@@ -1,0 +1,3 @@
+.vscode/
+*.sqlite3
+*.cover

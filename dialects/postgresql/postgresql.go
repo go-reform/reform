@@ -1,5 +1,5 @@
 // Package postgresql implements reform.Dialect for PostgreSQL.
-package postgresql // import "github.com/AlekSi/reform/dialects/postgresql"
+package postgresql // TODO add canonical import path via gopkg.in
 
 import (
 	"strconv"

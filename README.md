@@ -1,4 +1,4 @@
-# reform [![GoDoc](https://godoc.org/github.com/AlekSi/reform?status.svg)](https://godoc.org/github.com/AlekSi/reform)
+# reform [![GoDoc](https://godoc.org/github.com/AlekSi/reform?status.svg)](https://godoc.org/github.com/AlekSi/reform) [![Build Status](https://travis-ci.org/AlekSi/reform.svg?branch=master)](https://travis-ci.org/AlekSi/reform)
 
 A better ORM for Go.
 

@@ -1,0 +1,18 @@
+language: go
+sudo: false
+
+env:
+  global:
+    - GO15VENDOREXPERIMENT=1
+    - GORACE="halt_on_error=1"
+
+go:
+  - 1.6.2
+  - tip
+
+install:
+  - make init
+
+script:
+  - make test
+  - make test_lib_pq

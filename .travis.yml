@@ -16,3 +16,4 @@ install:
 script:
   - make test
   - make test_lib_pq
+  - make test_mattn_go-sqlite3

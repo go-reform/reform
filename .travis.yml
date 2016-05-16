@@ -5,6 +5,11 @@ env:
   global:
     - GO15VENDOREXPERIMENT=1
     - GORACE="halt_on_error=1"
+    - secure: PaMCT9Xv495cDNW1nQWa/Wfs9gRamW++OzbIy/Wt0YLRzSKdsXXxOOHbqMtf38tRf2gEjCn22Dytli0NW8t0D2RcQn0/iZFYbmr8hfSgEW0tDELlPAxKzaMg1aqd5Fot1jwdWsnyl8HIFfaTws49MBNqBk/U6ffcNrO6+nC0LNTtiiIf58ywpFxCT0eEnoVl1aOQvxNbcTUJTVcdjFpmas/JjsDVUwvKLWBCGNTTePy7BKPfhAmNsA+3IqWjSmDN6nzdQICODzcg5ofC3QGTCqWeTAA/+VphRvbNGYM4udYfIxF/T4irv7lo38wFA6raV6s66YIx+mr2ZT2SjHJmlr28QVse3xWa0ubR41PRtXPmZclapjfibiq8qBtkgzeem+Z6izW3uZuYDhCaaZKF8e7zTXno+ioAjO2t4Fl8f9T4lvuLSZpIyeBFs8mgZPk75hnXdhuN5Yixn5b1P8ZT5BCOt7VabD7FNu1BkIsWFjKduu/T8FUeFU83AkfCiAjUcadkK1PbMdV7P5h/hhjurvChSg0FGR0dc4vPHQAvxgDIoOw3ZVWdMd3CQFRN3Vhd03jzKHAr4XgUIZAY13h1QvqG5/iz/E+8LYIySVYa09o2SQgjOUj8jx2Z1J+r/vKcphyzlzG4s0UO6HG4J2oOXebhbR3LZCXnxWf2HjzsphM=
+
+  matrix:
+    - TARGET=test_lib_pq
+    - TARGET=test_mattn_go-sqlite3
 
 go:
   - 1.6.2
@@ -15,5 +20,5 @@ install:
 
 script:
   - make test
-  - make test_lib_pq
-  - make test_mattn_go-sqlite3
+  - make $TARGET
+  - goveralls -coverprofile=$TARGET.cover

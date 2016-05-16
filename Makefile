@@ -10,13 +10,14 @@ init:
 	go get -u -v github.com/golang/lint/golint
 	go get -u -v github.com/stretchr/testify/...
 	go get -u -v github.com/enodata/faker
+	go get -u -v github.com/mattn/goveralls
 
 install:
 	rm -f internal/test/models/*_reform.go
 	go install -v github.com/AlekSi/reform/...
 
 test: install
-	go test github.com/AlekSi/reform/parse
+	go test -coverprofile=parse.cover github.com/AlekSi/reform/parse
 	go generate -v -x github.com/AlekSi/reform/internal/test/models
 	go install -v github.com/AlekSi/reform/internal/test/models
 	go test -i -v
@@ -33,7 +34,7 @@ test_lib_pq:
 	env PGTZ=UTC psql -v ON_ERROR_STOP=1 -q -d reform-test < internal/test/sql/postgresql_init.sql
 	env PGTZ=UTC psql -v ON_ERROR_STOP=1 -q -d reform-test < internal/test/sql/data.sql
 	env PGTZ=UTC psql -v ON_ERROR_STOP=1 -q -d reform-test < internal/test/sql/postgresql_set.sql
-	go test -coverprofile=lib_pq.cover
+	go test -coverprofile=test_lib_pq.cover
 
 # currently broken due to pgx's timezone handling
 test_jackc_pgx: export REFORM_TEST_DRIVER = pgx
@@ -53,7 +54,7 @@ test_mattn_go-sqlite3:
 	sqlite3 -bail reform-test.sqlite3 < internal/test/sql/sqlite3_init.sql
 	sqlite3 -bail reform-test.sqlite3 < internal/test/sql/data.sql
 	sqlite3 -bail reform-test.sqlite3 < internal/test/sql/sqlite3_set.sql
-	go test
+	go test -coverprofile=test_mattn_go-sqlite3.cover
 
 test_go-sql-driver_mysql: export REFORM_TEST_DRIVER = mysql
 test_go-sql-driver_mysql: export REFORM_TEST_SOURCE = root@/reform-test?parseTime=true&strict=true&sql_notes=false&time_zone='America%2FNew_York'
@@ -63,7 +64,7 @@ test_go-sql-driver_mysql:
 	mysql -uroot reform-test < internal/test/sql/mysql_init.sql
 	mysql -uroot reform-test < internal/test/sql/data.sql
 	mysql -uroot reform-test < internal/test/sql/mysql_set.sql
-	go test
+	go test -coverprofile=test_go-sql-driver_mysql.cover
 
 # currently broken due to mymysql's timezone handling
 test_ziutek_mymysql: export REFORM_TEST_DRIVER = mymysql

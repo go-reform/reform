@@ -10,11 +10,15 @@ env:
   matrix:
     - TARGET=test_lib_pq
     - TARGET=test_mattn_go-sqlite3
+    - TARGET=test_go-sql-driver_mysql
     - TARGET=parse
 
 go:
   - 1.6.2
   - tip
+
+before_install:
+  - if [[ $TARGET == *mysql* ]] ; then mysql_tzinfo_to_sql /usr/share/zoneinfo | mysql -u root mysql; fi
 
 install:
   - make init

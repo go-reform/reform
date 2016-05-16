@@ -10,6 +10,7 @@ env:
   matrix:
     - TARGET=test_lib_pq
     - TARGET=test_mattn_go-sqlite3
+    - TARGET=parse
 
 go:
   - 1.6.2

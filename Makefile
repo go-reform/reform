@@ -76,3 +76,7 @@ test_ziutek_mymysql:
 	mysql -uroot reform-test < internal/test/sql/data.sql
 	mysql -uroot reform-test < internal/test/sql/mysql_set.sql
 	go test
+
+parse:
+	# nothing, hack for our Travis-CI configuration
+	# see test target

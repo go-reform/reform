@@ -32,7 +32,7 @@ func (db *DB) Begin() (*TX, error) {
 }
 
 // InTransaction wraps function execution in transaction, rolling back it in case of error or panic,
-// commiting otherwise.
+// committing otherwise.
 func (db *DB) InTransaction(f func(t *TX) error) error {
 	tx, err := db.Begin()
 	if err != nil {

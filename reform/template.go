@@ -76,7 +76,7 @@ func (s {{ .Type }}) String() string {
 }
 
 // Values returns a slice of struct or record field values.
-// Returned inteface{} values are never untyped nils.
+// Returned interface{} values are never untyped nils.
 func (s *{{ .Type }}) Values() []interface{} {
 	return []interface{}{ {{- range .Fields }}
 		s.{{ .Name }}, {{- end }}
@@ -84,7 +84,7 @@ func (s *{{ .Type }}) Values() []interface{} {
 }
 
 // Pointers returns a slice of pointers to struct or record fields.
-// Returned inteface{} values are never untyped nils.
+// Returned interface{} values are never untyped nils.
 func (s *{{ .Type }}) Pointers() []interface{} {
 	return []interface{}{ {{- range .Fields }}
 		&s.{{ .Name }}, {{- end }}
@@ -104,13 +104,13 @@ func (s *{{ .Type }}) Table() reform.Table {
 }
 
 // PKValue returns a value of primary key for that record.
-// Returned inteface{} value is never untyped nil.
+// Returned interface{} value is never untyped nil.
 func (s *{{ .Type }}) PKValue() interface{} {
 	return s.{{ .PKField.Name }}
 }
 
 // PKPointer returns a pointer to primary key field for that record.
-// Returned inteface{} value is never untyped nil.
+// Returned interface{} value is never untyped nil.
 func (s *{{ .Type }}) PKPointer() interface{} {
 	return &s.{{ .PKField.Name }}
 }

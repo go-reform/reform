@@ -43,11 +43,11 @@ type Struct interface {
 	String() string
 
 	// Values returns a slice of struct or record field values.
-	// Returned inteface{} values are never untyped nils.
+	// Returned interface{} values are never untyped nils.
 	Values() []interface{}
 
 	// Pointers returns a slice of pointers to struct or record fields.
-	// Returned inteface{} values are never untyped nils.
+	// Returned interface{} values are never untyped nils.
 	Pointers() []interface{}
 
 	// View returns View object for that struct.
@@ -62,11 +62,11 @@ type Record interface {
 	Table() Table
 
 	// PKValue returns a value of primary key for that record.
-	// Returned inteface{} value is never untyped nil.
+	// Returned interface{} value is never untyped nil.
 	PKValue() interface{}
 
 	// PKPointer returns a pointer to primary key field for that record.
-	// Returned inteface{} value is never untyped nil.
+	// Returned interface{} value is never untyped nil.
 	PKPointer() interface{}
 
 	// HasPK returns true if record has non-zero primary key set, false otherwise.

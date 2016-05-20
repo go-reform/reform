@@ -58,7 +58,7 @@ func (s Person) String() string {
 }
 
 // Values returns a slice of struct or record field values.
-// Returned inteface{} values are never untyped nils.
+// Returned interface{} values are never untyped nils.
 func (s *Person) Values() []interface{} {
 	return []interface{}{
 		s.ID,
@@ -70,7 +70,7 @@ func (s *Person) Values() []interface{} {
 }
 
 // Pointers returns a slice of pointers to struct or record fields.
-// Returned inteface{} values are never untyped nils.
+// Returned interface{} values are never untyped nils.
 func (s *Person) Pointers() []interface{} {
 	return []interface{}{
 		&s.ID,
@@ -92,13 +92,13 @@ func (s *Person) Table() reform.Table {
 }
 
 // PKValue returns a value of primary key for that record.
-// Returned inteface{} value is never untyped nil.
+// Returned interface{} value is never untyped nil.
 func (s *Person) PKValue() interface{} {
 	return s.ID
 }
 
 // PKPointer returns a pointer to primary key field for that record.
-// Returned inteface{} value is never untyped nil.
+// Returned interface{} value is never untyped nil.
 func (s *Person) PKPointer() interface{} {
 	return &s.ID
 }
@@ -173,7 +173,7 @@ func (s Project) String() string {
 }
 
 // Values returns a slice of struct or record field values.
-// Returned inteface{} values are never untyped nils.
+// Returned interface{} values are never untyped nils.
 func (s *Project) Values() []interface{} {
 	return []interface{}{
 		s.Name,
@@ -184,7 +184,7 @@ func (s *Project) Values() []interface{} {
 }
 
 // Pointers returns a slice of pointers to struct or record fields.
-// Returned inteface{} values are never untyped nils.
+// Returned interface{} values are never untyped nils.
 func (s *Project) Pointers() []interface{} {
 	return []interface{}{
 		&s.Name,
@@ -205,13 +205,13 @@ func (s *Project) Table() reform.Table {
 }
 
 // PKValue returns a value of primary key for that record.
-// Returned inteface{} value is never untyped nil.
+// Returned interface{} value is never untyped nil.
 func (s *Project) PKValue() interface{} {
 	return s.ID
 }
 
 // PKPointer returns a pointer to primary key field for that record.
-// Returned inteface{} value is never untyped nil.
+// Returned interface{} value is never untyped nil.
 func (s *Project) PKPointer() interface{} {
 	return &s.ID
 }
@@ -274,7 +274,7 @@ func (s PersonProject) String() string {
 }
 
 // Values returns a slice of struct or record field values.
-// Returned inteface{} values are never untyped nils.
+// Returned interface{} values are never untyped nils.
 func (s *PersonProject) Values() []interface{} {
 	return []interface{}{
 		s.PersonID,
@@ -283,7 +283,7 @@ func (s *PersonProject) Values() []interface{} {
 }
 
 // Pointers returns a slice of pointers to struct or record fields.
-// Returned inteface{} values are never untyped nils.
+// Returned interface{} values are never untyped nils.
 func (s *PersonProject) Pointers() []interface{} {
 	return []interface{}{
 		&s.PersonID,

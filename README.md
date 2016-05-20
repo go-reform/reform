@@ -71,7 +71,7 @@ as opposed to `interface{}` and runtime reflection. It will be kept simple.
 ## Background
 
 reform was born during summer 2014 out of frustrations with existing Go ORMs. All of them have a method
-`Save(record interface{}` which can be used like this:
+`Save(record interface{})` which can be used like this:
 
 ```go
 orm.Save(User{Name: "gopher"})

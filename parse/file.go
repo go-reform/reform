@@ -10,7 +10,7 @@ import (
 	"strings"
 )
 
-var magicReformComment = regexp.MustCompile(`reform:(\w+)`)
+var magicReformComment = regexp.MustCompile(`reform:([0-9A-Za-z_\.]+)`)
 
 func goType(x ast.Expr) string {
 	switch t := x.(type) {

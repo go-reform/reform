@@ -33,6 +33,7 @@ test_lib_pq:
 	createdb reform-test
 	env PGTZ=UTC psql -v ON_ERROR_STOP=1 -q -d reform-test < internal/test/sql/postgresql_init.sql
 	env PGTZ=UTC psql -v ON_ERROR_STOP=1 -q -d reform-test < internal/test/sql/data.sql
+	env PGTZ=UTC psql -v ON_ERROR_STOP=1 -q -d reform-test < internal/test/sql/postgresql_data.sql
 	env PGTZ=UTC psql -v ON_ERROR_STOP=1 -q -d reform-test < internal/test/sql/postgresql_set.sql
 	go test -coverprofile=test_lib_pq.cover
 

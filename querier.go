@@ -32,12 +32,21 @@ func (q *Querier) logAfter(query string, args []interface{}, d time.Duration, er
 	}
 }
 
-// QualifiedColumns returns a slice of quoted qulified column names for given view.
+// QualifiedView returns quoted qualified view name.
+func (q *Querier) QualifiedView(view View) string {
+	v := q.QuoteIdentifier(view.Name())
+	if view.Schema() != "" {
+		v = q.QuoteIdentifier(view.Schema()) + "." + v
+	}
+	return v
+}
+
+// QualifiedColumns returns a slice of quoted qualified column names for given view.
 func (q *Querier) QualifiedColumns(view View) []string {
-	t := q.QuoteIdentifier(view.Name())
+	v := q.QualifiedView(view)
 	res := view.Columns()
 	for i := 0; i < len(res); i++ {
-		res[i] = t + "." + q.QuoteIdentifier(res[i])
+		res[i] = v + "." + q.QuoteIdentifier(res[i])
 	}
 	return res
 }

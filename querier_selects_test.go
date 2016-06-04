@@ -6,6 +6,7 @@ import (
 	"github.com/AlekSi/pointer"
 
 	"github.com/AlekSi/reform"
+	"github.com/AlekSi/reform/dialects/postgresql"
 	. "github.com/AlekSi/reform/internal/test/models"
 )
 
@@ -271,4 +272,23 @@ func (s *ReformSuite) TestReload() {
 	err = s.q.Reload(&project)
 	s.Equal(Project{}, project) // expect old value
 	s.Equal(reform.ErrNoRows, err)
+}
+
+func (s *ReformSuite) TestSelectsSchema() {
+	if s.q.Dialect != postgresql.Dialect {
+		s.T().Skip("only PostgreSQL supports schemas")
+	}
+
+	var legacyPerson LegacyPerson
+	err := s.q.SelectOneTo(&legacyPerson, "WHERE id = "+s.q.Placeholder(1), 1001)
+	s.NoError(err)
+	s.Equal(LegacyPerson{ID: 1001, Name: pointer.ToString("Amelia Heathcote")}, legacyPerson)
+
+	structs, err := s.q.FindAllFrom(LegacyPersonTable, "id", 1002, 1003)
+	s.NoError(err)
+	s.Len(structs, 2)
+	s.Equal([]reform.Struct{
+		&LegacyPerson{ID: 1002, Name: pointer.ToString("Anastacio Ledner")},
+		&LegacyPerson{ID: 1003, Name: pointer.ToString("Dena Cummings")},
+	}, structs)
 }

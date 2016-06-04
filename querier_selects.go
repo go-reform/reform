@@ -8,7 +8,8 @@ import (
 
 // selectQuery returns full SELECT query for given view and tail.
 func (q *Querier) selectQuery(view View, tail string) string {
-	return fmt.Sprintf("SELECT %s FROM %s %s", strings.Join(q.QualifiedColumns(view), ", "), q.QuoteIdentifier(view.Name()), tail)
+	return fmt.Sprintf("SELECT %s FROM %s %s",
+		strings.Join(q.QualifiedColumns(view), ", "), q.QualifiedView(view), tail)
 }
 
 // NextRow scans next result row from rows to str. If str implements AfterFinder, it also calls AfterFind().
@@ -173,7 +174,7 @@ func (q *Querier) FindRows(view View, column string, arg interface{}) (*sql.Rows
 // partial result and error will be returned. Error is never ErrNoRows.
 func (q *Querier) FindAllFrom(view View, column string, args ...interface{}) ([]Struct, error) {
 	p := strings.Join(q.Placeholders(1, len(args)), ", ")
-	qi := q.QuoteIdentifier(view.Name()) + "." + q.QuoteIdentifier(column)
+	qi := q.QualifiedView(view) + "." + q.QuoteIdentifier(column)
 	tail := fmt.Sprintf("WHERE %s IN (%s)", qi, p)
 	return q.SelectAllFrom(view, tail, args...)
 }

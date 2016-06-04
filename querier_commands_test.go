@@ -252,3 +252,17 @@ func (s *ReformSuite) TestDeleteFrom() {
 	s.Error(err)
 	s.Equal(uint(0), ra)
 }
+
+func (s *ReformSuite) TestCommandsSchema() {
+	if s.q.Dialect != postgresql.Dialect {
+		s.T().Skip("only PostgreSQL supports schemas")
+	}
+
+	legacyPerson := &LegacyPerson{Name: pointer.ToString(faker.Name().Name())}
+	err := s.q.Save(legacyPerson)
+	s.NoError(err)
+	err = s.q.Save(legacyPerson)
+	s.NoError(err)
+	err = s.q.Delete(legacyPerson)
+	s.NoError(err)
+}

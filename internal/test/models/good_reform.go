@@ -15,7 +15,12 @@ type personTable struct {
 	z []interface{}
 }
 
-// Name returns a view or table name in SQL database (people).
+// Schema returns a schema name in SQL database ("").
+func (v *personTable) Schema() string {
+	return v.s.SQLSchema
+}
+
+// Name returns a view or table name in SQL database ("people").
 func (v *personTable) Name() string {
 	return v.s.SQLName
 }
@@ -42,7 +47,7 @@ func (v *personTable) PKColumnIndex() uint {
 
 // PersonTable represents people view or table in SQL database.
 var PersonTable = &personTable{
-	s: parse.StructInfo{Type: "Person", SQLName: "people", Fields: []parse.FieldInfo{{Name: "ID", Type: "int32", Column: "id"}, {Name: "Name", Type: "string", Column: "name"}, {Name: "Email", Type: "*string", Column: "email"}, {Name: "CreatedAt", Type: "time.Time", Column: "created_at"}, {Name: "UpdatedAt", Type: "*time.Time", Column: "updated_at"}}, PKFieldIndex: 0},
+	s: parse.StructInfo{Type: "Person", SQLSchema: "", SQLName: "people", Fields: []parse.FieldInfo{{Name: "ID", Type: "int32", Column: "id"}, {Name: "Name", Type: "string", Column: "name"}, {Name: "Email", Type: "*string", Column: "email"}, {Name: "CreatedAt", Type: "time.Time", Column: "created_at"}, {Name: "UpdatedAt", Type: "*time.Time", Column: "updated_at"}}, PKFieldIndex: 0},
 	z: new(Person).Values(),
 }
 
@@ -131,7 +136,12 @@ type projectTable struct {
 	z []interface{}
 }
 
-// Name returns a view or table name in SQL database (projects).
+// Schema returns a schema name in SQL database ("").
+func (v *projectTable) Schema() string {
+	return v.s.SQLSchema
+}
+
+// Name returns a view or table name in SQL database ("projects").
 func (v *projectTable) Name() string {
 	return v.s.SQLName
 }
@@ -158,7 +168,7 @@ func (v *projectTable) PKColumnIndex() uint {
 
 // ProjectTable represents projects view or table in SQL database.
 var ProjectTable = &projectTable{
-	s: parse.StructInfo{Type: "Project", SQLName: "projects", Fields: []parse.FieldInfo{{Name: "Name", Type: "string", Column: "name"}, {Name: "ID", Type: "string", Column: "id"}, {Name: "Start", Type: "time.Time", Column: "start"}, {Name: "End", Type: "*time.Time", Column: "end"}}, PKFieldIndex: 1},
+	s: parse.StructInfo{Type: "Project", SQLSchema: "", SQLName: "projects", Fields: []parse.FieldInfo{{Name: "Name", Type: "string", Column: "name"}, {Name: "ID", Type: "string", Column: "id"}, {Name: "Start", Type: "time.Time", Column: "start"}, {Name: "End", Type: "*time.Time", Column: "end"}}, PKFieldIndex: 1},
 	z: new(Project).Values(),
 }
 
@@ -244,7 +254,12 @@ type personProjectView struct {
 	z []interface{}
 }
 
-// Name returns a view or table name in SQL database (person_project).
+// Schema returns a schema name in SQL database ("").
+func (v *personProjectView) Schema() string {
+	return v.s.SQLSchema
+}
+
+// Name returns a view or table name in SQL database ("person_project").
 func (v *personProjectView) Name() string {
 	return v.s.SQLName
 }
@@ -261,7 +276,7 @@ func (v *personProjectView) NewStruct() reform.Struct {
 
 // PersonProjectView represents person_project view or table in SQL database.
 var PersonProjectView = &personProjectView{
-	s: parse.StructInfo{Type: "PersonProject", SQLName: "person_project", Fields: []parse.FieldInfo{{Name: "PersonID", Type: "int32", Column: "person_id"}, {Name: "ProjectID", Type: "string", Column: "project_id"}}, PKFieldIndex: -1},
+	s: parse.StructInfo{Type: "PersonProject", SQLSchema: "", SQLName: "person_project", Fields: []parse.FieldInfo{{Name: "PersonID", Type: "int32", Column: "person_id"}, {Name: "ProjectID", Type: "string", Column: "project_id"}}, PKFieldIndex: -1},
 	z: new(PersonProject).Values(),
 }
 
@@ -308,7 +323,12 @@ type legacyPersonTable struct {
 	z []interface{}
 }
 
-// Name returns a view or table name in SQL database (legacy.people).
+// Schema returns a schema name in SQL database ("legacy").
+func (v *legacyPersonTable) Schema() string {
+	return v.s.SQLSchema
+}
+
+// Name returns a view or table name in SQL database ("people").
 func (v *legacyPersonTable) Name() string {
 	return v.s.SQLName
 }
@@ -333,9 +353,9 @@ func (v *legacyPersonTable) PKColumnIndex() uint {
 	return uint(v.s.PKFieldIndex)
 }
 
-// LegacyPersonTable represents legacy.people view or table in SQL database.
+// LegacyPersonTable represents people view or table in SQL database.
 var LegacyPersonTable = &legacyPersonTable{
-	s: parse.StructInfo{Type: "LegacyPerson", SQLName: "legacy.people", Fields: []parse.FieldInfo{{Name: "ID", Type: "int32", Column: "id"}, {Name: "Name", Type: "*string", Column: "name"}}, PKFieldIndex: 0},
+	s: parse.StructInfo{Type: "LegacyPerson", SQLSchema: "legacy", SQLName: "people", Fields: []parse.FieldInfo{{Name: "ID", Type: "int32", Column: "id"}, {Name: "Name", Type: "*string", Column: "name"}}, PKFieldIndex: 0},
 	z: new(LegacyPerson).Values(),
 }
 

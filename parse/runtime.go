@@ -7,7 +7,7 @@ import (
 )
 
 // Object extracts struct information from given object.
-func Object(obj interface{}, table string) (res *StructInfo, err error) {
+func Object(obj interface{}, schema, table string) (res *StructInfo, err error) {
 	// convert any panic to error
 	defer func() {
 		p := recover()
@@ -24,6 +24,7 @@ func Object(obj interface{}, table string) (res *StructInfo, err error) {
 	t := reflect.ValueOf(obj).Elem().Type()
 	res = &StructInfo{
 		Type:         t.Name(),
+		SQLSchema:    schema,
 		SQLName:      table,
 		PKFieldIndex: -1,
 	}

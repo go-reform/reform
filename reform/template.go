@@ -31,7 +31,12 @@ type {{ .TableType }} struct {
 	z []interface{}
 }
 
-// Name returns a view or table name in SQL database ({{ .SQLName }}).
+// Schema returns a schema name in SQL database ("{{ .SQLSchema }}").
+func (v *{{ .TableType }}) Schema() string {
+	return v.s.SQLSchema
+}
+
+// Name returns a view or table name in SQL database ("{{ .SQLName }}").
 func (v *{{ .TableType }}) Name() string {
 	return v.s.SQLName
 }

@@ -10,7 +10,7 @@ import (
 	"strings"
 )
 
-var magicReformComment = regexp.MustCompile(`reform:(\w+)`)
+var magicReformComment = regexp.MustCompile(`reform:([0-9A-Za-z_\.]+)`)
 
 func goType(x ast.Expr) string {
 	switch t := x.(type) {
@@ -141,7 +141,12 @@ func File(path string) ([]StructInfo, error) {
 			if len(sm) < 2 {
 				continue
 			}
-			table := sm[1]
+			parts := strings.SplitN(sm[1], ".", 2)
+			var schema string
+			if len(parts) == 2 {
+				schema = parts[0]
+			}
+			table := parts[len(parts)-1]
 
 			str, ok := ts.Type.(*ast.StructType)
 			if !ok {
@@ -156,6 +161,7 @@ func File(path string) ([]StructInfo, error) {
 			if err != nil {
 				return nil, err
 			}
+			s.SQLSchema = schema
 			s.SQLName = table
 			res = append(res, *s)
 		}

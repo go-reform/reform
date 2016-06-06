@@ -15,6 +15,9 @@ var (
 
 // View represents SQL database view or table.
 type View interface {
+	// Schema returns a schema name in SQL database.
+	Schema() string
+
 	// Name returns a view or table name in SQL database.
 	Name() string
 

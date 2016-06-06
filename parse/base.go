@@ -17,6 +17,7 @@ type FieldInfo struct {
 // StructInfo represents information about struct.
 type StructInfo struct {
 	Type         string      // struct type as defined in source file, e.g. User
+	SQLSchema    string      // SQL database schema name from magic "reform:" comment, e.g. public
 	SQLName      string      // SQL database view or table name from magic "reform:" comment, e.g. users
 	Fields       []FieldInfo // fields info
 	PKFieldIndex int         // index of primary key field in Fields, -1 if none
@@ -52,7 +53,7 @@ func AssertUpToDate(si *StructInfo, obj interface{}) {
 		Typically this means that %s type definition was changed, but 'reform' tool / 'go generate' was not run.
 
 		`, si.Type, si.Type)
-	si2, err := Object(obj, si.SQLName)
+	si2, err := Object(obj, si.SQLSchema, si.SQLName)
 	if err != nil {
 		panic(msg + err.Error())
 	}

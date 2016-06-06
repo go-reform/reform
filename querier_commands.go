@@ -37,7 +37,7 @@ func (q *Querier) Insert(str Struct) error {
 	placeholders := q.Placeholders(1, len(columns))
 
 	query := fmt.Sprintf("INSERT INTO %s (%s) VALUES (%s)",
-		q.QuoteIdentifier(view.Name()),
+		q.QualifiedView(view),
 		strings.Join(columns, ", "),
 		strings.Join(placeholders, ", "),
 	)
@@ -84,7 +84,7 @@ func (q *Querier) update(record Record, columns []string, values []interface{}) 
 	}
 	table := record.Table()
 	query := fmt.Sprintf("UPDATE %s SET %s WHERE %s = %s",
-		q.QuoteIdentifier(table.Name()),
+		q.QualifiedView(table),
 		strings.Join(p, ", "),
 		q.QuoteIdentifier(table.Columns()[table.PKColumnIndex()]),
 		q.Placeholder(len(columns)+1),
@@ -218,7 +218,7 @@ func (q *Querier) Delete(record Record) error {
 	table := record.Table()
 	pk := table.PKColumnIndex()
 	query := fmt.Sprintf("DELETE FROM %s WHERE %s = %s",
-		q.QuoteIdentifier(table.Name()),
+		q.QualifiedView(table),
 		q.QuoteIdentifier(table.Columns()[pk]),
 		q.Placeholder(1),
 	)
@@ -245,7 +245,7 @@ func (q *Querier) Delete(record Record) error {
 // Method never returns ErrNoRows.
 func (q *Querier) DeleteFrom(view View, tail string, args ...interface{}) (uint, error) {
 	query := fmt.Sprintf("DELETE FROM %s %s",
-		q.QuoteIdentifier(view.Name()),
+		q.QualifiedView(view),
 		tail,
 	)
 

@@ -104,6 +104,12 @@ type PersonProject struct {
 	ProjectID string `reform:"project_id"`
 }
 
+//reform:legacy.people
+type LegacyPerson struct {
+	ID   int32   `reform:"id,pk"`
+	Name *string `reform:"name"`
+}
+
 // check interfaces
 var (
 	_ reform.BeforeInserter = new(Person)

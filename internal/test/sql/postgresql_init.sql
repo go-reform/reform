@@ -20,3 +20,10 @@ CREATE TABLE person_project (
   project_id varchar NOT NULL REFERENCES projects ON DELETE CASCADE,
   UNIQUE (person_id, project_id)
 );
+
+CREATE SCHEMA legacy;
+
+CREATE TABLE legacy.people (
+  id serial PRIMARY KEY,
+  name varchar
+);

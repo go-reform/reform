@@ -2,8 +2,9 @@
 
 A better ORM for Go.
 
-It uses non-empty interfaces, code generation (`go generate`) and initialization-time reflection
-as opposed to `interface{}` and runtime reflection. It will be kept simple.
+It uses code generation (`go generate`), non-empty interfaces and initialization-time reflection
+as opposed to type system sidestepping, `interface{}` and runtime reflection. It will be kept simple.
+
 
 ## Quickstart
 
@@ -32,7 +33,9 @@ as opposed to `interface{}` and runtime reflection. It will be kept simple.
 4. See [documentation](https://godoc.org/github.com/go-reform/reform) how to use it. Simple example:
 
     ```go
-	// save record (performs INSERT or UPDATE)
+	// Use reform.NewDB to create DB.
+
+	// Save record (performs INSERT or UPDATE).
 	person := &Person{
 		Name:  "Alexey Palazhchenko",
 		Email: pointer.ToString("alexey.palazhchenko@gmail.com"),
@@ -41,19 +44,19 @@ as opposed to `interface{}` and runtime reflection. It will be kept simple.
 		log.Fatal(err)
 	}
 
-	// ID is filled by Save
+	// ID is filled by Save.
 	person2, err := DB.FindByPrimaryKeyFrom(PersonTable, person.ID)
 	if err != nil {
 		log.Fatal(err)
 	}
 	fmt.Println(person2.(*Person).Name)
 
-	// delete record
+	// Delete record.
 	if err = DB.Delete(person); err != nil {
 		log.Fatal(err)
 	}
 
-	// find records by IDs
+	// Find records by IDs.
 	persons, err := DB.FindAllFrom(PersonTable, "id", 1, 2)
 	if err != nil {
 		log.Fatal(err)
@@ -61,12 +64,8 @@ as opposed to `interface{}` and runtime reflection. It will be kept simple.
 	for _, p := range persons {
 		fmt.Println(p)
 	}
-
-	// Output:
-	// Alexey Palazhchenko
-	// ID: 1 (int32), Name: `Denis Mills` (string), Email: <nil> (*string), CreatedAt: 2009-11-10 23:00:00 +0000 UTC (time.Time), UpdatedAt: <nil> (*time.Time)
-	// ID: 2 (int32), Name: `Garrick Muller` (string), Email: `muller_garrick@example.com` (*string), CreatedAt: 2009-12-12 12:34:56 +0000 UTC (time.Time), UpdatedAt: <nil> (*time.Time)
     ```
+
 
 ## Background
 
@@ -83,18 +82,24 @@ orm.Save("Batman!!")
 Now you can say that last invocation is obviously invalid, and that it's not hard to make an ORM to accept both
 first and second versions. But there are two problems:
 
-1. Compiler can't check it. Method's signature in `godoc` will not tell us how to use it. We are essentially working against them.
+1. Compiler can't check it. Method's signature in `godoc` will not tell us how to use it.
+   We are essentially working against those tools by sidestepping type system.
 2. First version is still invalid, since one would expect `Save()` method to set record's primary key after `INSERT`,
    but this change will be lost due to passing by value.
 
 First proprietary version of reform was used in production even before `go generate` announcement.
-This free and open-source version is the fourth iteration on the road to better and idiomatic API.
+This free and open-source version is the fourth milestone on the road to better and idiomatic API.
 
 
-## Versioning
+## Versioning policy
 
-We will switch to proper versioning via [gopkg.in](http://gopkg.in) at June 2016. Before that moment breaking changes MAY
-be applied, but are not expected.
+We are following Semantic Versioning, using [gopkg.in](http://gopkg.in) and filling a [changelog](CHANGELOG.md).
+
+We use branch `v1-dev` (default on Github) for v1 development and tags `v1.Y.Z` for releases.
+Code in that branch uses canonical import path `gopkg.in/reform.v1`.
+Breaking changes will not be applied to v1.
+
+We use `master` branch for what will became v2. Code there doesn't enforce canonical import path.
 
 
 ## Additional packages

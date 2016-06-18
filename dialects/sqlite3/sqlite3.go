@@ -2,7 +2,7 @@
 package sqlite3 // TODO add canonical import path via gopkg.in
 
 import (
-	"github.com/AlekSi/reform"
+	"github.com/go-reform/reform"
 )
 
 type sqlite3 struct{}

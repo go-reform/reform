@@ -14,12 +14,12 @@ init:
 
 install:
 	rm -f internal/test/models/*_reform.go
-	go install -v github.com/AlekSi/reform/...
+	go install -v github.com/go-reform/reform/...
 
 test: install
-	go test -coverprofile=parse.cover github.com/AlekSi/reform/parse
-	go generate -v -x github.com/AlekSi/reform/internal/test/models
-	go install -v github.com/AlekSi/reform/internal/test/models
+	go test -coverprofile=parse.cover github.com/go-reform/reform/parse
+	go generate -v -x github.com/go-reform/reform/internal/test/models
+	go install -v github.com/go-reform/reform/internal/test/models
 	go test -i -v
 
 check: test

@@ -9,7 +9,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/AlekSi/reform/parse"
+	"github.com/go-reform/reform/parse"
 )
 
 var (

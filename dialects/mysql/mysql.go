@@ -2,7 +2,7 @@
 package mysql // TODO add canonical import path via gopkg.in
 
 import (
-	"github.com/AlekSi/reform"
+	"github.com/go-reform/reform"
 )
 
 type mysql struct{}

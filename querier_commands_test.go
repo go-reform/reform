@@ -7,9 +7,9 @@ import (
 	"github.com/AlekSi/pointer"
 	"github.com/enodata/faker"
 
-	"github.com/AlekSi/reform"
-	"github.com/AlekSi/reform/dialects/postgresql"
-	. "github.com/AlekSi/reform/internal/test/models"
+	"github.com/go-reform/reform"
+	"github.com/go-reform/reform/dialects/postgresql"
+	. "github.com/go-reform/reform/internal/test/models"
 )
 
 func (s *ReformSuite) TestInsert() {

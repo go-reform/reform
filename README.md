@@ -1,4 +1,4 @@
-# reform [![GoDoc](https://godoc.org/github.com/AlekSi/reform?status.svg)](https://godoc.org/github.com/AlekSi/reform) [![Build Status](https://travis-ci.org/AlekSi/reform.svg?branch=master)](https://travis-ci.org/AlekSi/reform) [![Coverage Status](https://coveralls.io/repos/github/AlekSi/reform/badge.svg?branch=master)](https://coveralls.io/github/AlekSi/reform?branch=master) [![Go Report Card](https://goreportcard.com/badge/github.com/AlekSi/reform)](https://goreportcard.com/report/github.com/AlekSi/reform)
+# reform [![GoDoc](https://godoc.org/github.com/go-reform/reform?status.svg)](https://godoc.org/github.com/go-reform/reform) [![Build Status](https://travis-ci.org/go-reform/reform.svg?branch=master)](https://travis-ci.org/go-reform/reform) [![Coverage Status](https://coveralls.io/repos/github/go-reform/reform/badge.svg?branch=master)](https://coveralls.io/github/go-reform/reform?branch=master) [![Go Report Card](https://goreportcard.com/badge/github.com/go-reform/reform)](https://goreportcard.com/report/github.com/go-reform/reform)
 
 A better ORM for Go.
 
@@ -7,7 +7,7 @@ as opposed to `interface{}` and runtime reflection. It will be kept simple.
 
 ## Quickstart
 
-1. Install it: `go get github.com/AlekSi/reform/reform` (see about versioning below)
+1. Install it: `go get github.com/go-reform/reform/reform` (see about versioning below)
 2. Define your first model in file `person.go`:
 
     ```go
@@ -29,7 +29,7 @@ as opposed to `interface{}` and runtime reflection. It will be kept simple.
 
 3. Run `reform [package or directory]` or `go generate [package or file]`. This will create `person_reform.go`
    in the same package with type `PersonTable` and methods on `Person`.
-4. See [documentation](https://godoc.org/github.com/AlekSi/reform) how to use it. Simple example:
+4. See [documentation](https://godoc.org/github.com/go-reform/reform) how to use it. Simple example:
 
     ```go
 	// save record (performs INSERT or UPDATE)

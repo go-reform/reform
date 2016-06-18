@@ -19,11 +19,11 @@ import (
 	"github.com/enodata/faker"
 	"github.com/stretchr/testify/suite"
 
-	"github.com/AlekSi/reform"
-	"github.com/AlekSi/reform/dialects/mysql"
-	"github.com/AlekSi/reform/dialects/postgresql"
-	"github.com/AlekSi/reform/dialects/sqlite3"
-	"github.com/AlekSi/reform/internal/test/models"
+	"github.com/go-reform/reform"
+	"github.com/go-reform/reform/dialects/mysql"
+	"github.com/go-reform/reform/dialects/postgresql"
+	"github.com/go-reform/reform/dialects/sqlite3"
+	"github.com/go-reform/reform/internal/test/models"
 )
 
 var (

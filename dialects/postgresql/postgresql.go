@@ -4,7 +4,7 @@ package postgresql // TODO add canonical import path via gopkg.in
 import (
 	"strconv"
 
-	"github.com/AlekSi/reform"
+	"github.com/go-reform/reform"
 )
 
 type postgresql struct{}

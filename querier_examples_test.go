@@ -6,8 +6,8 @@ import (
 	"time"
 
 	"github.com/AlekSi/pointer"
-	"github.com/AlekSi/reform"
-	. "github.com/AlekSi/reform/internal/test/models"
+	"github.com/go-reform/reform"
+	. "github.com/go-reform/reform/internal/test/models"
 )
 
 func Example() {

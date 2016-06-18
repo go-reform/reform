@@ -1,13 +1,13 @@
 package models
 
-// generated with github.com/AlekSi/reform
+// generated with github.com/go-reform/reform
 
 import (
 	"fmt"
 	"strings"
 
-	"github.com/AlekSi/reform"
-	"github.com/AlekSi/reform/parse"
+	"github.com/go-reform/reform"
+	"github.com/go-reform/reform/parse"
 )
 
 type personTable struct {

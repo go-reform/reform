@@ -3,7 +3,7 @@ package main
 import (
 	"text/template"
 
-	"github.com/AlekSi/reform/parse"
+	"github.com/go-reform/reform/parse"
 )
 
 type StructData struct {
@@ -14,14 +14,14 @@ type StructData struct {
 
 var (
 	prologTemplate = template.Must(template.New("prolog").Parse(`
-// generated with github.com/AlekSi/reform
+// generated with github.com/go-reform/reform
 
 import (
 	"fmt"
 	"strings"
 
-	"github.com/AlekSi/reform"
-	"github.com/AlekSi/reform/parse"
+	"github.com/go-reform/reform"
+	"github.com/go-reform/reform/parse"
 )
 `))
 

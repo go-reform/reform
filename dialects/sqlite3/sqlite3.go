@@ -1,5 +1,5 @@
 // Package sqlite3 implements reform.Dialect for SQLite3.
-package sqlite3 // TODO add canonical import path via gopkg.in
+package sqlite3
 
 import (
 	"github.com/go-reform/reform"

@@ -1,5 +1,5 @@
 // Package mysql implements reform.Dialect for MySQL.
-package mysql // TODO add canonical import path via gopkg.in
+package mysql
 
 import (
 	"github.com/go-reform/reform"

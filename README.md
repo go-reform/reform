@@ -2,13 +2,13 @@
 
 A better ORM for Go.
 
-It uses code generation (`go generate`), non-empty interfaces and initialization-time reflection
-as opposed to type system sidestepping, `interface{}` and runtime reflection. It will be kept simple.
+It uses non-empty interfaces, code generation (`go generate`) and initialization-time reflection
+as opposed to `interface{}`, type system sidestepping and runtime reflection. It will be kept simple.
 
 
 ## Quickstart
 
-1. Install it: `go get github.com/gopkg.in/reform.v1/reform` (see about versioning below)
+1. Install it: `go get gopkg.in/reform.v1/reform` (see about versioning below)
 2. Define your first model in file `person.go`:
 
     ```go

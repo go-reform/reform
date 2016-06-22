@@ -8,8 +8,8 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/go-reform/reform/internal/test/models"
-	"github.com/go-reform/reform/internal/test/models/bogus"
+	"gopkg.in/reform.v1/internal/test/models"
+	"gopkg.in/reform.v1/internal/test/models/bogus"
 )
 
 var (

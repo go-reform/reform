@@ -1,4 +1,4 @@
-# reform [![GoDoc](https://godoc.org/github.com/go-reform/reform?status.svg)](https://godoc.org/github.com/go-reform/reform) [![Build Status](https://travis-ci.org/go-reform/reform.svg?branch=master)](https://travis-ci.org/go-reform/reform) [![Coverage Status](https://coveralls.io/repos/github/go-reform/reform/badge.svg?branch=master)](https://coveralls.io/github/go-reform/reform?branch=master) [![Go Report Card](https://goreportcard.com/badge/github.com/go-reform/reform)](https://goreportcard.com/report/github.com/go-reform/reform)
+# reform [![GoDoc](https://godoc.org/gopkg.in/reform.v1?status.svg)](https://godoc.org/gopkg.in/reform.v1) [![Build Status](https://travis-ci.org/go-reform/reform.svg?branch=v1-stable)](https://travis-ci.org/go-reform/reform) [![Coverage Status](https://coveralls.io/repos/github/go-reform/reform/badge.svg?branch=v1-stable)](https://coveralls.io/github/go-reform/reform?branch=v1-stable) [![Go Report Card](https://goreportcard.com/badge/gopkg.in/reform.v1)](https://goreportcard.com/report/gopkg.in/reform.v1)
 
 A better ORM for Go.
 
@@ -8,7 +8,7 @@ as opposed to type system sidestepping, `interface{}` and runtime reflection. It
 
 ## Quickstart
 
-1. Install it: `go get github.com/go-reform/reform/reform` (see about versioning below)
+1. Install it: `go get github.com/gopkg.in/reform.v1/reform` (see about versioning below)
 2. Define your first model in file `person.go`:
 
     ```go
@@ -30,7 +30,7 @@ as opposed to type system sidestepping, `interface{}` and runtime reflection. It
 
 3. Run `reform [package or directory]` or `go generate [package or file]`. This will create `person_reform.go`
    in the same package with type `PersonTable` and methods on `Person`.
-4. See [documentation](https://godoc.org/github.com/go-reform/reform) how to use it. Simple example:
+4. See [documentation](https://godoc.org/gopkg.in/reform.v1) how to use it. Simple example:
 
     ```go
 	// Use reform.NewDB to create DB.
@@ -93,13 +93,17 @@ This free and open-source version is the fourth milestone on the road to better 
 
 ## Versioning policy
 
-We are following Semantic Versioning, using [gopkg.in](http://gopkg.in) and filling a [changelog](CHANGELOG.md).
+We are following [Semantic Versioning](http://semver.org/spec/v2.0.0.html),
+using [gopkg.in](https://gopkg.in) and filling a [changelog](CHANGELOG.md).
 
-We use branch `v1-dev` (default on Github) for v1 development and tags `v1.Y.Z` for releases.
-Code in that branch uses canonical import path `gopkg.in/reform.v1`.
-Breaking changes will not be applied to v1.
+We use branch `v1-stable` (default on Github) for v1 development and tags `v1.Y.Z` for releases.
+All v1 releases are SemVer-compatible, breaking changes will not be applied.
+Canonical import path is `gopkg.in/reform.v1`.
+`go get -u gopkg.in/reform.v1` will install latest released version.
+To install not yet released v1 version one can do a `git checkout` manually while preserving import path.
 
-We use `master` branch for what will became v2. Code there doesn't enforce canonical import path.
+Branch `v2-unstable` is used for v2 development. It doesn't have any releases yet, and no compatibility is guaranteed.
+Canonical import path is `gopkg.in/reform.v2-unstable`.
 
 
 ## Additional packages

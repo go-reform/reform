@@ -4,7 +4,8 @@ import (
 	"time"
 
 	"github.com/AlekSi/pointer"
-	"github.com/go-reform/reform"
+
+	"gopkg.in/reform.v1"
 )
 
 //go:generate reform

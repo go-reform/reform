@@ -1,10 +1,10 @@
 // Package postgresql implements reform.Dialect for PostgreSQL.
-package postgresql
+package postgresql // import "gopkg.in/reform.v1/dialects/postgresql"
 
 import (
 	"strconv"
 
-	"github.com/go-reform/reform"
+	"gopkg.in/reform.v1"
 )
 
 type postgresql struct{}

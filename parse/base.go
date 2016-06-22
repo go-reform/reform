@@ -1,5 +1,5 @@
 // Package parse implements parsing of Go structs in files and runtime.
-package parse
+package parse // import "gopkg.in/reform.v1/parse"
 
 import (
 	"fmt"

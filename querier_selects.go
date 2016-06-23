@@ -89,21 +89,27 @@ func (q *Querier) SelectRows(view View, tail string, args ...interface{}) (*sql.
 //
 // In case of query error slice will be nil. If error is encountered during iteration,
 // partial result and error will be returned. Error is never ErrNoRows.
-func (q *Querier) SelectAllFrom(view View, tail string, args ...interface{}) ([]Struct, error) {
-	rows, err := q.SelectRows(view, tail, args...)
+func (q *Querier) SelectAllFrom(view View, tail string, args ...interface{}) (structs []Struct, err error) {
+	var rows *sql.Rows
+	rows, err = q.SelectRows(view, tail, args...)
 	if err != nil {
-		return nil, err
+		return
 	}
-	defer rows.Close()
+	defer func() {
+		e := rows.Close()
+		if err == nil {
+			err = e
+		}
+	}()
 
-	var structs []Struct
 	for {
 		str := view.NewStruct()
 		err = q.NextRow(str, rows)
-		if err == ErrNoRows {
-			return structs, nil
-		} else if err != nil {
-			return structs, err
+		if err != nil {
+			if err == ErrNoRows {
+				err = nil
+			}
+			return
 		}
 
 		structs = append(structs, str)

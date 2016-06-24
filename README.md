@@ -101,7 +101,7 @@ All v1 releases are SemVer-compatible, breaking changes will not be applied.
 Canonical import path is `gopkg.in/reform.v1`.
 `go get -u gopkg.in/reform.v1` will install latest released version.
 To install not yet released v1 version one can do checkout manually while preserving import path:
-```bash
+```
 go get -u gopkg.in/reform.v1
 cd $GOPATH/gopkg.in/reform.v1
 git checkout origin/v1-stable

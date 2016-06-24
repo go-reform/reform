@@ -103,6 +103,54 @@ func (s *ReformSuite) TestInsertIntoView() {
 	s.Error(err)
 }
 
+func (s *ReformSuite) TestInsertMulti() {
+	newEmail := faker.Internet().Email()
+	newName := faker.Name().Name()
+	person1, person2 := &Person{Email: &newEmail}, &Person{Name: newName}
+	err := s.q.InsertMulti(person1, person2)
+	s.NoError(err)
+
+	s.Equal(int32(0), person1.ID)
+	s.Equal("", person1.Name)
+	s.Equal(&newEmail, person1.Email)
+	s.WithinDuration(time.Now(), person1.CreatedAt, time.Second)
+	s.Nil(person1.UpdatedAt)
+
+	s.Equal(int32(0), person2.ID)
+	s.Equal(newName, person2.Name)
+	s.Nil(person2.Email)
+	s.WithinDuration(time.Now(), person2.CreatedAt, time.Second)
+	s.Nil(person2.UpdatedAt)
+}
+
+func (s *ReformSuite) TestInsertMultiWithPrimaryKeys() {
+	newEmail := faker.Internet().Email()
+	newName := faker.Name().Name()
+	person1, person2 := &Person{ID: 50, Email: &newEmail}, &Person{ID: 51, Name: newName}
+	err := s.q.InsertMulti(person1, person2)
+	s.NoError(err)
+
+	s.Equal(int32(50), person1.ID)
+	s.Equal("", person1.Name)
+	s.Equal(&newEmail, person1.Email)
+	s.WithinDuration(time.Now(), person1.CreatedAt, time.Second)
+	s.Nil(person1.UpdatedAt)
+
+	s.Equal(int32(51), person2.ID)
+	s.Equal(newName, person2.Name)
+	s.Nil(person2.Email)
+	s.WithinDuration(time.Now(), person2.CreatedAt, time.Second)
+	s.Nil(person2.UpdatedAt)
+
+	person, err := s.q.FindByPrimaryKeyFrom(PersonTable, person1.ID)
+	s.NoError(err)
+	s.Equal(person1, person)
+
+	person, err = s.q.FindByPrimaryKeyFrom(PersonTable, person2.ID)
+	s.NoError(err)
+	s.Equal(person2, person)
+}
+
 func (s *ReformSuite) TestUpdate() {
 	var person Person
 	err := s.q.Update(&person)

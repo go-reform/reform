@@ -100,7 +100,12 @@ We use branch `v1-stable` (default on Github) for v1 development and tags `v1.Y.
 All v1 releases are SemVer-compatible, breaking changes will not be applied.
 Canonical import path is `gopkg.in/reform.v1`.
 `go get -u gopkg.in/reform.v1` will install latest released version.
-To install not yet released v1 version one can do a `git checkout` manually while preserving import path.
+To install not yet released v1 version one can do checkout manually while preserving import path:
+```bash
+go get -u gopkg.in/reform.v1
+cd $GOPATH/gopkg.in/reform.v1
+git checkout origin/v1-stable
+```
 
 Branch `v2-unstable` is used for v2 development. It doesn't have any releases yet, and no compatibility is guaranteed.
 Canonical import path is `gopkg.in/reform.v2-unstable`.

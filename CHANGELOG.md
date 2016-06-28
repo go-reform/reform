@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.1.0 (not yet released)
+
+* Added Querier.InsertMulti.
+
 ## v1.0.0 (2016-06-22)
 
 * Moved to https://github.com/go-reform/reform repository.

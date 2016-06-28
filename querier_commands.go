@@ -7,6 +7,8 @@ import (
 
 // Insert inserts a struct into SQL database table.
 // If str implements BeforeInserter, it calls BeforeInsert() before doing so.
+//
+// It fills record's primary key field.
 func (q *Querier) Insert(str Struct) error {
 	if bi, ok := str.(BeforeInserter); ok {
 		err := bi.BeforeInsert()
@@ -70,6 +72,85 @@ func (q *Querier) Insert(str Struct) error {
 	default:
 		panic("reform: Unhandled LastInsertIdMethod. Please report this bug.")
 	}
+}
+
+// InsertMulti inserts several structs into SQL database table with single query.
+// If they implement BeforeInserter, it calls BeforeInsert() before doing so.
+//
+// All structs should belong to the same view/table.
+// All records should either have or not have primary key set.
+// It doesn't fill primary key fields.
+// Given all these limitations, most users should use Querier.Insert in a loop, not this method.
+func (q *Querier) InsertMulti(structs ...Struct) error {
+	if len(structs) == 0 {
+		return nil
+	}
+
+	// check that view is the same
+	view := structs[0].View()
+	for _, str := range structs {
+		if str.View() != view {
+			return fmt.Errorf("reform: different tables in InsertMulti: %s and %s", view.Name(), str.View().Name())
+		}
+	}
+
+	var err error
+	for _, str := range structs {
+		if bi, ok := str.(BeforeInserter); ok {
+			e := bi.BeforeInsert()
+			if err == nil {
+				err = e
+			}
+		}
+	}
+	if err != nil {
+		return err
+	}
+
+	// check if all PK are present or all are absent
+	record, _ := structs[0].(Record)
+	if record != nil {
+		for _, str := range structs {
+			rec, _ := str.(Record)
+			if record.HasPK() != rec.HasPK() {
+				return fmt.Errorf("reform: PK in present in one struct and absent in other: first: %s, second: %s",
+					record, rec)
+			}
+		}
+	}
+
+	columns := view.Columns()
+	for i, c := range columns {
+		columns[i] = q.QuoteIdentifier(c)
+	}
+
+	var pk uint
+	if record != nil && !record.HasPK() {
+		pk = view.(Table).PKColumnIndex()
+		columns = append(columns[:pk], columns[pk+1:]...)
+	}
+
+	placeholders := q.Placeholders(1, len(columns)*len(structs))
+	query := fmt.Sprintf("INSERT INTO %s (%s) VALUES ",
+		q.QualifiedView(view),
+		strings.Join(columns, ", "),
+	)
+	for i := 0; i < len(structs); i++ {
+		query += fmt.Sprintf("(%s), ", strings.Join(placeholders[len(columns)*i:len(columns)*(i+1)], ", "))
+	}
+	query = query[:len(query)-2] // cut last ", "
+
+	values := make([]interface{}, 0, len(placeholders))
+	for _, str := range structs {
+		v := str.Values()
+		if record != nil && !record.HasPK() {
+			v = append(v[:pk], v[pk+1:]...)
+		}
+		values = append(values, v...)
+	}
+
+	_, err = q.Exec(query, values...)
+	return err
 }
 
 func (q *Querier) update(record Record, columns []string, values []interface{}) error {

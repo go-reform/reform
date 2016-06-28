@@ -7,7 +7,8 @@ import (
 
 // Insert inserts a struct into SQL database table.
 // If str implements BeforeInserter, it calls BeforeInsert() before doing so.
-// TODO expand documentation - id is set back
+//
+// It fills record's primary key field.
 func (q *Querier) Insert(str Struct) error {
 	if bi, ok := str.(BeforeInserter); ok {
 		err := bi.BeforeInsert()
@@ -73,7 +74,13 @@ func (q *Querier) Insert(str Struct) error {
 	}
 }
 
-// TODO documentation
+// InsertMulti inserts several structs into SQL database table with single query.
+// If they implement BeforeInserter, it calls BeforeInsert() before doing so.
+//
+// All structs should belong to the same view/table.
+// All records should either have or not have primary key set.
+// It doesn't fill primary key fields.
+// Given all these limitations, most users should use Querier.Insert in a loop, not this method.
 func (q *Querier) InsertMulti(structs ...Struct) error {
 	if len(structs) == 0 {
 		return nil
@@ -120,11 +127,7 @@ func (q *Querier) InsertMulti(structs ...Struct) error {
 	var pk uint
 	if record != nil && !record.HasPK() {
 		pk = view.(Table).PKColumnIndex()
-
-		// cut primary key
-		if !record.HasPK() {
-			columns = append(columns[:pk], columns[pk+1:]...)
-		}
+		columns = append(columns[:pk], columns[pk+1:]...)
 	}
 
 	placeholders := q.Placeholders(1, len(columns)*len(structs))

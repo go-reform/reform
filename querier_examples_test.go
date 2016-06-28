@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/AlekSi/pointer"
+	"github.com/enodata/faker"
 
 	"gopkg.in/reform.v1"
 	"gopkg.in/reform.v1/dialects/postgresql"
@@ -104,4 +105,53 @@ func ExampleQuerier_SelectOneTo() {
 	fmt.Println(person)
 	// Output:
 	// ID: 1 (int32), Name: `Denis Mills` (string), Email: <nil> (*string), CreatedAt: 2009-11-10 23:00:00 +0000 UTC (time.Time), UpdatedAt: <nil> (*time.Time)
+}
+
+var persons = []reform.Struct{
+	&Person{
+		Name:  "Alexey Palazhchenko",
+		Email: pointer.ToString("alexey.palazhchenko@gmail.com"),
+	},
+	&Person{
+		Name:  faker.Name().Name(),
+		Email: pointer.ToString(faker.Internet().Email()),
+	},
+	&Person{
+		Name:  faker.Name().Name(),
+		Email: pointer.ToString(faker.Internet().Email()),
+	},
+	&Person{
+		Name:  faker.Name().Name(),
+		Email: pointer.ToString(faker.Internet().Email()),
+	},
+	&Person{
+		Name:  faker.Name().Name(),
+		Email: pointer.ToString(faker.Internet().Email()),
+	},
+}
+
+func ExampleQuerier_InsertMulti() {
+	// insert up to 3 structs at once
+	const batchSize = 3
+	for i := 0; i < len(persons)/batchSize+1; i++ {
+		low := i * batchSize
+		high := (i + 1) * batchSize
+		if high > len(persons) {
+			high = len(persons)
+		}
+		batch := persons[low:high]
+
+		err := DB.InsertMulti(batch...)
+		if err != nil {
+			log.Fatal(err)
+		}
+		fmt.Printf("Inserted %d persons\n", len(batch))
+	}
+
+	// note that ID is not filled
+	fmt.Println(persons[0].(*Person).ID, persons[0].(*Person).Name)
+	// Output:
+	// Inserted 3 persons
+	// Inserted 2 persons
+	// 0 Alexey Palazhchenko
 }

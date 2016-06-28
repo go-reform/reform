@@ -151,6 +151,17 @@ func (s *ReformSuite) TestInsertMultiWithPrimaryKeys() {
 	s.Equal(person2, person)
 }
 
+func (s *ReformSuite) TestInsertMultiMixes() {
+	err := s.q.InsertMulti()
+	s.NoError(err)
+
+	err = s.q.InsertMulti(&Person{}, &Project{})
+	s.Error(err)
+
+	err = s.q.InsertMulti(&Person{ID: 1}, &Person{})
+	s.Error(err)
+}
+
 func (s *ReformSuite) TestUpdate() {
 	var person Person
 	err := s.q.Update(&person)

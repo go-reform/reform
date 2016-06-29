@@ -5,14 +5,30 @@ import (
 	"time"
 )
 
+type TXInterface interface {
+	DBTX
+	Commit() error
+	Rollback() error
+}
+
+// check interface
+var _ TXInterface = new(sql.Tx)
+
 // TX represents a SQL database transaction.
 type TX struct {
 	*Querier
-	tx *sql.Tx
+	tx TXInterface
 }
 
 // NewTX creates new TX object for given SQL database transaction.
 func NewTX(tx *sql.Tx, dialect Dialect, logger Logger) *TX {
+	return &TX{
+		Querier: newQuerier(tx, dialect, logger),
+		tx:      tx,
+	}
+}
+
+func NewTXFromInterface(tx TXInterface, dialect Dialect, logger Logger) *TX {
 	return &TX{
 		Querier: newQuerier(tx, dialect, logger),
 		tx:      tx,

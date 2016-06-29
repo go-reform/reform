@@ -5,14 +5,29 @@ import (
 	"time"
 )
 
+type DBInterface interface {
+	DBTX
+	Begin() (*sql.Tx, error)
+}
+
+// check interface
+var _ DBInterface = new(sql.DB)
+
 // DB represents a connection to SQL database.
 type DB struct {
 	*Querier
-	db *sql.DB
+	db DBInterface
 }
 
 // NewDB creates new DB object for given SQL database connection.
 func NewDB(db *sql.DB, dialect Dialect, logger Logger) *DB {
+	return &DB{
+		Querier: newQuerier(db, dialect, logger),
+		db:      db,
+	}
+}
+
+func NewDBFromInterface(db DBInterface, dialect Dialect, logger Logger) *DB {
 	return &DB{
 		Querier: newQuerier(db, dialect, logger),
 		db:      db,

@@ -38,6 +38,7 @@ test-db:
 		internal/test/sql/$(DATABASE)_set.sql \
 		| reform-db -db-driver=$(REFORM_DRIVER) -db-source="$(REFORM_INIT_SOURCE)"
 	go test $(REFORM_TEST_FLAGS) -coverprofile=$(REFORM_DRIVER).cover
+	go test $(REFORM_TEST_FLAGS) -run=nothing -bench=Benchmark
 
 drone:
 	drone exec --repo.trusted .drone-local.yml

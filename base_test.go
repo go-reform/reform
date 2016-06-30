@@ -16,7 +16,6 @@ import (
 
 	"github.com/AlekSi/pointer"
 	"github.com/enodata/faker"
-	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
 
 	"gopkg.in/reform.v1"
@@ -97,7 +96,7 @@ func TestMain(m *testing.M) {
 	os.Exit(m.Run())
 }
 
-func setIdentityInsert(t *testing.T, tx *reform.TX, table string, allow bool) {
+func setIdentityInsert(tb testing.TB, tx *reform.TX, table string, allow bool) {
 	if tx.Dialect != mssql.Dialect {
 		return
 	}
@@ -108,7 +107,9 @@ func setIdentityInsert(t *testing.T, tx *reform.TX, table string, allow bool) {
 	}
 	sql := fmt.Sprintf("SET IDENTITY_INSERT %s %s", tx.QuoteIdentifier(table), allowString)
 	_, err := tx.Exec(sql)
-	require.NoError(t, err)
+	if err != nil {
+		tb.Fatalf("failed to execute %q: %s", sql, err)
+	}
 }
 
 type ReformSuite struct {
@@ -120,24 +121,39 @@ func TestReformSuite(t *testing.T) {
 	suite.Run(t, new(ReformSuite))
 }
 
+func setupTransaction(tb testing.TB, withLogger bool) *reform.TX {
+	if withLogger {
+		pl := reform.NewPrintfLogger(tb.Logf)
+		pl.LogTypes = true
+		DB.Logger = pl
+	}
+
+	tx, err := DB.Begin()
+	if err != nil {
+		tb.Fatalf("failed to begin transaction: %s", err)
+	}
+
+	setIdentityInsert(tb, tx, "people", false)
+
+	return tx
+}
+
+func tearDownTransaction(tb testing.TB, tx *reform.TX) {
+	// some transactional tests rollback and nilify transaction
+	if tx != nil {
+		err := tx.Rollback()
+		if err != nil {
+			tb.Fatalf("failed to rollback transaction: %s", err)
+		}
+	}
+}
+
 func (s *ReformSuite) SetupTest() {
-	pl := reform.NewPrintfLogger(s.T().Logf)
-	pl.LogTypes = true
-	DB.Logger = pl
-
-	var err error
-	s.q, err = DB.Begin()
-	s.Require().NoError(err)
-
-	setIdentityInsert(s.T(), s.q, "people", false)
+	s.q = setupTransaction(s.T(), true)
 }
 
 func (s *ReformSuite) TearDownTest() {
-	// some transactional tests rollback and nilify transaction
-	if s.q != nil {
-		err := s.q.Rollback()
-		s.Require().NoError(err)
-	}
+	tearDownTransaction(s.T(), s.q)
 }
 
 func (s *ReformSuite) RestartTransaction() {

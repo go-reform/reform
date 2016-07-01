@@ -6,7 +6,7 @@ import (
 )
 
 // DBInterface is a subset of *sql.DB used by reform.
-// Can be used together with NewDBFromInterface for passing test doubles.
+// Can be used together with NewDBFromInterface for easier integration with existing code or for passing test doubles.
 type DBInterface interface {
 	DBTX
 	Begin() (*sql.Tx, error)
@@ -30,7 +30,7 @@ func NewDB(db *sql.DB, dialect Dialect, logger Logger) *DB {
 }
 
 // NewDBFromInterface creates new DB object for given DBInterface.
-// Can be used for passing test doubles.
+// Can be used for easier integration with existing code or for passing test doubles.
 func NewDBFromInterface(db DBInterface, dialect Dialect, logger Logger) *DB {
 	return &DB{
 		Querier: newQuerier(db, dialect, logger),

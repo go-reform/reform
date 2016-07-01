@@ -1,15 +1,16 @@
 # reform [![GoDoc](https://godoc.org/gopkg.in/reform.v1?status.svg)](https://godoc.org/gopkg.in/reform.v1) [![Build Status](https://travis-ci.org/go-reform/reform.svg?branch=v1-stable)](https://travis-ci.org/go-reform/reform) [![Coverage Status](https://coveralls.io/repos/github/go-reform/reform/badge.svg?branch=v1-stable)](https://coveralls.io/github/go-reform/reform?branch=v1-stable) [![Go Report Card](https://goreportcard.com/badge/gopkg.in/reform.v1)](https://goreportcard.com/report/gopkg.in/reform.v1)
 
-A better ORM for Go.
+A better ORM for Go and `database/sql`.
 
-It uses non-empty interfaces, code generation (`go generate`) and initialization-time reflection
-as opposed to `interface{}`, type system sidestepping and runtime reflection. It will be kept simple.
+It uses non-empty interfaces, code generation (`go generate`), and initialization-time reflection
+as opposed to `interface{}`, type system sidestepping, and runtime reflection. It will be kept simple.
 
 
 ## Quickstart
 
-1. Install it: `go get gopkg.in/reform.v1/reform` (see about versioning below)
-2. Define your first model in file `person.go`:
+1. Make sure you are using Go 1.6+.
+2. Install it: `go get gopkg.in/reform.v1/reform` (see about versioning below)
+3. Define your first model in file `person.go`:
 
     ```go
     //go:generate reform
@@ -28,9 +29,9 @@ as opposed to `interface{}`, type system sidestepping and runtime reflection. It
     First value in `reform` tag is a column name. `pk` marks primary key.
     Use pointers for nullable fields.
 
-3. Run `reform [package or directory]` or `go generate [package or file]`. This will create `person_reform.go`
+4. Run `reform [package or directory]` or `go generate [package or file]`. This will create `person_reform.go`
    in the same package with type `PersonTable` and methods on `Person`.
-4. See [documentation](https://godoc.org/gopkg.in/reform.v1) how to use it. Simple example:
+5. See [documentation](https://godoc.org/gopkg.in/reform.v1) how to use it. Simple example:
 
     ```go
 	// Use reform.NewDB to create DB.

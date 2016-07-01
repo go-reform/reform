@@ -23,10 +23,7 @@ type DB struct {
 
 // NewDB creates new DB object for given SQL database connection.
 func NewDB(db *sql.DB, dialect Dialect, logger Logger) *DB {
-	return &DB{
-		Querier: newQuerier(db, dialect, logger),
-		db:      db,
-	}
+	return NewDBFromInterface(db, dialect, logger)
 }
 
 // NewDBFromInterface creates new DB object for given DBInterface.

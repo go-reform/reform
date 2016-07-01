@@ -1,6 +1,6 @@
 # Changelog
 
-## v1.1.0 (not yet released)
+## v1.1.0 (2016-07-01)
 
 * Added Querier.InsertMulti.
 * Added DBInterface, TXInterface, NewDBFromInterface, NewTXFromInterface.

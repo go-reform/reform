@@ -209,7 +209,7 @@ func (s *ReformSuite) TestUpdateColumns() {
 	for p, columns := range map[*Person][]string{
 		&Person{Name: "Elfrieda Abbott", Email: &newEmail}:                             {"email", "updated_at"},
 		&Person{Name: newName, Email: pointer.ToString("elfrieda_abbott@example.org")}: {"name", "name", "updated_at"},
-		&Person{Name: newName, Email: &newEmail}:                                       {"name", "email", "id", "id", "updated_at"},
+		&Person{Name: newName, Email: &newEmail}:                                       {"name", "email", "updated_at"},
 	} {
 		var person Person
 		err := s.q.FindByPrimaryKeyTo(&person, 102)
@@ -232,8 +232,9 @@ func (s *ReformSuite) TestUpdateColumns() {
 
 	person := &Person{ID: 102, Name: newName, Email: &newEmail, CreatedAt: personCreated}
 	for e, columns := range map[error][]string{
-		errors.New("reform: unexpected columns: [foo]"): {"foo"},
-		errors.New("reform: nothing to update"):         {},
+		errors.New("reform: unexpected columns: [foo]"):     {"foo"},
+		errors.New("reform: will not update PK column: id"): {"id"},
+		errors.New("reform: nothing to update"):             {},
 	} {
 		err := s.q.UpdateColumns(person, columns...)
 		s.Error(err)

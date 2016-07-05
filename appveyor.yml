@@ -1,0 +1,18 @@
+version: '{build}'
+
+clone_folder: c:\gopath\src\gopkg.in\reform.v1
+
+environment:
+  GOPATH: c:\gopath
+
+install:
+  - set PATH=C:\msys64\mingw64\bin;%PATH%;%GOPATH%\bin
+  - go version
+  - where mingw32-make
+  - where gcc
+
+build_script:
+  - mingw32-make init
+
+test_script:
+  - mingw32-make test

@@ -1,11 +1,12 @@
 # Changelog
 
-## v1.2.0 (not released yet)
+## v1.1.1 (2016-07-05, https://github.com/go-reform/reform/milestones/v1.1.1)
 
 * Querier.UpdateColumns no longer allows to update primary key column. This behavior was allowed,
   but did not make any sense.
+* `reform` tool now correctly handles pointers to custom types and slices.
 
-## v1.1.0 (2016-07-01)
+## v1.1.0 (2016-07-01, https://github.com/go-reform/reform/milestones/v1.1.0)
 
 * Added Querier.InsertMulti.
 * Added DBInterface, TXInterface, NewDBFromInterface, NewTXFromInterface.

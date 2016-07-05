@@ -12,16 +12,26 @@ import (
 
 var magicReformComment = regexp.MustCompile(`reform:([0-9A-Za-z_\.]+)`)
 
-func goType(x ast.Expr) string {
+func fileGoType(x ast.Expr) string {
 	switch t := x.(type) {
+	case *ast.StarExpr:
+		return "*" + fileGoType(t.X)
+	case *ast.ArrayType:
+		switch l := t.Len.(type) {
+		case nil:
+			return "[]" + fileGoType(t.Elt)
+		case *ast.BasicLit:
+			return fmt.Sprintf("[%s]", l.Value) + fileGoType(t.Elt)
+		default:
+			panic(fmt.Errorf("reform: fileGoType: unhandled array length %#v (%#v). Please report this bug.", l, t))
+		}
+		// return "[]" + fileGoType(t.Elt)
+	case *ast.SelectorExpr:
+		return fileGoType(t.X) + "." + t.Sel.String()
 	case *ast.Ident:
 		return t.String()
-	case *ast.SelectorExpr:
-		return goType(t.X) + "." + t.Sel.String()
-	case *ast.StarExpr:
-		return "*" + goType(t.X)
 	default:
-		panic(fmt.Errorf("reform: goType: unhandled %#v. Please report this bug.", x))
+		panic(fmt.Errorf("reform: fileGoType: unhandled '%s' (%#v). Please report this bug.", x, x))
 	}
 }
 
@@ -65,7 +75,7 @@ func parseStructTypeSpec(ts *ast.TypeSpec, str *ast.StructType) (*StructInfo, er
 		if column == "" {
 			return nil, fmt.Errorf(`reform: %s has field %s with invalid "reform:" tag value, it is not allowed`, res.Type, name.Name)
 		}
-		typ := goType(f.Type)
+		typ := fileGoType(f.Type)
 		if isPK && strings.HasPrefix(typ, "*") {
 			return nil, fmt.Errorf(`reform: %s has pointer field %s with with "pk" label in "reform:" tag, it is not allowed`, res.Type, name.Name)
 		}

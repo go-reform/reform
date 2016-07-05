@@ -6,6 +6,28 @@ import (
 	"strings"
 )
 
+func objectGoType(t reflect.Type, structT reflect.Type) string {
+	switch t.Kind() {
+	case reflect.Ptr:
+		return "*" + objectGoType(t.Elem(), structT)
+	case reflect.Slice:
+		return "[]" + objectGoType(t.Elem(), structT)
+	case reflect.Array:
+		return fmt.Sprintf("[%d]", t.Len()) + objectGoType(t.Elem(), structT)
+	case reflect.Uint8:
+		return "byte"
+	}
+
+	s := t.String()
+
+	// drop package name from qualified identifier if type is defined in the same package
+	if strings.Contains(s, ".") && t.PkgPath() == structT.PkgPath() {
+		s = strings.Join(strings.Split(s, ".")[1:], ".")
+	}
+
+	return s
+}
+
 // Object extracts struct information from given object.
 func Object(obj interface{}, schema, table string) (res *StructInfo, err error) {
 	// convert any panic to error
@@ -52,7 +74,7 @@ func Object(obj interface{}, schema, table string) (res *StructInfo, err error) 
 		if column == "" {
 			return nil, fmt.Errorf(`reform: %s has field %s with invalid "reform:" tag value, it is not allowed`, res.Type, f.Name)
 		}
-		typ := f.Type.String()
+		typ := objectGoType(f.Type, t)
 		if isPK && strings.HasPrefix(typ, "*") {
 			return nil, fmt.Errorf(`reform: %s has pointer field %s with with "pk" label in "reform:" tag, it is not allowed`, res.Type, f.Name)
 		}
@@ -62,11 +84,6 @@ func Object(obj interface{}, schema, table string) (res *StructInfo, err error) 
 		// if isPKOrOmitEmpty && strings.HasPrefix(typ, "*") {
 		// 	return nil, fmt.Errorf(`reform: %s has pointer field %s with with "omitempty" label in "reform:" tag, it is not allowed`, res.Type, f.Name)
 		// }
-
-		// drop package name from qualified identifier if type is defined in this package
-		if strings.Contains(typ, ".") && t.PkgPath() == f.Type.PkgPath() {
-			typ = strings.Join(strings.Split(typ, ".")[1:], ".")
-		}
 
 		res.Fields = append(res.Fields, FieldInfo{
 			Name:   f.Name,

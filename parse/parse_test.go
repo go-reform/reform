@@ -58,16 +58,30 @@ var (
 		},
 		PKFieldIndex: 0,
 	}
+
+	extra = StructInfo{
+		Type:    "Extra",
+		SQLName: "extra",
+		Fields: []FieldInfo{
+			{Name: "ID", Type: "Integer", Column: "id"},
+			{Name: "Name", Type: "*String", Column: "name"},
+			{Name: "Bytes", Type: "[]byte", Column: "bytes"},
+			{Name: "Byte", Type: "*byte", Column: "byte"},
+			{Name: "Array", Type: "[512]byte", Column: "array"},
+		},
+		PKFieldIndex: 0,
+	}
 )
 
 func TestFileGood(t *testing.T) {
 	s, err := File("../internal/test/models/good.go")
 	assert.NoError(t, err)
-	require.Len(t, s, 4)
+	require.Len(t, s, 5)
 	assert.Equal(t, person, s[0])
 	assert.Equal(t, project, s[1])
 	assert.Equal(t, personProject, s[2])
 	assert.Equal(t, legacyPerson, s[3])
+	assert.Equal(t, extra, s[4])
 }
 
 func TestFileBogus(t *testing.T) {
@@ -109,6 +123,10 @@ func TestObjectGood(t *testing.T) {
 	s, err = Object(new(models.LegacyPerson), "legacy", "people")
 	assert.NoError(t, err)
 	assert.Equal(t, &legacyPerson, s)
+
+	s, err = Object(new(models.Extra), "", "extra")
+	assert.NoError(t, err)
+	assert.Equal(t, &extra, s)
 }
 
 func TestObjectBogus(t *testing.T) {

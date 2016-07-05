@@ -52,6 +52,8 @@ func (s *ReformSuite) TestInsertWithValues() {
 }
 
 func (s *ReformSuite) TestInsertWithPrimaryKey() {
+	allowInsertIdentity(s.q, "people", true)
+
 	newEmail := faker.Internet().Email()
 	person := &Person{ID: 50, Email: &newEmail}
 	err := s.q.Insert(person)
@@ -68,6 +70,8 @@ func (s *ReformSuite) TestInsertWithPrimaryKey() {
 
 	err = s.q.Insert(person)
 	s.Error(err)
+
+	allowInsertIdentity(s.q, "people", false)
 }
 
 func (s *ReformSuite) TestInsertReturning() {
@@ -146,6 +150,8 @@ func (s *ReformSuite) TestInsertMulti() {
 }
 
 func (s *ReformSuite) TestInsertMultiWithPrimaryKeys() {
+	allowInsertIdentity(s.q, "people", true)
+
 	newEmail := faker.Internet().Email()
 	newName := faker.Name().Name()
 	person1, person2 := &Person{ID: 50, Email: &newEmail}, &Person{ID: 51, Name: newName}
@@ -171,6 +177,8 @@ func (s *ReformSuite) TestInsertMultiWithPrimaryKeys() {
 	person, err = s.q.FindByPrimaryKeyFrom(PersonTable, person2.ID)
 	s.NoError(err)
 	s.Equal(person2, person)
+
+	allowInsertIdentity(s.q, "people", false)
 }
 
 func (s *ReformSuite) TestInsertMultiMixes() {

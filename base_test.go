@@ -9,6 +9,7 @@ import (
 	"testing"
 	"time"
 
+	_ "github.com/denisenkom/go-mssqldb"
 	_ "github.com/go-sql-driver/mysql"
 	_ "github.com/jackc/pgx/stdlib"
 	_ "github.com/lib/pq"
@@ -20,6 +21,7 @@ import (
 	"github.com/stretchr/testify/suite"
 
 	"gopkg.in/reform.v1"
+	"gopkg.in/reform.v1/dialects/mssql"
 	"gopkg.in/reform.v1/dialects/mysql"
 	"gopkg.in/reform.v1/dialects/postgresql"
 	"gopkg.in/reform.v1/dialects/sqlite3"
@@ -84,6 +86,9 @@ func TestMain(m *testing.M) {
 			log.Fatal(err)
 		}
 
+	case "mssql":
+		dialect = mssql.Dialect
+
 	default:
 		log.Fatal("reform: no dialect for driver " + driver)
 	}
@@ -91,6 +96,21 @@ func TestMain(m *testing.M) {
 	DB = reform.NewDB(db, dialect, nil)
 
 	os.Exit(m.Run())
+}
+
+func allowInsertIdentity(tx *reform.TX, table string, allow bool) {
+	if tx.Dialect == mssql.Dialect {
+		var allowString string
+
+		if allow {
+			allowString = "on"
+		} else {
+			allowString = "off"
+		}
+
+		sql := fmt.Sprintf("set identity_insert %s %s", tx.Dialect.QuoteIdentifier(table), allowString)
+		tx.Exec(sql)
+	}
 }
 
 type ReformSuite struct {
@@ -192,7 +212,9 @@ func (s *ReformSuite) TestInTransaction() {
 	person := &models.Person{ID: 42, Email: pointer.ToString(faker.Internet().Email())}
 
 	err = DB.InTransaction(func(tx *reform.TX) error {
+		allowInsertIdentity(tx, "people", true)
 		err := tx.Insert(person)
+		allowInsertIdentity(tx, "people", false)
 		s.NoError(err)
 		return errors.New("epic error")
 	})
@@ -200,14 +222,18 @@ func (s *ReformSuite) TestInTransaction() {
 
 	s.Panics(func() {
 		DB.InTransaction(func(tx *reform.TX) error {
+			allowInsertIdentity(tx, "people", true)
 			err := tx.Insert(person)
+			allowInsertIdentity(tx, "people", false)
 			s.NoError(err)
 			panic("epic panic!")
 		})
 	})
 
 	err = DB.InTransaction(func(tx *reform.TX) error {
+		allowInsertIdentity(tx, "people", true)
 		err := tx.Insert(person)
+		allowInsertIdentity(tx, "people", false)
 		s.NoError(err)
 		return nil
 	})
@@ -221,6 +247,8 @@ func (s *ReformSuite) TestInTransaction() {
 }
 
 func (s *ReformSuite) TestTimezones() {
+	allowInsertIdentity(s.q, "people", true)
+
 	t1 := time.Now()
 	t2 := t1.UTC()
 	vlat, err := time.LoadLocation("Asia/Vladivostok")
@@ -278,4 +306,6 @@ func (s *ReformSuite) TestTimezones() {
 		err = rows.Close()
 		s.NoError(err)
 	}
+
+	allowInsertIdentity(s.q, "people", false)
 }

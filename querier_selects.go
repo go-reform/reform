@@ -126,8 +126,12 @@ func (q *Querier) findTail(view string, column string, arg interface{}, limit1 b
 		needArg = true
 	}
 
-	if limit1 {
-		tail += " LIMIT 1"
+	// TODO HACK
+	// for SQL server another strategy is needed (SELECT TOP 1)
+	if q.Dialect.QuoteIdentifier("a") != "[a]" {
+		if limit1 {
+			tail += " LIMIT 1"
+		}
 	}
 
 	return

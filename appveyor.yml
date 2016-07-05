@@ -2,8 +2,12 @@ version: '{build}'
 
 clone_folder: c:\gopath\src\gopkg.in\reform.v1
 
+services:
+  - mssql2008r2sp2
+
 environment:
   GOPATH: c:\gopath
+  REFORM_SQL_INSTANCE: 127.0.0.1\SQL2008R2SP2
 
 install:
   - set PATH=C:\msys64\mingw64\bin;%PATH%;%GOPATH%\bin
@@ -11,8 +15,13 @@ install:
   - where mingw32-make
   - where gcc
 
+before_build:
+  - sc config SQLBrowser start=demand
+  - net start SQLBrowser
+
 build_script:
   - mingw32-make init
 
 test_script:
   - mingw32-make test
+  - mingw32-make test_win_denisenkom_go-mssqldb

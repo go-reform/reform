@@ -7,9 +7,15 @@ import (
 )
 
 // selectQuery returns full SELECT query for given view and tail.
-func (q *Querier) selectQuery(view View, tail string) string {
-	return fmt.Sprintf("SELECT %s FROM %s %s",
-		strings.Join(q.QualifiedColumns(view), ", "), q.QualifiedView(view), tail)
+func (q *Querier) selectQuery(view View, tail string, limit1 bool) string {
+	command := "SELECT"
+
+	if limit1 && q.SelectLimitMethod() == SelectTop {
+		command += " TOP 1"
+	}
+
+	return fmt.Sprintf("%s %s FROM %s %s",
+		command, strings.Join(q.QualifiedColumns(view), ", "), q.QualifiedView(view), tail)
 }
 
 // NextRow scans next result row from rows to str. If str implements AfterFinder, it also calls AfterFind().
@@ -47,7 +53,7 @@ func (q *Querier) NextRow(str Struct, rows *sql.Rows) error {
 // If there are no rows in result, it returns ErrNoRows. It also may return QueryRow(), Scan()
 // and AfterFinder errors.
 func (q *Querier) SelectOneTo(str Struct, tail string, args ...interface{}) error {
-	query := q.selectQuery(str.View(), tail)
+	query := q.selectQuery(str.View(), tail, true)
 	err := q.QueryRow(query, args...).Scan(str.Pointers()...)
 	if err != nil {
 		return err
@@ -80,7 +86,7 @@ func (q *Querier) SelectOneFrom(view View, tail string, args ...interface{}) (St
 //
 // See example for ideomatic usage.
 func (q *Querier) SelectRows(view View, tail string, args ...interface{}) (*sql.Rows, error) {
-	query := q.selectQuery(view, tail)
+	query := q.selectQuery(view, tail, false)
 	return q.Query(query, args...)
 }
 
@@ -126,12 +132,8 @@ func (q *Querier) findTail(view string, column string, arg interface{}, limit1 b
 		needArg = true
 	}
 
-	// TODO HACK
-	// for SQL server another strategy is needed (SELECT TOP 1)
-	if q.Dialect.QuoteIdentifier("a") != "[a]" {
-		if limit1 {
-			tail += " LIMIT 1"
-		}
+	if limit1 && q.SelectLimitMethod() == Limit {
+		tail += " LIMIT 1"
 	}
 
 	return

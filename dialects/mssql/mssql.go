@@ -25,6 +25,10 @@ func (mssql) LastInsertIdMethod() reform.LastInsertIdMethod {
 	return reform.LastInsertId
 }
 
+func (mssql) SelectLimitMethod() reform.SelectLimitMethod {
+	return reform.SelectTop
+}
+
 // Dialect implements reform.Dialect for Microsoft SQL Server.
 var Dialect mssql
 

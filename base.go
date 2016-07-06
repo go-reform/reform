@@ -127,6 +127,17 @@ const (
 	Returning
 )
 
+// SelectLimitMethod is a method of limiting the number of rows in a query result.
+type SelectLimitMethod int
+
+const (
+	// Limit is a method using "LIMIT N" SQL syntax.
+	Limit SelectLimitMethod = iota
+
+	// SelectTop is a method using "SELECT TOP N" SQL syntax.
+	SelectTop
+)
+
 // Dialect represents differences in various SQL dialects.
 type Dialect interface {
 	// Placeholder returns representation of placeholder parameter for given index,
@@ -143,6 +154,9 @@ type Dialect interface {
 
 	// LastInsertIdMethod returns a method of receiving primary key of last inserted row.
 	LastInsertIdMethod() LastInsertIdMethod
+
+	// SelectLimitMethod returns a method of limiting the number of rows in a query result.
+	SelectLimitMethod() SelectLimitMethod
 }
 
 // check interface

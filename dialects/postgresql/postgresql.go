@@ -29,6 +29,10 @@ func (postgresql) LastInsertIdMethod() reform.LastInsertIdMethod {
 	return reform.Returning
 }
 
+func (postgresql) SelectLimitMethod() reform.SelectLimitMethod {
+	return reform.Limit
+}
+
 // Dialect implements reform.Dialect for PostgreSQL.
 var Dialect postgresql
 

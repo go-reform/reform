@@ -5,6 +5,45 @@ import (
 	"strings"
 )
 
+func filteredColumnsAndValues(record Record, columnsIn []string, isUpdate bool) (columns []string, values []interface{}, err error) {
+	columns = columnsIn
+
+	columnsSet := make(map[string]struct{}, len(columns))
+	for _, c := range columns {
+		columnsSet[c] = struct{}{}
+	}
+
+	table := record.Table()
+	pk := int(table.PKColumnIndex())
+	allColumns := table.Columns()
+	allValues := record.Values()
+	columns = make([]string, 0, len(columnsSet))
+	values = make([]interface{}, 0, len(columns))
+	for i, c := range allColumns {
+		if _, ok := columnsSet[c]; ok {
+			if isUpdate && i == pk {
+				err = fmt.Errorf("reform: will not update PK column: %s", c)
+				return
+			}
+			delete(columnsSet, c)
+			columns = append(columns, c)
+			values = append(values, allValues[i])
+		}
+	}
+
+	if len(columnsSet) > 0 {
+		columns = make([]string, 0, len(columnsSet))
+		for c := range columnsSet {
+			columns = append(columns, c)
+		}
+		// TODO make exported type for that error
+		err = fmt.Errorf("reform: unexpected columns: %v", columns)
+		return
+	}
+
+	return
+}
+
 // Insert inserts a struct into SQL database table.
 // If str implements BeforeInserter, it calls BeforeInsert() before doing so.
 //
@@ -238,35 +277,9 @@ func (q *Querier) UpdateColumns(record Record, columns ...string) error {
 		return err
 	}
 
-	columnsSet := make(map[string]struct{}, len(columns))
-	for _, c := range columns {
-		columnsSet[c] = struct{}{}
-	}
-
-	table := record.Table()
-	pk := int(table.PKColumnIndex())
-	allColumns := table.Columns()
-	allValues := record.Values()
-	columns = make([]string, 0, len(columnsSet))
-	values := make([]interface{}, 0, len(columns))
-	for i, c := range allColumns {
-		if _, ok := columnsSet[c]; ok {
-			if i == pk {
-				return fmt.Errorf("reform: will not update PK column: %s", c)
-			}
-			delete(columnsSet, c)
-			columns = append(columns, c)
-			values = append(values, allValues[i])
-		}
-	}
-
-	if len(columnsSet) > 0 {
-		columns = make([]string, 0, len(columnsSet))
-		for c := range columnsSet {
-			columns = append(columns, c)
-		}
-		// TODO make exported type for that error
-		return fmt.Errorf("reform: unexpected columns: %v", columns)
+	columns, values, err := filteredColumnsAndValues(record, columns, true)
+	if err != nil {
+		return err
 	}
 
 	if len(values) == 0 {

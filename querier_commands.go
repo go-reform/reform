@@ -44,38 +44,14 @@ func filteredColumnsAndValues(record Record, columnsIn []string, isUpdate bool) 
 	return
 }
 
-// Insert inserts a struct into SQL database table.
-// If str implements BeforeInserter, it calls BeforeInsert() before doing so.
-//
-// It fills record's primary key field.
-func (q *Querier) Insert(str Struct) error {
-	if bi, ok := str.(BeforeInserter); ok {
-		err := bi.BeforeInsert()
-		if err != nil {
-			return err
-		}
-	}
-
-	view := str.View()
-	values := str.Values()
-	columns := view.Columns()
-	record, _ := str.(Record)
-	var pk uint
-
-	if record != nil {
-		pk = view.(Table).PKColumnIndex()
-
-		// cut primary key
-		if !record.HasPK() {
-			values = append(values[:pk], values[pk+1:]...)
-			columns = append(columns[:pk], columns[pk+1:]...)
-		}
-	}
-
+func (q *Querier) insert(str Struct, columns []string, values []interface{}) error {
 	for i, c := range columns {
 		columns[i] = q.QuoteIdentifier(c)
 	}
 	placeholders := q.Placeholders(1, len(columns))
+
+	view := str.View()
+	record, _ := str.(Record)
 
 	query := fmt.Sprintf("INSERT INTO %s (%s) VALUES (%s)",
 		q.QualifiedView(view),
@@ -101,6 +77,8 @@ func (q *Querier) Insert(str Struct) error {
 	case Returning:
 		var err error
 		if record != nil {
+			pk := view.(Table).PKColumnIndex()
+
 			query += fmt.Sprintf(" RETURNING %s", q.QuoteIdentifier(view.Columns()[pk]))
 			err = q.QueryRow(query, values...).Scan(record.PKPointer())
 		} else {
@@ -111,6 +89,46 @@ func (q *Querier) Insert(str Struct) error {
 	default:
 		panic("reform: Unhandled LastInsertIdMethod. Please report this bug.")
 	}
+}
+
+func (q *Querier) beforeInsert(str Struct) error {
+	if bi, ok := str.(BeforeInserter); ok {
+		err := bi.BeforeInsert()
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+// Insert inserts a struct into SQL database table.
+// If str implements BeforeInserter, it calls BeforeInsert() before doing so.
+//
+// It fills record's primary key field.
+func (q *Querier) Insert(str Struct) error {
+	err := q.beforeInsert(str)
+	if err != nil {
+		return err
+	}
+
+	view := str.View()
+	values := str.Values()
+	columns := view.Columns()
+	record, _ := str.(Record)
+	var pk uint
+
+	if record != nil {
+		pk = view.(Table).PKColumnIndex()
+
+		// cut primary key
+		if !record.HasPK() {
+			values = append(values[:pk], values[pk+1:]...)
+			columns = append(columns[:pk], columns[pk+1:]...)
+		}
+	}
+
+	return q.insert(str, columns, values)
 }
 
 // InsertMulti inserts several structs into SQL database table with single query.

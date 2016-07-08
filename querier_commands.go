@@ -131,6 +131,26 @@ func (q *Querier) Insert(str Struct) error {
 	return q.insert(str, columns, values)
 }
 
+// InsertColumns inserts a struct into SQL database table with specified columns list to be explicitly set
+// If str implements BeforeInserter, it calls BeforeInsert() before doing so.
+//
+// It fills record's primary key field.
+func (q *Querier) InsertColumns(str Struct, columns ...string) error {
+	record, _ := str.(Record)
+
+	err := q.beforeInsert(record)
+	if err != nil {
+		return err
+	}
+
+	columns, values, err := filteredColumnsAndValues(record, columns, false)
+	if err != nil {
+		return err
+	}
+
+	return q.insert(record, columns, values)
+}
+
 // InsertMulti inserts several structs into SQL database table with single query.
 // If they implement BeforeInserter, it calls BeforeInsert() before doing so.
 //

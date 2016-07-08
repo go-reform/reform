@@ -1,5 +1,6 @@
 CREATE TABLE people (
   id serial PRIMARY KEY,
+  group_id integer DEFAULT 65534,
   name varchar NOT NULL,
   email varchar,
   created_at timestamp with time zone NOT NULL,

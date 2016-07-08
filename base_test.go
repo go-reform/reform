@@ -128,7 +128,7 @@ func (s *ReformSuite) RestartTransaction() {
 func (s *ReformSuite) TestStringer() {
 	person, err := s.q.FindByPrimaryKeyFrom(models.PersonTable, 1)
 	s.NoError(err)
-	expected := "ID: 1 (int32), Name: `Denis Mills` (string), Email: <nil> (*string), CreatedAt: 2009-11-10 23:00:00 +0000 UTC (time.Time), UpdatedAt: <nil> (*time.Time)"
+	expected := "ID: 1 (int32), GroupID: 65534 (*int32), Name: `Denis Mills` (string), Email: <nil> (*string), CreatedAt: 2009-11-10 23:00:00 +0000 UTC (time.Time), UpdatedAt: <nil> (*time.Time)"
 	s.Equal(expected, person.String())
 
 	project, err := s.q.FindByPrimaryKeyFrom(models.ProjectTable, "baron")

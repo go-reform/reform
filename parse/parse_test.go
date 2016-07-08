@@ -18,6 +18,7 @@ var (
 		SQLName: "people",
 		Fields: []FieldInfo{
 			{Name: "ID", Type: "int32", Column: "id"},
+			{Name: "GroupID", Type: "*int32", Column: "group_id"},
 			{Name: "Name", Type: "string", Column: "name"},
 			{Name: "Email", Type: "*string", Column: "email"},
 			{Name: "CreatedAt", Type: "time.Time", Column: "created_at"},
@@ -152,7 +153,7 @@ func TestObjectBogus(t *testing.T) {
 }
 
 func TestHelpers(t *testing.T) {
-	assert.Equal(t, []string{"id", "name", "email", "created_at", "updated_at"}, person.Columns())
+	assert.Equal(t, []string{"id", "group_id", "name", "email", "created_at", "updated_at"}, person.Columns())
 	assert.True(t, person.IsTable())
 	assert.Equal(t, FieldInfo{Name: "ID", Type: "int32", Column: "id"}, person.PKField())
 

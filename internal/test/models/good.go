@@ -14,6 +14,7 @@ type (
 	//reform:people
 	Person struct {
 		ID        int32      `reform:"id,pk"`
+		GroupID   *int32     `reform:"group_id"`
 		Name      string     `reform:"name"`
 		Email     *string    `reform:"email"`
 		CreatedAt time.Time  `reform:"created_at"`

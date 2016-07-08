@@ -5,38 +5,53 @@ import (
 	"strings"
 )
 
-// Insert inserts a struct into SQL database table.
-// If str implements BeforeInserter, it calls BeforeInsert() before doing so.
-//
-// It fills record's primary key field.
-func (q *Querier) Insert(str Struct) error {
-	if bi, ok := str.(BeforeInserter); ok {
-		err := bi.BeforeInsert()
-		if err != nil {
-			return err
+func filteredColumnsAndValues(record Record, columnsIn []string, isUpdate bool) (columns []string, values []interface{}, err error) {
+	columns = columnsIn
+
+	columnsSet := make(map[string]struct{}, len(columns))
+	for _, c := range columns {
+		columnsSet[c] = struct{}{}
+	}
+
+	table := record.Table()
+	pk := int(table.PKColumnIndex())
+	allColumns := table.Columns()
+	allValues := record.Values()
+	columns = make([]string, 0, len(columnsSet))
+	values = make([]interface{}, 0, len(columns))
+	for i, c := range allColumns {
+		if _, ok := columnsSet[c]; ok {
+			if isUpdate && i == pk {
+				err = fmt.Errorf("reform: will not update PK column: %s", c)
+				return
+			}
+			delete(columnsSet, c)
+			columns = append(columns, c)
+			values = append(values, allValues[i])
 		}
 	}
 
-	view := str.View()
-	values := str.Values()
-	columns := view.Columns()
-	record, _ := str.(Record)
-	var pk uint
-
-	if record != nil {
-		pk = view.(Table).PKColumnIndex()
-
-		// cut primary key
-		if !record.HasPK() {
-			values = append(values[:pk], values[pk+1:]...)
-			columns = append(columns[:pk], columns[pk+1:]...)
+	if len(columnsSet) > 0 {
+		columns = make([]string, 0, len(columnsSet))
+		for c := range columnsSet {
+			columns = append(columns, c)
 		}
+		// TODO make exported type for that error
+		err = fmt.Errorf("reform: unexpected columns: %v", columns)
+		return
 	}
 
+	return
+}
+
+func (q *Querier) insert(str Struct, columns []string, values []interface{}) error {
 	for i, c := range columns {
 		columns[i] = q.QuoteIdentifier(c)
 	}
 	placeholders := q.Placeholders(1, len(columns))
+
+	view := str.View()
+	record, _ := str.(Record)
 
 	query := fmt.Sprintf("INSERT INTO %s (%s) VALUES (%s)",
 		q.QualifiedView(view),
@@ -62,6 +77,8 @@ func (q *Querier) Insert(str Struct) error {
 	case Returning:
 		var err error
 		if record != nil {
+			pk := view.(Table).PKColumnIndex()
+
 			query += fmt.Sprintf(" RETURNING %s", q.QuoteIdentifier(view.Columns()[pk]))
 			err = q.QueryRow(query, values...).Scan(record.PKPointer())
 		} else {
@@ -72,6 +89,66 @@ func (q *Querier) Insert(str Struct) error {
 	default:
 		panic("reform: Unhandled LastInsertIdMethod. Please report this bug.")
 	}
+}
+
+func (q *Querier) beforeInsert(str Struct) error {
+	if bi, ok := str.(BeforeInserter); ok {
+		err := bi.BeforeInsert()
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+// Insert inserts a struct into SQL database table.
+// If str implements BeforeInserter, it calls BeforeInsert() before doing so.
+//
+// It fills record's primary key field.
+func (q *Querier) Insert(str Struct) error {
+	err := q.beforeInsert(str)
+	if err != nil {
+		return err
+	}
+
+	view := str.View()
+	values := str.Values()
+	columns := view.Columns()
+	record, _ := str.(Record)
+	var pk uint
+
+	if record != nil {
+		pk = view.(Table).PKColumnIndex()
+
+		// cut primary key
+		if !record.HasPK() {
+			values = append(values[:pk], values[pk+1:]...)
+			columns = append(columns[:pk], columns[pk+1:]...)
+		}
+	}
+
+	return q.insert(str, columns, values)
+}
+
+// InsertColumns inserts a struct into SQL database table with specified columns list to be explicitly set
+// If str implements BeforeInserter, it calls BeforeInsert() before doing so.
+//
+// It fills record's primary key field.
+func (q *Querier) InsertColumns(str Struct, columns ...string) error {
+	record, _ := str.(Record)
+
+	err := q.beforeInsert(record)
+	if err != nil {
+		return err
+	}
+
+	columns, values, err := filteredColumnsAndValues(record, columns, false)
+	if err != nil {
+		return err
+	}
+
+	return q.insert(record, columns, values)
 }
 
 // InsertMulti inserts several structs into SQL database table with single query.
@@ -238,35 +315,9 @@ func (q *Querier) UpdateColumns(record Record, columns ...string) error {
 		return err
 	}
 
-	columnsSet := make(map[string]struct{}, len(columns))
-	for _, c := range columns {
-		columnsSet[c] = struct{}{}
-	}
-
-	table := record.Table()
-	pk := int(table.PKColumnIndex())
-	allColumns := table.Columns()
-	allValues := record.Values()
-	columns = make([]string, 0, len(columnsSet))
-	values := make([]interface{}, 0, len(columns))
-	for i, c := range allColumns {
-		if _, ok := columnsSet[c]; ok {
-			if i == pk {
-				return fmt.Errorf("reform: will not update PK column: %s", c)
-			}
-			delete(columnsSet, c)
-			columns = append(columns, c)
-			values = append(values, allValues[i])
-		}
-	}
-
-	if len(columnsSet) > 0 {
-		columns = make([]string, 0, len(columnsSet))
-		for c := range columnsSet {
-			columns = append(columns, c)
-		}
-		// TODO make exported type for that error
-		return fmt.Errorf("reform: unexpected columns: %v", columns)
+	columns, values, err := filteredColumnsAndValues(record, columns, true)
+	if err != nil {
+		return err
 	}
 
 	if len(values) == 0 {

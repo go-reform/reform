@@ -28,6 +28,13 @@ func Inspect(arg interface{}, addType bool) string {
 			s = fmt.Sprintf("%s", arg)
 		}
 
+	case *int32:
+		if arg == nil {
+			s = "<nil>"
+		} else {
+			s = Inspect(*arg, false)
+		}
+
 	default:
 		s = fmt.Sprintf("%v", arg)
 	}

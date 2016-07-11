@@ -8,6 +8,10 @@ services:
 environment:
   GOPATH: c:\gopath
   REFORM_SQL_INSTANCE: 127.0.0.1\SQL2008R2SP2
+  TARGET: test_win_denisenkom_go-mssqldb
+# TODO replace with yours
+  COVERALLS_TOKEN:
+    secure: dO1+hFosmRDJTiuFSEV0Px2BYUwntKN34z2N077fRDgySfV9NZj0WwnXo4fQsydp
 
 install:
   - set PATH=C:\msys64\mingw64\bin;%PATH%;%GOPATH%\bin
@@ -24,4 +28,7 @@ build_script:
 
 test_script:
   - mingw32-make test
-  - mingw32-make test_win_denisenkom_go-mssqldb
+  - mingw32-make %TARGET%
+
+on_success:
+  - if defined COVERALLS_TOKEN goveralls -coverprofile=%TARGET%.cover -service=

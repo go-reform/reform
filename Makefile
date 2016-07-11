@@ -92,7 +92,7 @@ test_win_denisenkom_go-mssqldb:
 	$(REFORM_SQLCMD) -d "reform-test" -i internal/test/sql/mssql_init.sql
 	$(REFORM_SQLCMD) -d "reform-test" -i internal/test/sql/mssql_data.sql
 	$(REFORM_SQLCMD) -d "reform-test" -i internal/test/sql/mssql_set.sql
-	go test
+	go test -coverprofile=test_win_denisenkom_go-mssqldb.cover
 
 parse:
 	# nothing, hack for our Travis-CI configuration

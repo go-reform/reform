@@ -17,7 +17,7 @@ CREATE TABLE projects (
 );
 
 CREATE TABLE person_project (
-  person_id int NOT NULL REFERENCES people ON DELETE CASCADE,
+  person_id integer NOT NULL REFERENCES people ON DELETE CASCADE,
   project_id varchar NOT NULL REFERENCES projects ON DELETE CASCADE,
   UNIQUE (person_id, project_id)
 );

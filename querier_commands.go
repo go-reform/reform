@@ -6,13 +6,12 @@ import (
 )
 
 func filteredColumnsAndValues(record Record, columnsIn []string, isUpdate bool) (columns []string, values []interface{}, err error) {
-	columns = columnsIn
-
-	columnsSet := make(map[string]struct{}, len(columns))
-	for _, c := range columns {
+	columnsSet := make(map[string]struct{}, len(columnsIn))
+	for _, c := range columnsIn {
 		columnsSet[c] = struct{}{}
 	}
 
+	// select columns from set and collect values
 	table := record.Table()
 	pk := int(table.PKColumnIndex())
 	allColumns := table.Columns()
@@ -31,6 +30,7 @@ func filteredColumnsAndValues(record Record, columnsIn []string, isUpdate bool) 
 		}
 	}
 
+	// make error for extra columns
 	if len(columnsSet) > 0 {
 		columns = make([]string, 0, len(columnsSet))
 		for c := range columnsSet {
@@ -131,7 +131,8 @@ func (q *Querier) Insert(str Struct) error {
 	return q.insert(str, columns, values)
 }
 
-// InsertColumns inserts a struct into SQL database table with specified columns list to be explicitly set
+// InsertColumns inserts a struct into SQL database table with specified columns.
+// Other columns are omitted from generated INSERT statement.
 // If str implements BeforeInserter, it calls BeforeInsert() before doing so.
 //
 // It fills record's primary key field.
@@ -305,6 +306,7 @@ func (q *Querier) Update(record Record) error {
 }
 
 // UpdateColumns updates specified columns of row specified by primary key in SQL database table with given record.
+// Other columns are omitted from generated UPDATE statement.
 // If record implements BeforeUpdater, it calls BeforeUpdate() before doing so.
 //
 // Method returns ErrNoRows if no rows were updated.

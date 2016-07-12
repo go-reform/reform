@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.2.0 (not yet released)
+
+* Added Querier.InsertColumns.
+
 ## v1.1.1 (2016-07-05, https://github.com/go-reform/reform/milestones/v1.1.1)
 
 * Querier.UpdateColumns no longer allows to update primary key column. This behavior was allowed,

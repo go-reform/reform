@@ -1,5 +1,6 @@
 CREATE TABLE [people] (
   [id] int identity(1, 1) PRIMARY KEY,
+  [group_id] int DEFAULT 65534,
   [name] varchar(50),
   [email] varchar(50) NULL,
   [created_at] datetime2,

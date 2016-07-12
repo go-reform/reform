@@ -22,7 +22,7 @@ func (s *ReformSuite) TestSelectOneTo() {
 	var person Person
 	err := s.q.SelectOneTo(&person, "WHERE id = "+s.q.Placeholder(1), 1)
 	s.NoError(err)
-	s.Equal(Person{ID: 1, Name: "Denis Mills", CreatedAt: goCreated}, person)
+	s.Equal(Person{ID: 1, GroupID: pointer.ToInt32(65534), Name: "Denis Mills", CreatedAt: goCreated}, person)
 
 	var project Project
 	err = s.q.SelectOneTo(&project, "WHERE id = "+s.q.Placeholder(1), "baron")
@@ -43,7 +43,7 @@ func (s *ReformSuite) TestSelectOneTo() {
 func (s *ReformSuite) TestSelectOneFrom() {
 	person, err := s.q.SelectOneFrom(PersonTable, "WHERE id = "+s.q.Placeholder(1), 1)
 	s.NoError(err)
-	s.Equal(&Person{ID: 1, Name: "Denis Mills", CreatedAt: goCreated}, person)
+	s.Equal(&Person{ID: 1, GroupID: pointer.ToInt32(65534), Name: "Denis Mills", CreatedAt: goCreated}, person)
 
 	project, err := s.q.SelectOneFrom(ProjectTable, "WHERE id = "+s.q.Placeholder(1), "baron")
 	s.NoError(err)
@@ -67,12 +67,12 @@ func (s *ReformSuite) TestSelectRows() {
 	var person Person
 	err = s.q.NextRow(&person, rows)
 	s.NoError(err)
-	expected := Person{ID: 102, Name: "Elfrieda Abbott", Email: pointer.ToString("elfrieda_abbott@example.org"), CreatedAt: personCreated}
+	expected := Person{ID: 102, GroupID: pointer.ToInt32(65534), Name: "Elfrieda Abbott", Email: pointer.ToString("elfrieda_abbott@example.org"), CreatedAt: personCreated}
 	s.Equal(expected, person)
 
 	err = s.q.NextRow(&person, rows)
 	s.NoError(err)
-	expected = Person{ID: 103, Name: "Elfrieda Abbott", CreatedAt: personCreated}
+	expected = Person{ID: 103, GroupID: pointer.ToInt32(65534), Name: "Elfrieda Abbott", CreatedAt: personCreated}
 	s.Equal(expected, person)
 
 	err = s.q.NextRow(&person, rows)
@@ -100,8 +100,8 @@ func (s *ReformSuite) TestSelectAllFrom() {
 	s.NoError(err)
 	s.Len(structs, 2)
 	s.Equal([]reform.Struct{
-		&Person{ID: 102, Name: "Elfrieda Abbott", Email: pointer.ToString("elfrieda_abbott@example.org"), CreatedAt: personCreated},
-		&Person{ID: 103, Name: "Elfrieda Abbott", CreatedAt: personCreated},
+		&Person{ID: 102, GroupID: pointer.ToInt32(65534), Name: "Elfrieda Abbott", Email: pointer.ToString("elfrieda_abbott@example.org"), CreatedAt: personCreated},
+		&Person{ID: 103, GroupID: pointer.ToInt32(65534), Name: "Elfrieda Abbott", CreatedAt: personCreated},
 	}, structs)
 
 	structs, err = s.q.SelectAllFrom(ProjectTable, "WHERE id IS NULL")
@@ -119,7 +119,7 @@ func (s *ReformSuite) TestFindOneTo() {
 	err := s.q.FindOneTo(&person, "id", 102)
 	s.NoError(err)
 	s.Equal(
-		Person{ID: 102, Name: "Elfrieda Abbott", Email: pointer.ToString("elfrieda_abbott@example.org"), CreatedAt: personCreated},
+		Person{ID: 102, GroupID: pointer.ToInt32(65534), Name: "Elfrieda Abbott", Email: pointer.ToString("elfrieda_abbott@example.org"), CreatedAt: personCreated},
 		person,
 	)
 
@@ -143,7 +143,7 @@ func (s *ReformSuite) TestFindOneFrom() {
 	person, err := s.q.FindOneFrom(PersonTable, "id", 102)
 	s.NoError(err)
 	s.Equal(
-		&Person{ID: 102, Name: "Elfrieda Abbott", Email: pointer.ToString("elfrieda_abbott@example.org"), CreatedAt: personCreated},
+		&Person{ID: 102, GroupID: pointer.ToInt32(65534), Name: "Elfrieda Abbott", Email: pointer.ToString("elfrieda_abbott@example.org"), CreatedAt: personCreated},
 		person,
 	)
 
@@ -170,12 +170,12 @@ func (s *ReformSuite) TestFindRows() {
 	var person Person
 	err = s.q.NextRow(&person, rows)
 	s.NoError(err)
-	expected := Person{ID: 102, Name: "Elfrieda Abbott", Email: pointer.ToString("elfrieda_abbott@example.org"), CreatedAt: personCreated}
+	expected := Person{ID: 102, GroupID: pointer.ToInt32(65534), Name: "Elfrieda Abbott", Email: pointer.ToString("elfrieda_abbott@example.org"), CreatedAt: personCreated}
 	s.Equal(expected, person)
 
 	err = s.q.NextRow(&person, rows)
 	s.NoError(err)
-	expected = Person{ID: 103, Name: "Elfrieda Abbott", CreatedAt: personCreated}
+	expected = Person{ID: 103, GroupID: pointer.ToInt32(65534), Name: "Elfrieda Abbott", CreatedAt: personCreated}
 	s.Equal(expected, person)
 
 	err = s.q.NextRow(&person, rows)
@@ -203,16 +203,16 @@ func (s *ReformSuite) TestFindAllFrom() {
 	s.NoError(err)
 	s.Len(structs, 2)
 	s.Equal([]reform.Struct{
-		&Person{ID: 102, Name: "Elfrieda Abbott", Email: pointer.ToString("elfrieda_abbott@example.org"), CreatedAt: personCreated},
-		&Person{ID: 103, Name: "Elfrieda Abbott", CreatedAt: personCreated},
+		&Person{ID: 102, GroupID: pointer.ToInt32(65534), Name: "Elfrieda Abbott", Email: pointer.ToString("elfrieda_abbott@example.org"), CreatedAt: personCreated},
+		&Person{ID: 103, GroupID: pointer.ToInt32(65534), Name: "Elfrieda Abbott", CreatedAt: personCreated},
 	}, structs)
 
 	structs, err = s.q.FindAllFrom(PersonTable, "id", 102, 103)
 	s.NoError(err)
 	s.Len(structs, 2)
 	s.Equal([]reform.Struct{
-		&Person{ID: 102, Name: "Elfrieda Abbott", Email: pointer.ToString("elfrieda_abbott@example.org"), CreatedAt: personCreated},
-		&Person{ID: 103, Name: "Elfrieda Abbott", CreatedAt: personCreated},
+		&Person{ID: 102, GroupID: pointer.ToInt32(65534), Name: "Elfrieda Abbott", Email: pointer.ToString("elfrieda_abbott@example.org"), CreatedAt: personCreated},
+		&Person{ID: 103, GroupID: pointer.ToInt32(65534), Name: "Elfrieda Abbott", CreatedAt: personCreated},
 	}, structs)
 
 	structs, err = s.q.FindAllFrom(ProjectTable, "id", nil)
@@ -229,7 +229,7 @@ func (s *ReformSuite) TestFindByPrimaryKeyTo() {
 	var person Person
 	err := s.q.FindByPrimaryKeyTo(&person, 1)
 	s.NoError(err)
-	s.Equal(Person{ID: 1, Name: "Denis Mills", CreatedAt: goCreated}, person)
+	s.Equal(Person{ID: 1, GroupID: pointer.ToInt32(65534), Name: "Denis Mills", CreatedAt: goCreated}, person)
 
 	var project Project
 	err = s.q.FindByPrimaryKeyTo(&project, "baron")
@@ -245,7 +245,7 @@ func (s *ReformSuite) TestFindByPrimaryKeyTo() {
 func (s *ReformSuite) TestFindByPrimaryKeyFrom() {
 	person, err := s.q.FindByPrimaryKeyFrom(PersonTable, 1)
 	s.NoError(err)
-	s.Equal(&Person{ID: 1, Name: "Denis Mills", CreatedAt: goCreated}, person)
+	s.Equal(&Person{ID: 1, GroupID: pointer.ToInt32(65534), Name: "Denis Mills", CreatedAt: goCreated}, person)
 
 	project, err := s.q.FindByPrimaryKeyFrom(ProjectTable, "baron")
 	s.NoError(err)
@@ -260,7 +260,7 @@ func (s *ReformSuite) TestReload() {
 	person := Person{ID: 1}
 	err := s.q.Reload(&person)
 	s.NoError(err)
-	s.Equal(Person{ID: 1, Name: "Denis Mills", CreatedAt: goCreated}, person)
+	s.Equal(Person{ID: 1, GroupID: pointer.ToInt32(65534), Name: "Denis Mills", CreatedAt: goCreated}, person)
 
 	project := Project{ID: "baron"}
 	err = s.q.Reload(&project)

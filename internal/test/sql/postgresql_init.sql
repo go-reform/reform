@@ -1,5 +1,6 @@
 CREATE TABLE people (
   id serial PRIMARY KEY,
+  group_id integer DEFAULT 65534,
   name varchar NOT NULL,
   email varchar,
   created_at timestamp with time zone NOT NULL,
@@ -16,7 +17,7 @@ CREATE TABLE projects (
 );
 
 CREATE TABLE person_project (
-  person_id int NOT NULL REFERENCES people ON DELETE CASCADE,
+  person_id integer NOT NULL REFERENCES people ON DELETE CASCADE,
   project_id varchar NOT NULL REFERENCES projects ON DELETE CASCADE,
   UNIQUE (person_id, project_id)
 );

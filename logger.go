@@ -2,31 +2,25 @@ package reform
 
 import (
 	"fmt"
+	"reflect"
 	"strings"
 	"time"
 )
 
 // Inspect returns suitable for logging representation of a query argument.
 func Inspect(arg interface{}, addType bool) string {
-	// do not merge cases, we want "arg == nil" to work
 	var s string
-	switch arg := arg.(type) {
-	case string:
+	v := reflect.ValueOf(arg)
+	switch v.Kind() {
+	case reflect.Ptr:
+		if v.IsNil() {
+			s = "<nil>"
+		} else {
+			s = Inspect(v.Elem().Interface(), false)
+		}
+
+	case reflect.String:
 		s = fmt.Sprintf("%#q", arg)
-
-	case *string:
-		if arg == nil {
-			s = "<nil>"
-		} else {
-			s = Inspect(*arg, false)
-		}
-
-	case fmt.Stringer:
-		if arg == nil {
-			s = "<nil>"
-		} else {
-			s = fmt.Sprintf("%s", arg)
-		}
 
 	default:
 		s = fmt.Sprintf("%v", arg)

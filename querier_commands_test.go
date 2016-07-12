@@ -103,6 +103,28 @@ func (s *ReformSuite) TestInsertIntoView() {
 	s.Error(err)
 }
 
+func (s *ReformSuite) TestInsertColumns() {
+	t := time.Now()
+	newEmail := faker.Internet().Email()
+	person := &Person{Email: &newEmail, CreatedAt: t, UpdatedAt: &t}
+	err := s.q.InsertColumns(person, "name", "email", "created_at", "updated_at")
+	s.NoError(err)
+	s.NotEqual(int32(0), person.ID)
+	s.Equal("", person.Name)
+	s.Equal((*int32)(nil), person.GroupID)
+	s.Equal(&newEmail, person.Email)
+	s.WithinDuration(t, person.CreatedAt, time.Second)
+	s.WithinDuration(t, *person.UpdatedAt, time.Second)
+
+	person2, err := s.q.FindByPrimaryKeyFrom(PersonTable, person.ID)
+	s.NoError(err)
+	person.GroupID = pointer.ToInt32(65534)
+	s.Equal(person, person2)
+
+	err = s.q.Insert(person)
+	s.Error(err)
+}
+
 func (s *ReformSuite) TestInsertMulti() {
 	newEmail := faker.Internet().Email()
 	newName := faker.Name().Name()

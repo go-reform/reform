@@ -2,6 +2,7 @@ SET GLOBAL sql_mode = 'ANSI';
 
 CREATE TABLE people (
   id int NOT NULL AUTO_INCREMENT,
+  group_id int DEFAULT 65534,
   name varchar(255) NOT NULL,
   email varchar(255),
   created_at datetime NOT NULL,

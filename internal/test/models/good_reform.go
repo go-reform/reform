@@ -27,7 +27,7 @@ func (v *personTable) Name() string {
 
 // Columns returns a new slice of column names for that view or table in SQL database.
 func (v *personTable) Columns() []string {
-	return []string{"id", "name", "email", "created_at", "updated_at"}
+	return []string{"id", "group_id", "name", "email", "created_at", "updated_at"}
 }
 
 // NewStruct makes a new struct for that view or table.
@@ -47,18 +47,19 @@ func (v *personTable) PKColumnIndex() uint {
 
 // PersonTable represents people view or table in SQL database.
 var PersonTable = &personTable{
-	s: parse.StructInfo{Type: "Person", SQLSchema: "", SQLName: "people", Fields: []parse.FieldInfo{{Name: "ID", Type: "int32", Column: "id"}, {Name: "Name", Type: "string", Column: "name"}, {Name: "Email", Type: "*string", Column: "email"}, {Name: "CreatedAt", Type: "time.Time", Column: "created_at"}, {Name: "UpdatedAt", Type: "*time.Time", Column: "updated_at"}}, PKFieldIndex: 0},
+	s: parse.StructInfo{Type: "Person", SQLSchema: "", SQLName: "people", Fields: []parse.FieldInfo{{Name: "ID", Type: "int32", Column: "id"}, {Name: "GroupID", Type: "*int32", Column: "group_id"}, {Name: "Name", Type: "string", Column: "name"}, {Name: "Email", Type: "*string", Column: "email"}, {Name: "CreatedAt", Type: "time.Time", Column: "created_at"}, {Name: "UpdatedAt", Type: "*time.Time", Column: "updated_at"}}, PKFieldIndex: 0},
 	z: new(Person).Values(),
 }
 
 // String returns a string representation of this struct or record.
 func (s Person) String() string {
-	res := make([]string, 5)
+	res := make([]string, 6)
 	res[0] = "ID: " + reform.Inspect(s.ID, true)
-	res[1] = "Name: " + reform.Inspect(s.Name, true)
-	res[2] = "Email: " + reform.Inspect(s.Email, true)
-	res[3] = "CreatedAt: " + reform.Inspect(s.CreatedAt, true)
-	res[4] = "UpdatedAt: " + reform.Inspect(s.UpdatedAt, true)
+	res[1] = "GroupID: " + reform.Inspect(s.GroupID, true)
+	res[2] = "Name: " + reform.Inspect(s.Name, true)
+	res[3] = "Email: " + reform.Inspect(s.Email, true)
+	res[4] = "CreatedAt: " + reform.Inspect(s.CreatedAt, true)
+	res[5] = "UpdatedAt: " + reform.Inspect(s.UpdatedAt, true)
 	return strings.Join(res, ", ")
 }
 
@@ -67,6 +68,7 @@ func (s Person) String() string {
 func (s *Person) Values() []interface{} {
 	return []interface{}{
 		s.ID,
+		s.GroupID,
 		s.Name,
 		s.Email,
 		s.CreatedAt,
@@ -79,6 +81,7 @@ func (s *Person) Values() []interface{} {
 func (s *Person) Pointers() []interface{} {
 	return []interface{}{
 		&s.ID,
+		&s.GroupID,
 		&s.Name,
 		&s.Email,
 		&s.CreatedAt,

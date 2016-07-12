@@ -125,6 +125,9 @@ const (
 
 	// Returning is method using "RETURNING id" SQL syntax.
 	Returning
+
+	// OutputInserted is method using "OUTPUT INSERTED.id" SQL syntax.
+	OutputInserted
 )
 
 // SelectLimitMethod is a method of limiting the number of rows in a query result.

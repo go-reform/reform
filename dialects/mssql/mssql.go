@@ -22,7 +22,7 @@ func (mssql) QuoteIdentifier(identifier string) string {
 }
 
 func (mssql) LastInsertIdMethod() reform.LastInsertIdMethod {
-	return reform.LastInsertId
+	return reform.OutputInserted
 }
 
 func (mssql) SelectLimitMethod() reform.SelectLimitMethod {

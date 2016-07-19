@@ -47,7 +47,7 @@ func (v *personTable) PKColumnIndex() uint {
 
 // PersonTable represents people view or table in SQL database.
 var PersonTable = &personTable{
-	s: parse.StructInfo{Type: "Person", SQLSchema: "", SQLName: "people", Fields: []parse.FieldInfo{{Name: "ID", Type: "int32", Column: "id"}, {Name: "Name", Type: "string", Column: "name"}, {Name: "Email", Type: "*string", Column: "email"}, {Name: "CreatedAt", Type: "time.Time", Column: "created_at"}, {Name: "UpdatedAt", Type: "*time.Time", Column: "updated_at"}}, PKFieldIndex: 0},
+	s: parse.StructInfo{Type: "Person", SQLSchema: "", SQLName: "people", Fields: []parse.FieldInfo{{Name: "ID", Type: "int32", Column: "id"}, {Name: "Name", Type: "", Column: "name"}, {Name: "Email", Type: "", Column: "email"}, {Name: "CreatedAt", Type: "", Column: "created_at"}, {Name: "UpdatedAt", Type: "", Column: "updated_at"}}, PKFieldIndex: 0},
 	z: new(Person).Values(),
 }
 
@@ -168,7 +168,7 @@ func (v *projectTable) PKColumnIndex() uint {
 
 // ProjectTable represents projects view or table in SQL database.
 var ProjectTable = &projectTable{
-	s: parse.StructInfo{Type: "Project", SQLSchema: "", SQLName: "projects", Fields: []parse.FieldInfo{{Name: "Name", Type: "string", Column: "name"}, {Name: "ID", Type: "string", Column: "id"}, {Name: "Start", Type: "time.Time", Column: "start"}, {Name: "End", Type: "*time.Time", Column: "end"}}, PKFieldIndex: 1},
+	s: parse.StructInfo{Type: "Project", SQLSchema: "", SQLName: "projects", Fields: []parse.FieldInfo{{Name: "Name", Type: "", Column: "name"}, {Name: "ID", Type: "string", Column: "id"}, {Name: "Start", Type: "", Column: "start"}, {Name: "End", Type: "", Column: "end"}}, PKFieldIndex: 1},
 	z: new(Project).Values(),
 }
 
@@ -276,7 +276,7 @@ func (v *personProjectView) NewStruct() reform.Struct {
 
 // PersonProjectView represents person_project view or table in SQL database.
 var PersonProjectView = &personProjectView{
-	s: parse.StructInfo{Type: "PersonProject", SQLSchema: "", SQLName: "person_project", Fields: []parse.FieldInfo{{Name: "PersonID", Type: "int32", Column: "person_id"}, {Name: "ProjectID", Type: "string", Column: "project_id"}}, PKFieldIndex: -1},
+	s: parse.StructInfo{Type: "PersonProject", SQLSchema: "", SQLName: "person_project", Fields: []parse.FieldInfo{{Name: "PersonID", Type: "", Column: "person_id"}, {Name: "ProjectID", Type: "", Column: "project_id"}}, PKFieldIndex: -1},
 	z: new(PersonProject).Values(),
 }
 
@@ -355,7 +355,7 @@ func (v *legacyPersonTable) PKColumnIndex() uint {
 
 // LegacyPersonTable represents people view or table in SQL database.
 var LegacyPersonTable = &legacyPersonTable{
-	s: parse.StructInfo{Type: "LegacyPerson", SQLSchema: "legacy", SQLName: "people", Fields: []parse.FieldInfo{{Name: "ID", Type: "int32", Column: "id"}, {Name: "Name", Type: "*string", Column: "name"}}, PKFieldIndex: 0},
+	s: parse.StructInfo{Type: "LegacyPerson", SQLSchema: "legacy", SQLName: "people", Fields: []parse.FieldInfo{{Name: "ID", Type: "int32", Column: "id"}, {Name: "Name", Type: "", Column: "name"}}, PKFieldIndex: 0},
 	z: new(LegacyPerson).Values(),
 }
 
@@ -447,7 +447,7 @@ func (v *extraTable) Name() string {
 
 // Columns returns a new slice of column names for that view or table in SQL database.
 func (v *extraTable) Columns() []string {
-	return []string{"id", "name", "bytes", "byte", "array"}
+	return []string{"id", "name", "bytes", "bytes2", "byte", "array"}
 }
 
 // NewStruct makes a new struct for that view or table.
@@ -467,18 +467,19 @@ func (v *extraTable) PKColumnIndex() uint {
 
 // ExtraTable represents extra view or table in SQL database.
 var ExtraTable = &extraTable{
-	s: parse.StructInfo{Type: "Extra", SQLSchema: "", SQLName: "extra", Fields: []parse.FieldInfo{{Name: "ID", Type: "Integer", Column: "id"}, {Name: "Name", Type: "*String", Column: "name"}, {Name: "Bytes", Type: "[]byte", Column: "bytes"}, {Name: "Byte", Type: "*byte", Column: "byte"}, {Name: "Array", Type: "[512]byte", Column: "array"}}, PKFieldIndex: 0},
+	s: parse.StructInfo{Type: "Extra", SQLSchema: "", SQLName: "extra", Fields: []parse.FieldInfo{{Name: "ID", Type: "Integer", Column: "id"}, {Name: "Name", Type: "", Column: "name"}, {Name: "Bytes", Type: "", Column: "bytes"}, {Name: "Bytes2", Type: "", Column: "bytes2"}, {Name: "Byte", Type: "", Column: "byte"}, {Name: "Array", Type: "", Column: "array"}}, PKFieldIndex: 0},
 	z: new(Extra).Values(),
 }
 
 // String returns a string representation of this struct or record.
 func (s Extra) String() string {
-	res := make([]string, 5)
+	res := make([]string, 6)
 	res[0] = "ID: " + reform.Inspect(s.ID, true)
 	res[1] = "Name: " + reform.Inspect(s.Name, true)
 	res[2] = "Bytes: " + reform.Inspect(s.Bytes, true)
-	res[3] = "Byte: " + reform.Inspect(s.Byte, true)
-	res[4] = "Array: " + reform.Inspect(s.Array, true)
+	res[3] = "Bytes2: " + reform.Inspect(s.Bytes2, true)
+	res[4] = "Byte: " + reform.Inspect(s.Byte, true)
+	res[5] = "Array: " + reform.Inspect(s.Array, true)
 	return strings.Join(res, ", ")
 }
 
@@ -489,6 +490,7 @@ func (s *Extra) Values() []interface{} {
 		s.ID,
 		s.Name,
 		s.Bytes,
+		s.Bytes2,
 		s.Byte,
 		s.Array,
 	}
@@ -501,6 +503,7 @@ func (s *Extra) Pointers() []interface{} {
 		&s.ID,
 		&s.Name,
 		&s.Bytes,
+		&s.Bytes2,
 		&s.Byte,
 		&s.Array,
 	}

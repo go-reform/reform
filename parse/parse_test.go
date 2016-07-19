@@ -18,10 +18,10 @@ var (
 		SQLName: "people",
 		Fields: []FieldInfo{
 			{Name: "ID", Type: "int32", Column: "id"},
-			{Name: "Name", Type: "string", Column: "name"},
-			{Name: "Email", Type: "*string", Column: "email"},
-			{Name: "CreatedAt", Type: "time.Time", Column: "created_at"},
-			{Name: "UpdatedAt", Type: "*time.Time", Column: "updated_at"},
+			{Name: "Name", Column: "name"},
+			{Name: "Email", Column: "email"},
+			{Name: "CreatedAt", Column: "created_at"},
+			{Name: "UpdatedAt", Column: "updated_at"},
 		},
 		PKFieldIndex: 0,
 	}
@@ -30,10 +30,10 @@ var (
 		Type:    "Project",
 		SQLName: "projects",
 		Fields: []FieldInfo{
-			{Name: "Name", Type: "string", Column: "name"},
+			{Name: "Name", Column: "name"},
 			{Name: "ID", Type: "string", Column: "id"},
-			{Name: "Start", Type: "time.Time", Column: "start"},
-			{Name: "End", Type: "*time.Time", Column: "end"},
+			{Name: "Start", Column: "start"},
+			{Name: "End", Column: "end"},
 		},
 		PKFieldIndex: 1,
 	}
@@ -42,8 +42,8 @@ var (
 		Type:    "PersonProject",
 		SQLName: "person_project",
 		Fields: []FieldInfo{
-			{Name: "PersonID", Type: "int32", Column: "person_id"},
-			{Name: "ProjectID", Type: "string", Column: "project_id"},
+			{Name: "PersonID", Column: "person_id"},
+			{Name: "ProjectID", Column: "project_id"},
 		},
 		PKFieldIndex: -1,
 	}
@@ -54,7 +54,7 @@ var (
 		SQLName:   "people",
 		Fields: []FieldInfo{
 			{Name: "ID", Type: "int32", Column: "id"},
-			{Name: "Name", Type: "*string", Column: "name"},
+			{Name: "Name", Column: "name"},
 		},
 		PKFieldIndex: 0,
 	}
@@ -64,11 +64,11 @@ var (
 		SQLName: "extra",
 		Fields: []FieldInfo{
 			{Name: "ID", Type: "Integer", Column: "id"},
-			{Name: "Name", Type: "*String", Column: "name"},
-			{Name: "Bytes", Type: "[]byte", Column: "bytes"},
-			{Name: "Bytes2", Type: "Bytes", Column: "bytes2"},
-			{Name: "Byte", Type: "*byte", Column: "byte"},
-			{Name: "Array", Type: "[512]byte", Column: "array"},
+			{Name: "Name", Column: "name"},
+			{Name: "Bytes", Column: "bytes"},
+			{Name: "Bytes2", Column: "bytes2"},
+			{Name: "Byte", Column: "byte"},
+			{Name: "Array", Column: "array"},
 		},
 		PKFieldIndex: 0,
 	}

@@ -75,22 +75,21 @@ func parseStructTypeSpec(ts *ast.TypeSpec, str *ast.StructType) (*StructInfo, er
 		if column == "" {
 			return nil, fmt.Errorf(`reform: %s has field %s with invalid "reform:" tag value, it is not allowed`, res.Type, name.Name)
 		}
-		typ := fileGoType(f.Type)
-		if isPK && strings.HasPrefix(typ, "*") {
-			return nil, fmt.Errorf(`reform: %s has pointer field %s with with "pk" label in "reform:" tag, it is not allowed`, res.Type, name.Name)
+		var typ string
+		if isPK {
+			typ = fileGoType(f.Type)
+			if strings.HasPrefix(typ, "*") {
+				return nil, fmt.Errorf(`reform: %s has pointer field %s with with "pk" label in "reform:" tag, it is not allowed`, res.Type, name.Name)
+			}
+			if res.PKFieldIndex >= 0 {
+				return nil, fmt.Errorf(`reform: %s has field %s with with duplicate "pk" label in "reform:" tag (first used by %s), it is not allowed`, res.Type, name.Name, res.Fields[res.PKFieldIndex].Name)
+			}
 		}
-		if isPK && res.PKFieldIndex >= 0 {
-			return nil, fmt.Errorf(`reform: %s has field %s with with duplicate "pk" label in "reform:" tag (first used by %s), it is not allowed`, res.Type, name.Name, res.Fields[res.PKFieldIndex].Name)
-		}
-		// if isPKOrOmitEmpty && strings.HasPrefix(typ, "*") {
-		// 	return nil, fmt.Errorf(`reform: %s has pointer field %s with with "omitempty" label in "reform:" tag, it is not allowed`, res.Type, name.Name)
-		// }
 
 		res.Fields = append(res.Fields, FieldInfo{
 			Name:   name.Name,
 			Type:   typ,
 			Column: column,
-			// PKOrOmitEmpty: isPKOrOmitEmpty,
 		})
 		if isPK {
 			res.PKFieldIndex = n

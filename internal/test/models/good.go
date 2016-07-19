@@ -122,8 +122,8 @@ type Extra struct {
 	ID     Integer   `reform:"id,pk"`
 	Name   *String   `reform:"name"`
 	Bytes  []byte    `reform:"bytes"`
-	Byte   *byte     `reform:"byte"`
 	Bytes2 Bytes     `reform:"bytes2"`
+	Byte   *byte     `reform:"byte"`
 	Array  [512]byte `reform:"array"`
 }
 

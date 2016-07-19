@@ -1,4 +1,8 @@
 // Package parse implements parsing of Go structs in files and runtime.
+//
+// This package, despite containing exported types, methods and functions,
+// is an internal part of implementation of 'reform' tool, used by generated files,
+// and not a part of public stable API.
 package parse // import "gopkg.in/reform.v1/parse"
 
 import (
@@ -10,7 +14,7 @@ import (
 // FieldInfo represents information about struct field.
 type FieldInfo struct {
 	Name   string // field name as defined in source file, e.g. Name
-	Type   string // field type as defined in source file, e.g. string
+	PKType string // primary key field type as defined in source file, e.g. string
 	Column string // SQL database column name from "reform:" struct field tag, e.g. name
 }
 
@@ -91,7 +95,8 @@ func checkFields(res *StructInfo) error {
 	dupes := make(map[string]string)
 	for _, f := range res.Fields {
 		if f2, ok := dupes[f.Column]; ok {
-			return fmt.Errorf(`reform: %s has field %s with "reform:" tag with duplicate column name %s (used by %s), it is not allowed`, res.Type, f.Name, f.Column, f2)
+			return fmt.Errorf(`reform: %s has field %s with "reform:" tag with duplicate column name %s (used by %s), it is not allowed`,
+				res.Type, f.Name, f.Column, f2)
 		}
 		dupes[f.Column] = f.Name
 	}

@@ -10,12 +10,6 @@ func objectGoType(t reflect.Type, structT reflect.Type) string {
 	switch t.Kind() {
 	case reflect.Ptr:
 		return "*" + objectGoType(t.Elem(), structT)
-	case reflect.Slice:
-		return "[]" + objectGoType(t.Elem(), structT)
-	case reflect.Array:
-		return fmt.Sprintf("[%d]", t.Len()) + objectGoType(t.Elem(), structT)
-	case reflect.Uint8:
-		return "byte"
 	}
 
 	s := t.String()
@@ -74,22 +68,21 @@ func Object(obj interface{}, schema, table string) (res *StructInfo, err error) 
 		if column == "" {
 			return nil, fmt.Errorf(`reform: %s has field %s with invalid "reform:" tag value, it is not allowed`, res.Type, f.Name)
 		}
-		typ := objectGoType(f.Type, t)
-		if isPK && strings.HasPrefix(typ, "*") {
-			return nil, fmt.Errorf(`reform: %s has pointer field %s with with "pk" label in "reform:" tag, it is not allowed`, res.Type, f.Name)
+		var pkType string
+		if isPK {
+			pkType = objectGoType(f.Type, t)
+			if strings.HasPrefix(pkType, "*") {
+				return nil, fmt.Errorf(`reform: %s has pointer field %s with with "pk" label in "reform:" tag, it is not allowed`, res.Type, f.Name)
+			}
+			if res.PKFieldIndex >= 0 {
+				return nil, fmt.Errorf(`reform: %s has field %s with with duplicate "pk" label in "reform:" tag (first used by %s), it is not allowed`, res.Type, f.Name, res.Fields[res.PKFieldIndex].Name)
+			}
 		}
-		if isPK && res.PKFieldIndex >= 0 {
-			return nil, fmt.Errorf(`reform: %s has field %s with with duplicate "pk" label in "reform:" tag (first used by %s), it is not allowed`, res.Type, f.Name, res.Fields[res.PKFieldIndex].Name)
-		}
-		// if isPKOrOmitEmpty && strings.HasPrefix(typ, "*") {
-		// 	return nil, fmt.Errorf(`reform: %s has pointer field %s with with "omitempty" label in "reform:" tag, it is not allowed`, res.Type, f.Name)
-		// }
 
 		res.Fields = append(res.Fields, FieldInfo{
 			Name:   f.Name,
-			Type:   typ,
+			PKType: pkType,
 			Column: column,
-			// PKOrOmitEmpty: isPKOrOmitEmpty,
 		})
 		if isPK {
 			res.PKFieldIndex = n

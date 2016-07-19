@@ -17,12 +17,12 @@ var (
 		Type:    "Person",
 		SQLName: "people",
 		Fields: []FieldInfo{
-			{Name: "ID", Type: "int32", Column: "id"},
-			{Name: "GroupID", Type: "*int32", Column: "group_id"},
-			{Name: "Name", Type: "string", Column: "name"},
-			{Name: "Email", Type: "*string", Column: "email"},
-			{Name: "CreatedAt", Type: "time.Time", Column: "created_at"},
-			{Name: "UpdatedAt", Type: "*time.Time", Column: "updated_at"},
+			{Name: "ID", PKType: "int32", Column: "id"},
+			{Name: "GroupID", Column: "group_id"},
+			{Name: "Name", Column: "name"},
+			{Name: "Email", Column: "email"},
+			{Name: "CreatedAt", Column: "created_at"},
+			{Name: "UpdatedAt", Column: "updated_at"},
 		},
 		PKFieldIndex: 0,
 	}
@@ -31,10 +31,10 @@ var (
 		Type:    "Project",
 		SQLName: "projects",
 		Fields: []FieldInfo{
-			{Name: "Name", Type: "string", Column: "name"},
-			{Name: "ID", Type: "string", Column: "id"},
-			{Name: "Start", Type: "time.Time", Column: "start"},
-			{Name: "End", Type: "*time.Time", Column: "end"},
+			{Name: "Name", Column: "name"},
+			{Name: "ID", PKType: "string", Column: "id"},
+			{Name: "Start", Column: "start"},
+			{Name: "End", Column: "end"},
 		},
 		PKFieldIndex: 1,
 	}
@@ -43,8 +43,8 @@ var (
 		Type:    "PersonProject",
 		SQLName: "person_project",
 		Fields: []FieldInfo{
-			{Name: "PersonID", Type: "int32", Column: "person_id"},
-			{Name: "ProjectID", Type: "string", Column: "project_id"},
+			{Name: "PersonID", Column: "person_id"},
+			{Name: "ProjectID", Column: "project_id"},
 		},
 		PKFieldIndex: -1,
 	}
@@ -54,8 +54,8 @@ var (
 		SQLSchema: "legacy",
 		SQLName:   "people",
 		Fields: []FieldInfo{
-			{Name: "ID", Type: "int32", Column: "id"},
-			{Name: "Name", Type: "*string", Column: "name"},
+			{Name: "ID", PKType: "int32", Column: "id"},
+			{Name: "Name", Column: "name"},
 		},
 		PKFieldIndex: 0,
 	}
@@ -64,11 +64,12 @@ var (
 		Type:    "Extra",
 		SQLName: "extra",
 		Fields: []FieldInfo{
-			{Name: "ID", Type: "Integer", Column: "id"},
-			{Name: "Name", Type: "*String", Column: "name"},
-			{Name: "Bytes", Type: "[]byte", Column: "bytes"},
-			{Name: "Byte", Type: "*byte", Column: "byte"},
-			{Name: "Array", Type: "[512]byte", Column: "array"},
+			{Name: "ID", PKType: "Integer", Column: "id"},
+			{Name: "Name", Column: "name"},
+			{Name: "Bytes", Column: "bytes"},
+			{Name: "Bytes2", Column: "bytes2"},
+			{Name: "Byte", Column: "byte"},
+			{Name: "Array", Column: "array"},
 		},
 		PKFieldIndex: 0,
 	}
@@ -155,11 +156,11 @@ func TestObjectBogus(t *testing.T) {
 func TestHelpers(t *testing.T) {
 	assert.Equal(t, []string{"id", "group_id", "name", "email", "created_at", "updated_at"}, person.Columns())
 	assert.True(t, person.IsTable())
-	assert.Equal(t, FieldInfo{Name: "ID", Type: "int32", Column: "id"}, person.PKField())
+	assert.Equal(t, FieldInfo{Name: "ID", PKType: "int32", Column: "id"}, person.PKField())
 
 	assert.Equal(t, []string{"name", "id", "start", "end"}, project.Columns())
 	assert.True(t, project.IsTable())
-	assert.Equal(t, FieldInfo{Name: "ID", Type: "string", Column: "id"}, project.PKField())
+	assert.Equal(t, FieldInfo{Name: "ID", PKType: "string", Column: "id"}, project.PKField())
 
 	assert.Equal(t, []string{"person_id", "project_id"}, personProject.Columns())
 	assert.False(t, personProject.IsTable())

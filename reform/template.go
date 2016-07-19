@@ -128,9 +128,9 @@ func (s *{{ .Type }}) HasPK() bool {
 // SetPK sets record primary key.
 func (s *{{ .Type }}) SetPK(pk interface{}) {
 	if i64, ok := pk.(int64); ok {
-		s.{{ .PKField.Name }} = {{ .PKField.Type }}(i64)
+		s.{{ .PKField.Name }} = {{ .PKField.PKType }}(i64)
 	} else {
-		s.{{ .PKField.Name }} = pk.({{ .PKField.Type }})
+		s.{{ .PKField.Name }} = pk.({{ .PKField.PKType }})
 	}
 }
 

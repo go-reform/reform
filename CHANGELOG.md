@@ -4,6 +4,14 @@
 
 * Added Querier.InsertColumns.
 
+## v1.1.2 (2016-07-20, https://github.com/go-reform/reform/milestones/v1.1.2)
+
+* `reform` tool now correctly ignores type information when it's not used.
+  This allows one to have fields of any custom types. The only exception is primary key fields,
+  which are restricted to basic types (numbers and strings).
+* Package `gopkg.in/reform.v1/parse` is explicitly documented as internal.
+  (It's wasn't really possible to use it.)
+
 ## v1.1.1 (2016-07-05, https://github.com/go-reform/reform/milestones/v1.1.1)
 
 * Querier.UpdateColumns no longer allows to update primary key column. This behavior was allowed,

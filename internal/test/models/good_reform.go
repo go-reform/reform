@@ -47,7 +47,7 @@ func (v *personTable) PKColumnIndex() uint {
 
 // PersonTable represents people view or table in SQL database.
 var PersonTable = &personTable{
-	s: parse.StructInfo{Type: "Person", SQLSchema: "", SQLName: "people", Fields: []parse.FieldInfo{{Name: "ID", Type: "int32", Column: "id"}, {Name: "Name", Type: "", Column: "name"}, {Name: "Email", Type: "", Column: "email"}, {Name: "CreatedAt", Type: "", Column: "created_at"}, {Name: "UpdatedAt", Type: "", Column: "updated_at"}}, PKFieldIndex: 0},
+	s: parse.StructInfo{Type: "Person", SQLSchema: "", SQLName: "people", Fields: []parse.FieldInfo{{Name: "ID", PKType: "int32", Column: "id"}, {Name: "Name", PKType: "", Column: "name"}, {Name: "Email", PKType: "", Column: "email"}, {Name: "CreatedAt", PKType: "", Column: "created_at"}, {Name: "UpdatedAt", PKType: "", Column: "updated_at"}}, PKFieldIndex: 0},
 	z: new(Person).Values(),
 }
 
@@ -168,7 +168,7 @@ func (v *projectTable) PKColumnIndex() uint {
 
 // ProjectTable represents projects view or table in SQL database.
 var ProjectTable = &projectTable{
-	s: parse.StructInfo{Type: "Project", SQLSchema: "", SQLName: "projects", Fields: []parse.FieldInfo{{Name: "Name", Type: "", Column: "name"}, {Name: "ID", Type: "string", Column: "id"}, {Name: "Start", Type: "", Column: "start"}, {Name: "End", Type: "", Column: "end"}}, PKFieldIndex: 1},
+	s: parse.StructInfo{Type: "Project", SQLSchema: "", SQLName: "projects", Fields: []parse.FieldInfo{{Name: "Name", PKType: "", Column: "name"}, {Name: "ID", PKType: "string", Column: "id"}, {Name: "Start", PKType: "", Column: "start"}, {Name: "End", PKType: "", Column: "end"}}, PKFieldIndex: 1},
 	z: new(Project).Values(),
 }
 
@@ -276,7 +276,7 @@ func (v *personProjectView) NewStruct() reform.Struct {
 
 // PersonProjectView represents person_project view or table in SQL database.
 var PersonProjectView = &personProjectView{
-	s: parse.StructInfo{Type: "PersonProject", SQLSchema: "", SQLName: "person_project", Fields: []parse.FieldInfo{{Name: "PersonID", Type: "", Column: "person_id"}, {Name: "ProjectID", Type: "", Column: "project_id"}}, PKFieldIndex: -1},
+	s: parse.StructInfo{Type: "PersonProject", SQLSchema: "", SQLName: "person_project", Fields: []parse.FieldInfo{{Name: "PersonID", PKType: "", Column: "person_id"}, {Name: "ProjectID", PKType: "", Column: "project_id"}}, PKFieldIndex: -1},
 	z: new(PersonProject).Values(),
 }
 
@@ -355,7 +355,7 @@ func (v *legacyPersonTable) PKColumnIndex() uint {
 
 // LegacyPersonTable represents people view or table in SQL database.
 var LegacyPersonTable = &legacyPersonTable{
-	s: parse.StructInfo{Type: "LegacyPerson", SQLSchema: "legacy", SQLName: "people", Fields: []parse.FieldInfo{{Name: "ID", Type: "int32", Column: "id"}, {Name: "Name", Type: "", Column: "name"}}, PKFieldIndex: 0},
+	s: parse.StructInfo{Type: "LegacyPerson", SQLSchema: "legacy", SQLName: "people", Fields: []parse.FieldInfo{{Name: "ID", PKType: "int32", Column: "id"}, {Name: "Name", PKType: "", Column: "name"}}, PKFieldIndex: 0},
 	z: new(LegacyPerson).Values(),
 }
 
@@ -467,7 +467,7 @@ func (v *extraTable) PKColumnIndex() uint {
 
 // ExtraTable represents extra view or table in SQL database.
 var ExtraTable = &extraTable{
-	s: parse.StructInfo{Type: "Extra", SQLSchema: "", SQLName: "extra", Fields: []parse.FieldInfo{{Name: "ID", Type: "Integer", Column: "id"}, {Name: "Name", Type: "", Column: "name"}, {Name: "Bytes", Type: "", Column: "bytes"}, {Name: "Bytes2", Type: "", Column: "bytes2"}, {Name: "Byte", Type: "", Column: "byte"}, {Name: "Array", Type: "", Column: "array"}}, PKFieldIndex: 0},
+	s: parse.StructInfo{Type: "Extra", SQLSchema: "", SQLName: "extra", Fields: []parse.FieldInfo{{Name: "ID", PKType: "Integer", Column: "id"}, {Name: "Name", PKType: "", Column: "name"}, {Name: "Bytes", PKType: "", Column: "bytes"}, {Name: "Bytes2", PKType: "", Column: "bytes2"}, {Name: "Byte", PKType: "", Column: "byte"}, {Name: "Array", PKType: "", Column: "array"}}, PKFieldIndex: 0},
 	z: new(Extra).Values(),
 }
 

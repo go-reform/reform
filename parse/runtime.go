@@ -10,12 +10,6 @@ func objectGoType(t reflect.Type, structT reflect.Type) string {
 	switch t.Kind() {
 	case reflect.Ptr:
 		return "*" + objectGoType(t.Elem(), structT)
-	case reflect.Slice:
-		return "[]" + objectGoType(t.Elem(), structT)
-	case reflect.Array:
-		return fmt.Sprintf("[%d]", t.Len()) + objectGoType(t.Elem(), structT)
-	case reflect.Uint8:
-		return "byte"
 	}
 
 	s := t.String()
@@ -74,10 +68,10 @@ func Object(obj interface{}, schema, table string) (res *StructInfo, err error) 
 		if column == "" {
 			return nil, fmt.Errorf(`reform: %s has field %s with invalid "reform:" tag value, it is not allowed`, res.Type, f.Name)
 		}
-		var typ string
+		var pkType string
 		if isPK {
-			typ = objectGoType(f.Type, t)
-			if strings.HasPrefix(typ, "*") {
+			pkType = objectGoType(f.Type, t)
+			if strings.HasPrefix(pkType, "*") {
 				return nil, fmt.Errorf(`reform: %s has pointer field %s with with "pk" label in "reform:" tag, it is not allowed`, res.Type, f.Name)
 			}
 			if res.PKFieldIndex >= 0 {
@@ -87,7 +81,7 @@ func Object(obj interface{}, schema, table string) (res *StructInfo, err error) 
 
 		res.Fields = append(res.Fields, FieldInfo{
 			Name:   f.Name,
-			Type:   typ,
+			PKType: pkType,
 			Column: column,
 		})
 		if isPK {

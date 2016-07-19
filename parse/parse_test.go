@@ -17,7 +17,7 @@ var (
 		Type:    "Person",
 		SQLName: "people",
 		Fields: []FieldInfo{
-			{Name: "ID", Type: "int32", Column: "id"},
+			{Name: "ID", PKType: "int32", Column: "id"},
 			{Name: "Name", Column: "name"},
 			{Name: "Email", Column: "email"},
 			{Name: "CreatedAt", Column: "created_at"},
@@ -31,7 +31,7 @@ var (
 		SQLName: "projects",
 		Fields: []FieldInfo{
 			{Name: "Name", Column: "name"},
-			{Name: "ID", Type: "string", Column: "id"},
+			{Name: "ID", PKType: "string", Column: "id"},
 			{Name: "Start", Column: "start"},
 			{Name: "End", Column: "end"},
 		},
@@ -53,7 +53,7 @@ var (
 		SQLSchema: "legacy",
 		SQLName:   "people",
 		Fields: []FieldInfo{
-			{Name: "ID", Type: "int32", Column: "id"},
+			{Name: "ID", PKType: "int32", Column: "id"},
 			{Name: "Name", Column: "name"},
 		},
 		PKFieldIndex: 0,
@@ -63,7 +63,7 @@ var (
 		Type:    "Extra",
 		SQLName: "extra",
 		Fields: []FieldInfo{
-			{Name: "ID", Type: "Integer", Column: "id"},
+			{Name: "ID", PKType: "Integer", Column: "id"},
 			{Name: "Name", Column: "name"},
 			{Name: "Bytes", Column: "bytes"},
 			{Name: "Bytes2", Column: "bytes2"},
@@ -155,11 +155,11 @@ func TestObjectBogus(t *testing.T) {
 func TestHelpers(t *testing.T) {
 	assert.Equal(t, []string{"id", "name", "email", "created_at", "updated_at"}, person.Columns())
 	assert.True(t, person.IsTable())
-	assert.Equal(t, FieldInfo{Name: "ID", Type: "int32", Column: "id"}, person.PKField())
+	assert.Equal(t, FieldInfo{Name: "ID", PKType: "int32", Column: "id"}, person.PKField())
 
 	assert.Equal(t, []string{"name", "id", "start", "end"}, project.Columns())
 	assert.True(t, project.IsTable())
-	assert.Equal(t, FieldInfo{Name: "ID", Type: "string", Column: "id"}, project.PKField())
+	assert.Equal(t, FieldInfo{Name: "ID", PKType: "string", Column: "id"}, project.PKField())
 
 	assert.Equal(t, []string{"person_id", "project_id"}, personProject.Columns())
 	assert.False(t, personProject.IsTable())

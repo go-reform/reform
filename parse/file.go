@@ -16,18 +16,6 @@ func fileGoType(x ast.Expr) string {
 	switch t := x.(type) {
 	case *ast.StarExpr:
 		return "*" + fileGoType(t.X)
-	case *ast.ArrayType:
-		switch l := t.Len.(type) {
-		case nil:
-			return "[]" + fileGoType(t.Elt)
-		case *ast.BasicLit:
-			return fmt.Sprintf("[%s]", l.Value) + fileGoType(t.Elt)
-		default:
-			panic(fmt.Errorf("reform: fileGoType: unhandled array length %#v (%#v). Please report this bug.", l, t))
-		}
-		// return "[]" + fileGoType(t.Elt)
-	case *ast.SelectorExpr:
-		return fileGoType(t.X) + "." + t.Sel.String()
 	case *ast.Ident:
 		return t.String()
 	default:
@@ -75,10 +63,10 @@ func parseStructTypeSpec(ts *ast.TypeSpec, str *ast.StructType) (*StructInfo, er
 		if column == "" {
 			return nil, fmt.Errorf(`reform: %s has field %s with invalid "reform:" tag value, it is not allowed`, res.Type, name.Name)
 		}
-		var typ string
+		var pkType string
 		if isPK {
-			typ = fileGoType(f.Type)
-			if strings.HasPrefix(typ, "*") {
+			pkType = fileGoType(f.Type)
+			if strings.HasPrefix(pkType, "*") {
 				return nil, fmt.Errorf(`reform: %s has pointer field %s with with "pk" label in "reform:" tag, it is not allowed`, res.Type, name.Name)
 			}
 			if res.PKFieldIndex >= 0 {
@@ -88,7 +76,7 @@ func parseStructTypeSpec(ts *ast.TypeSpec, str *ast.StructType) (*StructInfo, er
 
 		res.Fields = append(res.Fields, FieldInfo{
 			Name:   name.Name,
-			Type:   typ,
+			PKType: pkType,
 			Column: column,
 		})
 		if isPK {

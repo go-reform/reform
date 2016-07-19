@@ -66,6 +66,7 @@ var (
 			{Name: "ID", Type: "Integer", Column: "id"},
 			{Name: "Name", Type: "*String", Column: "name"},
 			{Name: "Bytes", Type: "[]byte", Column: "bytes"},
+			{Name: "Bytes2", Type: "Bytes", Column: "bytes2"},
 			{Name: "Byte", Type: "*byte", Column: "byte"},
 			{Name: "Array", Type: "[512]byte", Column: "array"},
 		},

@@ -115,13 +115,16 @@ type Integer int32
 
 type String string
 
+type Bytes []byte
+
 //reform:extra
 type Extra struct {
-	ID    Integer   `reform:"id,pk"`
-	Name  *String   `reform:"name"`
-	Bytes []byte    `reform:"bytes"`
-	Byte  *byte     `reform:"byte"`
-	Array [512]byte `reform:"array"`
+	ID     Integer   `reform:"id,pk"`
+	Name   *String   `reform:"name"`
+	Bytes  []byte    `reform:"bytes"`
+	Byte   *byte     `reform:"byte"`
+	Bytes2 Bytes     `reform:"bytes2"`
+	Array  [512]byte `reform:"array"`
 }
 
 // check interfaces

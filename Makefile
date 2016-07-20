@@ -86,11 +86,11 @@ test_denisenkom_go-mssqldb: REFORM_SQL_INSTANCE ?= 127.0.0.1\SQLEXPRESS
 test_denisenkom_go-mssqldb: export REFORM_TEST_DRIVER = mssql
 test_denisenkom_go-mssqldb: export REFORM_TEST_SOURCE = server=$(REFORM_SQL_INSTANCE);database=reform-test
 test_denisenkom_go-mssqldb:
-	-sqlcmd -S "$(REFORM_SQL_INSTANCE)" -Q "DROP DATABASE [reform-test];"
-	sqlcmd -S "$(REFORM_SQL_INSTANCE)" -Q "CREATE DATABASE [reform-test];"
-	sqlcmd -S "$(REFORM_SQL_INSTANCE)" -d "reform-test" -i internal/test/sql/mssql_init.sql
-	sqlcmd -S "$(REFORM_SQL_INSTANCE)" -d "reform-test" -i internal/test/sql/mssql_data.sql
-	sqlcmd -S "$(REFORM_SQL_INSTANCE)" -d "reform-test" -i internal/test/sql/mssql_set.sql
+	-sqlcmd -b -I -S "$(REFORM_SQL_INSTANCE)" -Q "DROP DATABASE [reform-test];"
+	sqlcmd -b -I -S "$(REFORM_SQL_INSTANCE)" -Q "CREATE DATABASE [reform-test];"
+	sqlcmd -b -I -S "$(REFORM_SQL_INSTANCE)" -d "reform-test" -i internal/test/sql/mssql_init.sql
+	sqlcmd -b -I -S "$(REFORM_SQL_INSTANCE)" -d "reform-test" -i internal/test/sql/mssql_data.sql
+	sqlcmd -b -I -S "$(REFORM_SQL_INSTANCE)" -d "reform-test" -i internal/test/sql/mssql_set.sql
 	go test -coverprofile=test_denisenkom_go-mssqldb.cover
 
 parse:

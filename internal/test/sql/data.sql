@@ -1,5 +1,5 @@
-INSERT INTO people (name, email, created_at) VALUES ('Denis Mills', NULL, '2009-11-10 23:00:00');  -- id 1
-INSERT INTO people (name, email, created_at) VALUES ('Garrick Muller', 'muller_garrick@example.com', '2009-12-12 12:34:56');  -- id 2
+INSERT INTO people (id, name, email, created_at) VALUES (1, 'Denis Mills', NULL, '2009-11-10 23:00:00');
+INSERT INTO people (id, name, email, created_at) VALUES (2, 'Garrick Muller', 'muller_garrick@example.com', '2009-12-12 12:34:56');
 
 INSERT INTO people (id, name, email, created_at) VALUES (101, 'Noble Schumm', NULL, '2013-01-01 00:00:00');
 INSERT INTO people (id, name, email, created_at) VALUES (102, 'Elfrieda Abbott', 'elfrieda_abbott@example.org', '2014-01-01 00:00:00');

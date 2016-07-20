@@ -18,6 +18,7 @@ import (
 
 	"github.com/AlekSi/pointer"
 	"github.com/enodata/faker"
+	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
 
 	"gopkg.in/reform.v1"
@@ -98,19 +99,18 @@ func TestMain(m *testing.M) {
 	os.Exit(m.Run())
 }
 
-func allowInsertIdentity(tx *reform.TX, table string, allow bool) {
-	if tx.Dialect == mssql.Dialect {
-		var allowString string
-
-		if allow {
-			allowString = "on"
-		} else {
-			allowString = "off"
-		}
-
-		sql := fmt.Sprintf("set identity_insert %s %s", tx.Dialect.QuoteIdentifier(table), allowString)
-		tx.Exec(sql)
+func setIdentityInsert(t *testing.T, tx *reform.TX, table string, allow bool) {
+	if tx.Dialect != mssql.Dialect {
+		return
 	}
+
+	allowString := "OFF"
+	if allow {
+		allowString = "ON"
+	}
+	sql := fmt.Sprintf("SET IDENTITY_INSERT %s %s", tx.QuoteIdentifier(table), allowString)
+	_, err := tx.Exec(sql)
+	require.NoError(t, err)
 }
 
 type ReformSuite struct {
@@ -130,6 +130,8 @@ func (s *ReformSuite) SetupTest() {
 	var err error
 	s.q, err = DB.Begin()
 	s.Require().NoError(err)
+
+	setIdentityInsert(s.T(), s.q, "people", false)
 }
 
 func (s *ReformSuite) TearDownTest() {
@@ -205,6 +207,8 @@ func (s *ReformSuite) TestPlaceholders() {
 }
 
 func (s *ReformSuite) TestInTransaction() {
+	setIdentityInsert(s.T(), s.q, "people", true)
+
 	err := s.q.Rollback()
 	s.Require().NoError(err)
 	s.q = nil
@@ -212,9 +216,7 @@ func (s *ReformSuite) TestInTransaction() {
 	person := &models.Person{ID: 42, Email: pointer.ToString(faker.Internet().Email())}
 
 	err = DB.InTransaction(func(tx *reform.TX) error {
-		allowInsertIdentity(tx, "people", true)
 		err := tx.Insert(person)
-		allowInsertIdentity(tx, "people", false)
 		s.NoError(err)
 		return errors.New("epic error")
 	})
@@ -222,18 +224,14 @@ func (s *ReformSuite) TestInTransaction() {
 
 	s.Panics(func() {
 		DB.InTransaction(func(tx *reform.TX) error {
-			allowInsertIdentity(tx, "people", true)
 			err := tx.Insert(person)
-			allowInsertIdentity(tx, "people", false)
 			s.NoError(err)
 			panic("epic panic!")
 		})
 	})
 
 	err = DB.InTransaction(func(tx *reform.TX) error {
-		allowInsertIdentity(tx, "people", true)
 		err := tx.Insert(person)
-		allowInsertIdentity(tx, "people", false)
 		s.NoError(err)
 		return nil
 	})
@@ -247,7 +245,7 @@ func (s *ReformSuite) TestInTransaction() {
 }
 
 func (s *ReformSuite) TestTimezones() {
-	allowInsertIdentity(s.q, "people", true)
+	setIdentityInsert(s.T(), s.q, "people", true)
 
 	t1 := time.Now()
 	t2 := t1.UTC()
@@ -306,6 +304,4 @@ func (s *ReformSuite) TestTimezones() {
 		err = rows.Close()
 		s.NoError(err)
 	}
-
-	allowInsertIdentity(s.q, "people", false)
 }

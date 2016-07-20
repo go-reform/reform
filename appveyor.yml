@@ -6,7 +6,7 @@ services:
   - mssql2008r2sp2
   - mssql2012sp1
   - mssql2014
-  # - mssql2016
+  - mssql2016
 
 environment:
   GOPATH: c:\gopath
@@ -17,12 +17,10 @@ environment:
     - REFORM_SQL_INSTANCE: 127.0.0.1\SQL2008R2SP2
     - REFORM_SQL_INSTANCE: 127.0.0.1\SQL2012SP1
     - REFORM_SQL_INSTANCE: 127.0.0.1\SQL2014
-    # - REFORM_SQL_INSTANCE: 127.0.0.1\SQL2016
+    - REFORM_SQL_INSTANCE: 127.0.0.1\SQL2016
 
 install:
-  - sc config SQLBrowser start=demand
-  - net start SQLBrowser
-
+  - powershell -file appveyor-prepare-mssql.ps1
   - set PATH=%PATH%;C:\msys64\mingw64\bin;%GOPATH%\bin
 
   # - echo %PATH%

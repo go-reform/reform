@@ -27,6 +27,10 @@ func (sqlite3) LastInsertIdMethod() reform.LastInsertIdMethod {
 	return reform.LastInsertId
 }
 
+func (sqlite3) SelectLimitMethod() reform.SelectLimitMethod {
+	return reform.Limit
+}
+
 // Dialect implements reform.Dialect for SQLite3.
 var Dialect sqlite3
 

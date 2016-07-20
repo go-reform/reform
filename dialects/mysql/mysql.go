@@ -27,6 +27,10 @@ func (mysql) LastInsertIdMethod() reform.LastInsertIdMethod {
 	return reform.LastInsertId
 }
 
+func (mysql) SelectLimitMethod() reform.SelectLimitMethod {
+	return reform.Limit
+}
+
 // Dialect implements reform.Dialect for MySQL.
 var Dialect mysql
 

@@ -52,14 +52,29 @@ func (q *Querier) insert(str Struct, columns []string, values []interface{}) err
 
 	view := str.View()
 	record, _ := str.(Record)
+	lastInsertIdMethod := q.LastInsertIdMethod()
 
-	query := fmt.Sprintf("INSERT INTO %s (%s) VALUES (%s)",
+	var pk uint
+	if record != nil {
+		pk = view.(Table).PKColumnIndex()
+	}
+
+	query := fmt.Sprintf("INSERT INTO %s (%s)",
 		q.QualifiedView(view),
 		strings.Join(columns, ", "),
-		strings.Join(placeholders, ", "),
 	)
 
-	switch q.Dialect.LastInsertIdMethod() {
+	if record != nil && lastInsertIdMethod == OutputInserted {
+		query += fmt.Sprintf(" OUTPUT INSERTED.%s", q.QuoteIdentifier(view.Columns()[pk]))
+	}
+
+	query += fmt.Sprintf(" VALUES (%s)", strings.Join(placeholders, ", "))
+
+	if record != nil && lastInsertIdMethod == Returning {
+		query += fmt.Sprintf(" RETURNING %s", q.QuoteIdentifier(view.Columns()[pk]))
+	}
+
+	switch lastInsertIdMethod {
 	case LastInsertId:
 		res, err := q.Exec(query, values...)
 		if err != nil {
@@ -74,12 +89,9 @@ func (q *Querier) insert(str Struct, columns []string, values []interface{}) err
 		}
 		return nil
 
-	case Returning:
+	case Returning, OutputInserted:
 		var err error
 		if record != nil {
-			pk := view.(Table).PKColumnIndex()
-
-			query += fmt.Sprintf(" RETURNING %s", q.QuoteIdentifier(view.Columns()[pk]))
 			err = q.QueryRow(query, values...).Scan(record.PKPointer())
 		} else {
 			_, err = q.Exec(query, values...)

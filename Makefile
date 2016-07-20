@@ -6,6 +6,7 @@ init:
 	go get -u -v github.com/mattn/go-sqlite3/...
 	go get -u -v github.com/go-sql-driver/mysql/...
 	go get -u -v github.com/ziutek/mymysql/...
+	go get -u -v github.com/denisenkom/go-mssqldb
 	go get -u -v github.com/AlekSi/pointer
 	go get -u -v github.com/kisielk/errcheck
 	go get -u -v github.com/golang/lint/golint
@@ -79,6 +80,19 @@ test_ziutek_mymysql:
 	mysql -uroot reform-test < internal/test/sql/data.sql
 	mysql -uroot reform-test < internal/test/sql/mysql_set.sql
 	go test
+
+# this target is configured for Windows
+test_win_denisenkom_go-mssqldb: REFORM_SQL_INSTANCE ?= 127.0.0.1\SQLEXPRESS
+test_win_denisenkom_go-mssqldb: REFORM_SQLCMD = sqlcmd -S "$(REFORM_SQL_INSTANCE)"
+test_win_denisenkom_go-mssqldb: export REFORM_TEST_DRIVER = mssql
+test_win_denisenkom_go-mssqldb: export REFORM_TEST_SOURCE = server=$(REFORM_SQL_INSTANCE);database=reform-test
+test_win_denisenkom_go-mssqldb:
+	$(REFORM_SQLCMD) -Q "IF EXISTS (SELECT NULL FROM sys.databases WHERE name='reform-test') DROP DATABASE [reform-test]"
+	$(REFORM_SQLCMD) -Q "CREATE DATABASE [reform-test]"
+	$(REFORM_SQLCMD) -d "reform-test" -i internal/test/sql/mssql_init.sql
+	$(REFORM_SQLCMD) -d "reform-test" -i internal/test/sql/mssql_data.sql
+	$(REFORM_SQLCMD) -d "reform-test" -i internal/test/sql/mssql_set.sql
+	go test -coverprofile=test_win_denisenkom_go-mssqldb.cover
 
 parse:
 	# nothing, hack for our Travis-CI configuration

@@ -9,9 +9,8 @@ environment:
   GOPATH: c:\gopath
   REFORM_SQL_INSTANCE: 127.0.0.1\SQL2008R2SP2
   TARGET: test_win_denisenkom_go-mssqldb
-# TODO replace with yours
   COVERALLS_TOKEN:
-    secure: dO1+hFosmRDJTiuFSEV0Px2BYUwntKN34z2N077fRDgySfV9NZj0WwnXo4fQsydp
+    secure: +o9WB0T57udDJzTTSmKMg0O5hrP2e0rAuBL36/foBRYTg8VKccp2G8ovxJi4hsmD
 
 install:
   - set PATH=C:\msys64\mingw64\bin;%PATH%;%GOPATH%\bin

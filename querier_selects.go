@@ -6,25 +6,13 @@ import (
 	"strings"
 )
 
-// selectQuery returns full SELECT query for given view and tail.
-func (q *Querier) selectQuery(view View, tail string, limit1 bool) string {
-	command := "SELECT"
-
-	if limit1 && q.SelectLimitMethod() == SelectTop {
-		command += " TOP 1"
-	}
-
-	return fmt.Sprintf("%s %s FROM %s %s",
-		command, strings.Join(q.QualifiedColumns(view), ", "), q.QualifiedView(view), tail)
-}
-
 // NextRow scans next result row from rows to str. If str implements AfterFinder, it also calls AfterFind().
 // It is caller's responsibility to call rows.Close().
 //
 // If there is no next result row, it returns ErrNoRows. It also may return rows.Next(), rows.Scan()
 // and AfterFinder errors.
 //
-// See SelectRows example for ideomatic usage.
+// See SelectRows example for idiomatic usage.
 func (q *Querier) NextRow(str Struct, rows *sql.Rows) error {
 	var err error
 	next := rows.Next()
@@ -45,6 +33,18 @@ func (q *Querier) NextRow(str Struct, rows *sql.Rows) error {
 		err = af.AfterFind()
 	}
 	return err
+}
+
+// selectQuery returns full SELECT query for given view and tail.
+func (q *Querier) selectQuery(view View, tail string, limit1 bool) string {
+	command := "SELECT"
+
+	if limit1 && q.SelectLimitMethod() == SelectTop {
+		command += " TOP 1"
+	}
+
+	return fmt.Sprintf("%s %s FROM %s %s",
+		command, strings.Join(q.QualifiedColumns(view), ", "), q.QualifiedView(view), tail)
 }
 
 // SelectOneTo queries str's View with tail and args and scans first result to str.
@@ -84,7 +84,7 @@ func (q *Querier) SelectOneFrom(view View, tail string, args ...interface{}) (St
 //
 // In case of error rows will be nil. Error is never ErrNoRows.
 //
-// See example for ideomatic usage.
+// See example for idiomatic usage.
 func (q *Querier) SelectRows(view View, tail string, args ...interface{}) (*sql.Rows, error) {
 	query := q.selectQuery(view, tail, false)
 	return q.Query(query, args...)
@@ -122,7 +122,7 @@ func (q *Querier) SelectAllFrom(view View, tail string, args ...interface{}) (st
 	}
 }
 
-// findTail returns tail of  SELECT query for given view, column and arg.
+// findTail returns a tail of SELECT query for given view, column and arg.
 func (q *Querier) findTail(view string, column string, arg interface{}, limit1 bool) (tail string, needArg bool) {
 	qi := q.QuoteIdentifier(view) + "." + q.QuoteIdentifier(column)
 	if arg == nil {
@@ -170,7 +170,7 @@ func (q *Querier) FindOneFrom(view View, column string, arg interface{}) (Struct
 //
 // In case of error rows will be nil. Error is never ErrNoRows.
 //
-// See SelectRows example for ideomatic usage.
+// See SelectRows example for idiomatic usage.
 func (q *Querier) FindRows(view View, column string, arg interface{}) (*sql.Rows, error) {
 	tail, needArg := q.findTail(view.Name(), column, arg, false)
 	if needArg {

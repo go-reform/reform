@@ -112,11 +112,12 @@ type LegacyPerson struct {
 	Name *string `reform:"name"`
 }
 
-type Integer int32
-
-type String string
-
-type Bytes []byte
+// types for testing
+type (
+	Integer int32
+	String  string
+	Bytes   []byte
+)
 
 //reform:extra
 type Extra struct {

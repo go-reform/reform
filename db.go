@@ -58,7 +58,8 @@ func (db *DB) InTransaction(f func(t *TX) error) error {
 	var committed bool
 	defer func() {
 		if !committed {
-			tx.Rollback()
+			// always return f() or Commit() error, not possible Rollback() error
+			_ = tx.Rollback()
 		}
 	}()
 

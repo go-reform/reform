@@ -223,7 +223,7 @@ func (s *ReformSuite) TestInTransaction() {
 	s.EqualError(err, "epic error")
 
 	s.Panics(func() {
-		DB.InTransaction(func(tx *reform.TX) error {
+		err = DB.InTransaction(func(tx *reform.TX) error {
 			err := tx.Insert(person)
 			s.NoError(err)
 			panic("epic panic!")

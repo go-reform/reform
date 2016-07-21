@@ -6,6 +6,7 @@ import (
 	"gopkg.in/reform.v1/parse"
 )
 
+// StructData represents struct info for XXX_reform.go file generation.
 type StructData struct {
 	parse.StructInfo
 	TableType string

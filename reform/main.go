@@ -13,8 +13,8 @@ import (
 )
 
 var (
-	DebugF = flag.Bool("debug", false, "Enable debug logging")
-	GofmtF = flag.Bool("gofmt", true, "Format with gofmt")
+	debugF = flag.Bool("debug", false, "Enable debug logging")
+	gofmtF = flag.Bool("gofmt", true, "Format with gofmt")
 
 	logger = NewLogger()
 )
@@ -80,7 +80,7 @@ func processFile(path, file, pack string) error {
 }
 
 func gofmt(path string) {
-	if *GofmtF {
+	if *gofmtF {
 		cmd := exec.Command("gofmt", "-s", "-w", path)
 		logger.Debugf(strings.Join(cmd.Args, " "))
 		b, err := cmd.CombinedOutput()
@@ -102,7 +102,7 @@ func main() {
 	}
 	flag.Parse()
 
-	if *DebugF {
+	if *debugF {
 		logger.Debug = true
 	}
 

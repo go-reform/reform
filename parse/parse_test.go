@@ -165,3 +165,22 @@ func TestHelpers(t *testing.T) {
 	assert.Equal(t, []string{"person_id", "project_id"}, personProject.Columns())
 	assert.False(t, personProject.IsTable())
 }
+
+func TestAssertUpToDate(t *testing.T) {
+	AssertUpToDate(&person, new(models.Person))
+
+	func() {
+		defer func() {
+			expected := `reform:
+		Person struct information is not up-to-date.
+		Typically this means that Person type definition was changed, but 'reform' tool / 'go generate' was not run.
+
+		`
+			assert.Equal(t, expected, recover())
+		}()
+
+		p := person
+		p.PKFieldIndex = 1
+		AssertUpToDate(&p, new(models.Person))
+	}()
+}

@@ -1,18 +1,18 @@
 all: test test_lib_pq test_mattn_go-sqlite3 test_go-sql-driver_mysql
 
 init:
-	go get -u -v github.com/lib/pq/...
-	go get -u -v github.com/jackc/pgx/...
-	go get -u -v github.com/mattn/go-sqlite3/...
-	go get -u -v github.com/go-sql-driver/mysql/...
-	go get -u -v github.com/ziutek/mymysql/...
-	go get -u -v github.com/denisenkom/go-mssqldb
-	go get -u -v github.com/AlekSi/pointer
-	go get -u -v github.com/kisielk/errcheck
-	go get -u -v github.com/golang/lint/golint
-	go get -u -v github.com/stretchr/testify/...
-	go get -u -v github.com/enodata/faker
-	go get -u -v github.com/mattn/goveralls
+	go get -u github.com/lib/pq
+	go get -u github.com/jackc/pgx/stdlib
+	go get -u github.com/mattn/go-sqlite3
+	go get -u github.com/go-sql-driver/mysql
+	go get -u github.com/ziutek/mymysql/...
+	go get -u github.com/denisenkom/go-mssqldb
+	go get -u github.com/AlekSi/pointer
+	go get -u github.com/kisielk/errcheck
+	go get -u github.com/golang/lint/golint
+	go get -u github.com/stretchr/testify/...
+	go get -u github.com/enodata/faker
+	go get -u github.com/mattn/goveralls
 
 install:
 	rm -f internal/test/models/*_reform.go

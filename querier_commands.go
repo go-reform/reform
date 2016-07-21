@@ -269,7 +269,7 @@ func (q *Querier) update(record Record, columns []string, values []interface{}) 
 		return ErrNoRows
 	}
 	if ra > 1 {
-		panic(fmt.Errorf("reform: %d rows by UPDATE by primary key. Please report this bug.", ra))
+		panic(fmt.Sprintf("reform: %d rows by UPDATE by primary key. Please report this bug.", ra))
 	}
 	return nil
 }
@@ -380,7 +380,7 @@ func (q *Querier) Delete(record Record) error {
 		return ErrNoRows
 	}
 	if ra > 1 {
-		panic(fmt.Errorf("reform: %d rows by DELETE by primary key. Please report this bug.", ra))
+		panic(fmt.Sprintf("reform: %d rows by DELETE by primary key. Please report this bug.", ra))
 	}
 	return nil
 }

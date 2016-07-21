@@ -19,7 +19,7 @@ func fileGoType(x ast.Expr) string {
 	case *ast.Ident:
 		return t.String()
 	default:
-		panic(fmt.Errorf("reform: fileGoType: unhandled '%s' (%#v). Please report this bug.", x, x))
+		panic(fmt.Sprintf("reform: fileGoType: unhandled '%s' (%#v). Please report this bug.", x, x))
 	}
 }
 
@@ -49,7 +49,7 @@ func parseStructTypeSpec(ts *ast.TypeSpec, str *ast.StructType) (*StructInfo, er
 			return nil, fmt.Errorf(`reform: %s has anonymous field %s with "reform:" tag, it is not allowed`, res.Type, f.Type)
 		}
 		if len(f.Names) != 1 {
-			panic(fmt.Errorf("reform: %d names: %#v. Please report this bug.", len(f.Names), f.Names))
+			panic(fmt.Sprintf("reform: %d names: %#v. Please report this bug.", len(f.Names), f.Names))
 		}
 
 		// check for exported name

@@ -20,7 +20,7 @@ environment:
     - REFORM_SQL_INSTANCE: 127.0.0.1\SQL2016
 
 install:
-  - powershell -file appveyor-prepare-mssql.ps1
+  - powershell -file .github\appveyor-prepare-mssql.ps1
   - set PATH=%PATH%;C:\msys64\mingw64\bin;%GOPATH%\bin
 
   # - echo %PATH%

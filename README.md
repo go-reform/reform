@@ -10,11 +10,16 @@ A better ORM for Go and `database/sql`.
 It uses non-empty interfaces, code generation (`go generate`), and initialization-time reflection
 as opposed to `interface{}`, type system sidestepping, and runtime reflection. It will be kept simple.
 
+Supported SQL dialects:
+* PostgreSQL (tested with [`github.com/lib/pq`](https://github.com/lib/pq)).
+* MySQL (tested with [`github.com/go-sql-driver/mysql`](https://github.com/go-sql-driver/mysql)).
+* SQLite3 (tested with [`github.com/mattn/go-sqlite3`](https://github.com/mattn/go-sqlite3)).
+* Microsoft SQL Server (tested with [`github.com/denisenkom/go-mssqldb`](https://github.com/denisenkom/go-mssqldb)).
 
 ## Quickstart
 
 1. Make sure you are using Go 1.6+.
-2. Install it: `go get gopkg.in/reform.v1/reform` (see about versioning below)
+2. Install or update it: `go get -u gopkg.in/reform.v1/reform` (see about versioning below)
 3. Define your first model in file `person.go`:
 
     ```go

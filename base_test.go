@@ -9,6 +9,7 @@ import (
 	"testing"
 	"time"
 
+	_ "github.com/denisenkom/go-mssqldb"
 	_ "github.com/go-sql-driver/mysql"
 	_ "github.com/jackc/pgx/stdlib"
 	_ "github.com/lib/pq"
@@ -17,9 +18,11 @@ import (
 
 	"github.com/AlekSi/pointer"
 	"github.com/enodata/faker"
+	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
 
 	"gopkg.in/reform.v1"
+	"gopkg.in/reform.v1/dialects/mssql"
 	"gopkg.in/reform.v1/dialects/mysql"
 	"gopkg.in/reform.v1/dialects/postgresql"
 	"gopkg.in/reform.v1/dialects/sqlite3"
@@ -84,6 +87,9 @@ func TestMain(m *testing.M) {
 			log.Fatal(err)
 		}
 
+	case "mssql":
+		dialect = mssql.Dialect
+
 	default:
 		log.Fatal("reform: no dialect for driver " + driver)
 	}
@@ -91,6 +97,20 @@ func TestMain(m *testing.M) {
 	DB = reform.NewDB(db, dialect, nil)
 
 	os.Exit(m.Run())
+}
+
+func setIdentityInsert(t *testing.T, tx *reform.TX, table string, allow bool) {
+	if tx.Dialect != mssql.Dialect {
+		return
+	}
+
+	allowString := "OFF"
+	if allow {
+		allowString = "ON"
+	}
+	sql := fmt.Sprintf("SET IDENTITY_INSERT %s %s", tx.QuoteIdentifier(table), allowString)
+	_, err := tx.Exec(sql)
+	require.NoError(t, err)
 }
 
 type ReformSuite struct {
@@ -110,6 +130,8 @@ func (s *ReformSuite) SetupTest() {
 	var err error
 	s.q, err = DB.Begin()
 	s.Require().NoError(err)
+
+	setIdentityInsert(s.T(), s.q, "people", false)
 }
 
 func (s *ReformSuite) TearDownTest() {
@@ -185,6 +207,8 @@ func (s *ReformSuite) TestPlaceholders() {
 }
 
 func (s *ReformSuite) TestInTransaction() {
+	setIdentityInsert(s.T(), s.q, "people", true)
+
 	err := s.q.Rollback()
 	s.Require().NoError(err)
 	s.q = nil
@@ -221,6 +245,8 @@ func (s *ReformSuite) TestInTransaction() {
 }
 
 func (s *ReformSuite) TestTimezones() {
+	setIdentityInsert(s.T(), s.q, "people", true)
+
 	t1 := time.Now()
 	t2 := t1.UTC()
 	vlat, err := time.LoadLocation("Asia/Vladivostok")

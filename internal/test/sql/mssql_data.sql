@@ -1,3 +1,8 @@
+SET IDENTITY_INSERT people ON;
+
+-- A copy of data.sql follows.
+-- TODO Somehow merge with data.sql
+
 INSERT INTO people (id, name, email, created_at) VALUES (1, 'Denis Mills', NULL, '2009-11-10 23:00:00');
 INSERT INTO people (id, name, email, created_at) VALUES (2, 'Garrick Muller', 'muller_garrick@example.com', '2009-12-12 12:34:56');
 

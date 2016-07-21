@@ -22,10 +22,16 @@ before_install:
   - mkdir $GOPATH/src/gopkg.in && mv $GOPATH/src/github.com/go-reform/reform $GOPATH/src/gopkg.in/reform.v1
   - cd $GOPATH/src/gopkg.in/reform.v1
 
+  # - echo $PATH
+  # - go env
+  # - go version
+
 install:
   - make init
 
 script:
   - make test
   - make $TARGET
+
+after_success:
   - goveralls -coverprofile=$TARGET.cover

@@ -2,17 +2,41 @@ version: '{build}'
 
 clone_folder: c:\gopath\src\gopkg.in\reform.v1
 
+services:
+  - mssql2008r2sp2
+  - mssql2012sp1
+  - mssql2014
+  # - mssql2016
+
 environment:
   GOPATH: c:\gopath
+  TARGET: test_denisenkom_go-mssqldb
+  COVERALLS_TOKEN:
+    secure: +o9WB0T57udDJzTTSmKMg0O5hrP2e0rAuBL36/foBRYTg8VKccp2G8ovxJi4hsmD
+  matrix:
+    - REFORM_SQL_INSTANCE: 127.0.0.1\SQL2008R2SP2
+    - REFORM_SQL_INSTANCE: 127.0.0.1\SQL2012SP1
+    - REFORM_SQL_INSTANCE: 127.0.0.1\SQL2014
+    # - REFORM_SQL_INSTANCE: 127.0.0.1\SQL2016
 
 install:
-  - set PATH=C:\msys64\mingw64\bin;%PATH%;%GOPATH%\bin
-  - go version
-  - where mingw32-make
-  - where gcc
+  - sc config SQLBrowser start=demand
+  - net start SQLBrowser
+
+  - set PATH=%PATH%;C:\msys64\mingw64\bin;%GOPATH%\bin
+
+  # - echo %PATH%
+  # - go env
+  # - go version
+  # - where mingw32-make
+  # - where gcc
 
 build_script:
   - mingw32-make init
 
 test_script:
   - mingw32-make test
+  - mingw32-make %TARGET%
+
+on_success:
+  - if defined COVERALLS_TOKEN goveralls -coverprofile=%TARGET%.cover -service=

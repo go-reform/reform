@@ -6,6 +6,7 @@ init:
 	go get -u -v github.com/mattn/go-sqlite3/...
 	go get -u -v github.com/go-sql-driver/mysql/...
 	go get -u -v github.com/ziutek/mymysql/...
+	go get -u -v github.com/denisenkom/go-mssqldb
 	go get -u -v github.com/AlekSi/pointer
 	go get -u -v github.com/kisielk/errcheck
 	go get -u -v github.com/golang/lint/golint
@@ -80,6 +81,18 @@ test_ziutek_mymysql:
 	mysql -uroot reform-test < internal/test/sql/mysql_set.sql
 	go test
 
+# this target is configured for Windows
+test_denisenkom_go-mssqldb: REFORM_SQL_INSTANCE ?= 127.0.0.1\SQLEXPRESS
+test_denisenkom_go-mssqldb: export REFORM_TEST_DRIVER = mssql
+test_denisenkom_go-mssqldb: export REFORM_TEST_SOURCE = server=$(REFORM_SQL_INSTANCE);database=reform-test
+test_denisenkom_go-mssqldb:
+	-sqlcmd -b -I -S "$(REFORM_SQL_INSTANCE)" -Q "DROP DATABASE [reform-test];"
+	sqlcmd -b -I -S "$(REFORM_SQL_INSTANCE)" -Q "CREATE DATABASE [reform-test];"
+	sqlcmd -b -I -S "$(REFORM_SQL_INSTANCE)" -d "reform-test" -i internal/test/sql/mssql_init.sql
+	sqlcmd -b -I -S "$(REFORM_SQL_INSTANCE)" -d "reform-test" -i internal/test/sql/mssql_data.sql
+	sqlcmd -b -I -S "$(REFORM_SQL_INSTANCE)" -d "reform-test" -i internal/test/sql/mssql_set.sql
+	go test -coverprofile=test_denisenkom_go-mssqldb.cover
+
 parse:
 	# nothing, hack for our Travis-CI configuration
-	# see test target
+	# see 'test' target here and $TARGET in .travis.yml

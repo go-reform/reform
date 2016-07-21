@@ -265,8 +265,6 @@ func (s *ReformSuite) TestUpdateColumns() {
 		err := s.q.UpdateColumns(person, columns...)
 		s.Error(err)
 		s.Equal(e, err)
-
-		s.RestartTransaction()
 	}
 }
 

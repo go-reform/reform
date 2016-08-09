@@ -59,6 +59,7 @@ func (q *Querier) insert(str Struct, columns []string, values []interface{}) err
 	view := str.View()
 	record, _ := str.(Record)
 	lastInsertIdMethod := q.LastInsertIdMethod()
+	defaultValuesMethod := q.DefaultValuesMethod()
 
 	var pk uint
 	if record != nil {
@@ -67,16 +68,16 @@ func (q *Querier) insert(str Struct, columns []string, values []interface{}) err
 
 	// make query
 	query := "INSERT INTO " + q.QualifiedView(view)
-	if len(columns) != 0 {
+	if len(columns) != 0 || defaultValuesMethod == EmptyLists {
 		query += " (" + strings.Join(columns, ", ") + ")"
 	}
 	if record != nil && lastInsertIdMethod == OutputInserted {
 		query += fmt.Sprintf(" OUTPUT INSERTED.%s", q.QuoteIdentifier(view.Columns()[pk]))
 	}
-	if len(placeholders) == 0 {
-		query += " DEFAULT VALUES"
-	} else {
+	if len(placeholders) != 0 || defaultValuesMethod == EmptyLists {
 		query += fmt.Sprintf(" VALUES (%s)", strings.Join(placeholders, ", "))
+	} else {
+		query += " DEFAULT VALUES"
 	}
 	if record != nil && lastInsertIdMethod == Returning {
 		query += fmt.Sprintf(" RETURNING %s", q.QuoteIdentifier(view.Columns()[pk]))

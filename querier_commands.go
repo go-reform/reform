@@ -60,11 +60,18 @@ func (q *Querier) insert(str Struct, columns []string, values []interface{}) err
 	}
 
 	// make query
-	query := fmt.Sprintf("INSERT INTO %s (%s)", q.QualifiedView(view), strings.Join(columns, ", "))
+	query := "INSERT INTO " + q.QualifiedView(view)
+	if len(columns) != 0 {
+		query += " (" + strings.Join(columns, ", ") + ")"
+	}
 	if record != nil && lastInsertIdMethod == OutputInserted {
 		query += fmt.Sprintf(" OUTPUT INSERTED.%s", q.QuoteIdentifier(view.Columns()[pk]))
 	}
-	query += fmt.Sprintf(" VALUES (%s)", strings.Join(placeholders, ", "))
+	if len(placeholders) == 0 {
+		query += " DEFAULT VALUES"
+	} else {
+		query += fmt.Sprintf(" VALUES (%s)", strings.Join(placeholders, ", "))
+	}
 	if record != nil && lastInsertIdMethod == Returning {
 		query += fmt.Sprintf(" RETURNING %s", q.QuoteIdentifier(view.Columns()[pk]))
 	}

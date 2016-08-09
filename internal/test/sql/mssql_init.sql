@@ -19,3 +19,7 @@ CREATE TABLE [person_project] (
   [project_id] varchar(255) REFERENCES [projects] ON DELETE CASCADE,
   UNIQUE ([person_id], [project_id])
 );
+
+CREATE TABLE id_only (
+  [id] int identity(1, 1) PRIMARY KEY
+);

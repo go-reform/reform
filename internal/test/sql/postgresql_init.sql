@@ -22,6 +22,10 @@ CREATE TABLE person_project (
   UNIQUE (person_id, project_id)
 );
 
+CREATE TABLE id_only (
+  id serial PRIMARY KEY
+);
+
 CREATE SCHEMA legacy;
 
 CREATE TABLE legacy.people (

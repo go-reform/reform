@@ -188,6 +188,13 @@ func (s *ReformSuite) TestInsertMultiMixes() {
 	s.Error(err)
 }
 
+func (s *ReformSuite) TestInsertIDOnly() {
+	id := &IDOnly{}
+	err := s.q.Insert(id)
+	s.NoError(err)
+	s.Equal(int32(1), id.ID)
+}
+
 func (s *ReformSuite) TestUpdate() {
 	var person Person
 	err := s.q.Update(&person)

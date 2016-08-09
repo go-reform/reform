@@ -106,6 +106,11 @@ type PersonProject struct {
 	ProjectID string `reform:"project_id"`
 }
 
+// reform:id_only
+type IDOnly struct {
+	ID int32 `reform:"id,pk"`
+}
+
 //reform:legacy.people
 type LegacyPerson struct {
 	ID   int32   `reform:"id,pk"`

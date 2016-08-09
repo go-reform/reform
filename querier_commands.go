@@ -5,22 +5,28 @@ import (
 	"strings"
 )
 
-func filteredColumnsAndValues(record Record, columnsIn []string, isUpdate bool) (columns []string, values []interface{}, err error) {
+func filteredColumnsAndValues(str Struct, columnsIn []string, isUpdate bool) (columns []string, values []interface{}, err error) {
 	columnsSet := make(map[string]struct{}, len(columnsIn))
 	for _, c := range columnsIn {
 		columnsSet[c] = struct{}{}
 	}
 
 	// select columns from set and collect values
-	table := record.Table()
-	pk := int(table.PKColumnIndex())
-	allColumns := table.Columns()
-	allValues := record.Values()
+	view := str.View()
+	allColumns := view.Columns()
+	allValues := str.Values()
 	columns = make([]string, 0, len(columnsSet))
 	values = make([]interface{}, 0, len(columns))
+
+	record, _ := str.(Record)
+	var pk uint
+	if record != nil {
+		pk = view.(Table).PKColumnIndex()
+	}
+
 	for i, c := range allColumns {
 		if _, ok := columnsSet[c]; ok {
-			if isUpdate && i == pk {
+			if isUpdate && record != nil && i == int(pk) {
 				err = fmt.Errorf("reform: will not update PK column: %s", c)
 				return
 			}
@@ -130,10 +136,9 @@ func (q *Querier) Insert(str Struct) error {
 	values := str.Values()
 	columns := view.Columns()
 	record, _ := str.(Record)
-	var pk uint
 
 	if record != nil {
-		pk = view.(Table).PKColumnIndex()
+		pk := view.(Table).PKColumnIndex()
 
 		// cut primary key
 		if !record.HasPK() {
@@ -151,19 +156,17 @@ func (q *Querier) Insert(str Struct) error {
 //
 // It fills record's primary key field.
 func (q *Querier) InsertColumns(str Struct, columns ...string) error {
-	record, _ := str.(Record)
-
-	err := q.beforeInsert(record)
+	err := q.beforeInsert(str)
 	if err != nil {
 		return err
 	}
 
-	columns, values, err := filteredColumnsAndValues(record, columns, false)
+	columns, values, err := filteredColumnsAndValues(str, columns, false)
 	if err != nil {
 		return err
 	}
 
-	return q.insert(record, columns, values)
+	return q.insert(str, columns, values)
 }
 
 // InsertMulti inserts several structs into SQL database table with single query.

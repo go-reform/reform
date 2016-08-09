@@ -127,6 +127,21 @@ func (s *ReformSuite) TestInsertColumns() {
 	s.Error(err)
 }
 
+func (s *ReformSuite) TestInsertColumnsIntoView() {
+	pp := &PersonProject{PersonID: 1, ProjectID: "baron"}
+	err := s.q.InsertColumns(pp, "person_id", "project_id")
+	s.NoError(err)
+
+	err = s.q.InsertColumns(pp, "person_id", "project_id")
+	s.Error(err)
+
+	s.RestartTransaction()
+
+	pp = &PersonProject{PersonID: 1, ProjectID: "no_such_project"}
+	err = s.q.InsertColumns(pp, "person_id", "project_id")
+	s.Error(err)
+}
+
 func (s *ReformSuite) TestInsertMulti() {
 	newEmail := faker.Internet().Email()
 	newName := faker.Name().Name()

@@ -17,6 +17,7 @@ deps:                           ## Install dependencies.
 
 	go get -u github.com/AlekSi/gocoverutil
 	go get -u github.com/AlekSi/pointer
+	go get -u github.com/satori/go.uuid
 	go get -u github.com/brianvoe/gofakeit
 	go get -u github.com/stretchr/testify/...
 

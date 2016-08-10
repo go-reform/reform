@@ -75,6 +75,7 @@ var (
 		SQLName: "extra",
 		Fields: []FieldInfo{
 			{Name: "ID", Type: "Integer", Column: "id"},
+			{Name: "UUID", Type: "uuid.UUID", Column: "uuid"},
 			{Name: "Name", Type: "*String", Column: "name"},
 			{Name: "Byte", Type: "uint8", Column: "byte"},
 			{Name: "Uint8", Type: "uint8", Column: "uint8"},
@@ -221,7 +222,7 @@ func TestHelpersGood(t *testing.T) {
 
 func TestHelpersExtra(t *testing.T) {
 	columns := []string{
-		"id", "name",
+		"id", "uuid", "name",
 		"byte", "uint8", "bytep", "uint8p", "bytes", "uint8s", "bytesa", "uint8sa", "bytest", "uint8st",
 	}
 	assert.Equal(t, columns, extra.Columns())

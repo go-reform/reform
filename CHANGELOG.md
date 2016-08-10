@@ -1,8 +1,10 @@
 # Changelog
 
-## v1.2.0 (not yet released)
+## v1.2.0 (2016-08-10, https://github.com/go-reform/reform/milestones/v1.2.0)
 
+* Added support for Microsoft SQL Server. Huge thanks to [Aleksey Martynov](https://github.com/AlekseyMartynov).
 * Added Querier.InsertColumns.
+* Querier.Insert now correctly handles records with only primary key column.
 
 ## v1.1.2 (2016-07-20, https://github.com/go-reform/reform/milestones/v1.1.2)
 

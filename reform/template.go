@@ -145,7 +145,7 @@ var (
 	_ reform.Table  = {{ .TableVar }}
 	_ reform.Record = new({{ .Type }})
 {{- end }}
-	_ fmt.Stringer   = new({{ .Type }})
+	_ fmt.Stringer  = new({{ .Type }})
 )
 `))
 

@@ -31,6 +31,10 @@ func (sqlite3) SelectLimitMethod() reform.SelectLimitMethod {
 	return reform.Limit
 }
 
+func (sqlite3) DefaultValuesMethod() reform.DefaultValuesMethod {
+	return reform.DefaultValues
+}
+
 // Dialect implements reform.Dialect for SQLite3.
 var Dialect sqlite3
 

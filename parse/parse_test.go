@@ -49,6 +49,15 @@ var (
 		PKFieldIndex: -1,
 	}
 
+	idOnly = StructInfo{
+		Type:    "IDOnly",
+		SQLName: "id_only",
+		Fields: []FieldInfo{
+			{Name: "ID", PKType: "int32", Column: "id"},
+		},
+		PKFieldIndex: 0,
+	}
+
 	legacyPerson = StructInfo{
 		Type:      "LegacyPerson",
 		SQLSchema: "legacy",
@@ -78,12 +87,13 @@ var (
 func TestFileGood(t *testing.T) {
 	s, err := File("../internal/test/models/good.go")
 	assert.NoError(t, err)
-	require.Len(t, s, 5)
+	require.Len(t, s, 6)
 	assert.Equal(t, person, s[0])
 	assert.Equal(t, project, s[1])
 	assert.Equal(t, personProject, s[2])
-	assert.Equal(t, legacyPerson, s[3])
-	assert.Equal(t, extra, s[4])
+	assert.Equal(t, idOnly, s[3])
+	assert.Equal(t, legacyPerson, s[4])
+	assert.Equal(t, extra, s[5])
 }
 
 func TestFileBogus(t *testing.T) {

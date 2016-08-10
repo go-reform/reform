@@ -29,6 +29,10 @@ func (mssql) SelectLimitMethod() reform.SelectLimitMethod {
 	return reform.SelectTop
 }
 
+func (mssql) DefaultValuesMethod() reform.DefaultValuesMethod {
+	return reform.DefaultValues
+}
+
 // Dialect implements reform.Dialect for Microsoft SQL Server.
 var Dialect mssql
 

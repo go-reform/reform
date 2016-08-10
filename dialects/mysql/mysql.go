@@ -31,6 +31,10 @@ func (mysql) SelectLimitMethod() reform.SelectLimitMethod {
 	return reform.Limit
 }
 
+func (mysql) DefaultValuesMethod() reform.DefaultValuesMethod {
+	return reform.EmptyLists
+}
+
 // Dialect implements reform.Dialect for MySQL.
 var Dialect mysql
 

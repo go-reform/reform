@@ -33,3 +33,8 @@ CREATE TABLE person_project (
   FOREIGN KEY (person_id) REFERENCES people (id) ON DELETE CASCADE,
   FOREIGN KEY (project_id) REFERENCES projects (id) ON DELETE CASCADE
 );
+
+CREATE TABLE id_only (
+  id int NOT NULL AUTO_INCREMENT,
+  PRIMARY KEY (id)
+);

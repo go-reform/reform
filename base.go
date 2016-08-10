@@ -141,6 +141,17 @@ const (
 	SelectTop
 )
 
+// DefaultValuesMethod is a method of inserting of row with all default values.
+type DefaultValuesMethod int
+
+const (
+	// DefaultValues is a method using "DEFAULT VALUES"
+	DefaultValues DefaultValuesMethod = iota
+
+	// EmptyLists is a method using "() VALUES ()"
+	EmptyLists
+)
+
 // Dialect represents differences in various SQL dialects.
 type Dialect interface {
 	// Placeholder returns representation of placeholder parameter for given index,
@@ -160,6 +171,9 @@ type Dialect interface {
 
 	// SelectLimitMethod returns a method of limiting the number of rows in a query result.
 	SelectLimitMethod() SelectLimitMethod
+
+	// DefaultValuesMethod returns a method of inserting of row with all default values.
+	DefaultValuesMethod() DefaultValuesMethod
 }
 
 // check interface

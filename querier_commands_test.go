@@ -127,6 +127,21 @@ func (s *ReformSuite) TestInsertColumns() {
 	s.Error(err)
 }
 
+func (s *ReformSuite) TestInsertColumnsIntoView() {
+	pp := &PersonProject{PersonID: 1, ProjectID: "baron"}
+	err := s.q.InsertColumns(pp, "person_id", "project_id")
+	s.NoError(err)
+
+	err = s.q.InsertColumns(pp, "person_id", "project_id")
+	s.Error(err)
+
+	s.RestartTransaction()
+
+	pp = &PersonProject{PersonID: 1, ProjectID: "no_such_project"}
+	err = s.q.InsertColumns(pp, "person_id", "project_id")
+	s.Error(err)
+}
+
 func (s *ReformSuite) TestInsertMulti() {
 	newEmail := faker.Internet().Email()
 	newName := faker.Name().Name()
@@ -186,6 +201,13 @@ func (s *ReformSuite) TestInsertMultiMixes() {
 
 	err = s.q.InsertMulti(&Person{ID: 1}, &Person{})
 	s.Error(err)
+}
+
+func (s *ReformSuite) TestInsertIDOnly() {
+	id := &IDOnly{}
+	err := s.q.Insert(id)
+	s.NoError(err)
+	s.Equal(int32(1), id.ID)
 }
 
 func (s *ReformSuite) TestUpdate() {

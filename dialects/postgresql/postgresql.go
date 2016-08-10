@@ -33,6 +33,10 @@ func (postgresql) SelectLimitMethod() reform.SelectLimitMethod {
 	return reform.Limit
 }
 
+func (postgresql) DefaultValuesMethod() reform.DefaultValuesMethod {
+	return reform.DefaultValues
+}
+
 // Dialect implements reform.Dialect for PostgreSQL.
 var Dialect postgresql
 

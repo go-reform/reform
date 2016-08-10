@@ -6,7 +6,7 @@ services:
   - mssql2008r2sp2
   - mssql2012sp1
   - mssql2014
-  - mssql2016
+  # - FIXME mssql2016
 
 environment:
   GOPATH: c:\gopath

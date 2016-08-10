@@ -6,7 +6,7 @@ services:
   - mssql2008r2sp2
   - mssql2012sp1
   - mssql2014
-  # - FIXME mssql2016
+  - mssql2016
 
 environment:
   GOPATH: c:\gopath
@@ -17,7 +17,7 @@ environment:
     - REFORM_SQL_INSTANCE: 127.0.0.1\SQL2008R2SP2
     - REFORM_SQL_INSTANCE: 127.0.0.1\SQL2012SP1
     - REFORM_SQL_INSTANCE: 127.0.0.1\SQL2014
-    - REFORM_SQL_INSTANCE: 127.0.0.1\SQL2016
+    # FIXME - REFORM_SQL_INSTANCE: 127.0.0.1\SQL2016
 
 install:
   - powershell -file .github\appveyor-prepare-mssql.ps1

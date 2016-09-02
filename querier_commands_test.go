@@ -72,9 +72,9 @@ func (s *ReformSuite) TestInsertWithPrimaryKey() {
 	s.Error(err)
 }
 
-func (s *ReformSuite) TestInsertReturning() {
-	if s.q.Dialect != postgresql.Dialect {
-		s.T().Skip("only PostgreSQL supports RETURNING syntax, other dialects support only integers from LastInsertId")
+func (s *ReformSuite) TestInsertWithStringPrimaryKey() {
+	if s.q.Dialect.LastInsertIdMethod() == reform.LastInsertId {
+		s.T().Skipf("%s uses LastInsertId", s.q.Dialect)
 	}
 
 	project := &Project{ID: "new", End: pointer.ToTime(time.Now().Truncate(24 * time.Hour))}

@@ -154,6 +154,9 @@ const (
 
 // Dialect represents differences in various SQL dialects.
 type Dialect interface {
+	// String returns dialect name.
+	String() string
+
 	// Placeholder returns representation of placeholder parameter for given index,
 	// typically "?" or "$1".
 	Placeholder(index int) string

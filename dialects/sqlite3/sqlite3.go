@@ -7,6 +7,10 @@ import (
 
 type sqlite3 struct{}
 
+func (sqlite3) String() string {
+	return "sqlite3"
+}
+
 func (sqlite3) Placeholder(index int) string {
 	return "?"
 }

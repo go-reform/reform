@@ -7,6 +7,10 @@ import (
 
 type mysql struct{}
 
+func (mysql) String() string {
+	return "mysql"
+}
+
 func (mysql) Placeholder(index int) string {
 	return "?"
 }

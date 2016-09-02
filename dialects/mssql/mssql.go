@@ -5,6 +5,10 @@ import "gopkg.in/reform.v1"
 
 type mssql struct{}
 
+func (mssql) String() string {
+	return "mssql"
+}
+
 func (mssql) Placeholder(index int) string {
 	return "?"
 }

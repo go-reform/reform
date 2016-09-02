@@ -9,6 +9,10 @@ import (
 
 type postgresql struct{}
 
+func (postgresql) String() string {
+	return "postgresql"
+}
+
 func (postgresql) Placeholder(index int) string {
 	return "$" + strconv.Itoa(index)
 }

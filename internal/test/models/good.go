@@ -106,32 +106,15 @@ type PersonProject struct {
 	ProjectID string `reform:"project_id"`
 }
 
-// reform:id_only
-type IDOnly struct {
-	ID int32 `reform:"id,pk"`
-}
-
 //reform:legacy.people
 type LegacyPerson struct {
 	ID   int32   `reform:"id,pk"`
 	Name *string `reform:"name"`
 }
 
-// types for testing
-type (
-	Integer int32
-	String  string
-	Bytes   []byte
-)
-
-//reform:extra
-type Extra struct {
-	ID     Integer   `reform:"id,pk"`
-	Name   *String   `reform:"name"`
-	Bytes  []byte    `reform:"bytes"`
-	Bytes2 Bytes     `reform:"bytes2"`
-	Byte   *byte     `reform:"byte"`
-	Array  [512]byte `reform:"array"`
+// reform:id_only
+type IDOnly struct {
+	ID int32 `reform:"id,pk"`
 }
 
 // check interfaces

@@ -321,115 +321,6 @@ var (
 	_ fmt.Stringer  = new(PersonProject)
 )
 
-type iDOnlyTable struct {
-	s parse.StructInfo
-	z []interface{}
-}
-
-// Schema returns a schema name in SQL database ("").
-func (v *iDOnlyTable) Schema() string {
-	return v.s.SQLSchema
-}
-
-// Name returns a view or table name in SQL database ("id_only").
-func (v *iDOnlyTable) Name() string {
-	return v.s.SQLName
-}
-
-// Columns returns a new slice of column names for that view or table in SQL database.
-func (v *iDOnlyTable) Columns() []string {
-	return []string{"id"}
-}
-
-// NewStruct makes a new struct for that view or table.
-func (v *iDOnlyTable) NewStruct() reform.Struct {
-	return new(IDOnly)
-}
-
-// NewRecord makes a new record for that table.
-func (v *iDOnlyTable) NewRecord() reform.Record {
-	return new(IDOnly)
-}
-
-// PKColumnIndex returns an index of primary key column for that table in SQL database.
-func (v *iDOnlyTable) PKColumnIndex() uint {
-	return uint(v.s.PKFieldIndex)
-}
-
-// IDOnlyTable represents id_only view or table in SQL database.
-var IDOnlyTable = &iDOnlyTable{
-	s: parse.StructInfo{Type: "IDOnly", SQLSchema: "", SQLName: "id_only", Fields: []parse.FieldInfo{{Name: "ID", PKType: "int32", Column: "id"}}, PKFieldIndex: 0},
-	z: new(IDOnly).Values(),
-}
-
-// String returns a string representation of this struct or record.
-func (s IDOnly) String() string {
-	res := make([]string, 1)
-	res[0] = "ID: " + reform.Inspect(s.ID, true)
-	return strings.Join(res, ", ")
-}
-
-// Values returns a slice of struct or record field values.
-// Returned interface{} values are never untyped nils.
-func (s *IDOnly) Values() []interface{} {
-	return []interface{}{
-		s.ID,
-	}
-}
-
-// Pointers returns a slice of pointers to struct or record fields.
-// Returned interface{} values are never untyped nils.
-func (s *IDOnly) Pointers() []interface{} {
-	return []interface{}{
-		&s.ID,
-	}
-}
-
-// View returns View object for that struct.
-func (s *IDOnly) View() reform.View {
-	return IDOnlyTable
-}
-
-// Table returns Table object for that record.
-func (s *IDOnly) Table() reform.Table {
-	return IDOnlyTable
-}
-
-// PKValue returns a value of primary key for that record.
-// Returned interface{} value is never untyped nil.
-func (s *IDOnly) PKValue() interface{} {
-	return s.ID
-}
-
-// PKPointer returns a pointer to primary key field for that record.
-// Returned interface{} value is never untyped nil.
-func (s *IDOnly) PKPointer() interface{} {
-	return &s.ID
-}
-
-// HasPK returns true if record has non-zero primary key set, false otherwise.
-func (s *IDOnly) HasPK() bool {
-	return s.ID != IDOnlyTable.z[IDOnlyTable.s.PKFieldIndex]
-}
-
-// SetPK sets record primary key.
-func (s *IDOnly) SetPK(pk interface{}) {
-	if i64, ok := pk.(int64); ok {
-		s.ID = int32(i64)
-	} else {
-		s.ID = pk.(int32)
-	}
-}
-
-// check interfaces
-var (
-	_ reform.View   = IDOnlyTable
-	_ reform.Struct = new(IDOnly)
-	_ reform.Table  = IDOnlyTable
-	_ reform.Record = new(IDOnly)
-	_ fmt.Stringer  = new(IDOnly)
-)
-
 type legacyPersonTable struct {
 	s parse.StructInfo
 	z []interface{}
@@ -542,135 +433,119 @@ var (
 	_ fmt.Stringer  = new(LegacyPerson)
 )
 
-type extraTable struct {
+type iDOnlyTable struct {
 	s parse.StructInfo
 	z []interface{}
 }
 
 // Schema returns a schema name in SQL database ("").
-func (v *extraTable) Schema() string {
+func (v *iDOnlyTable) Schema() string {
 	return v.s.SQLSchema
 }
 
-// Name returns a view or table name in SQL database ("extra").
-func (v *extraTable) Name() string {
+// Name returns a view or table name in SQL database ("id_only").
+func (v *iDOnlyTable) Name() string {
 	return v.s.SQLName
 }
 
 // Columns returns a new slice of column names for that view or table in SQL database.
-func (v *extraTable) Columns() []string {
-	return []string{"id", "name", "bytes", "bytes2", "byte", "array"}
+func (v *iDOnlyTable) Columns() []string {
+	return []string{"id"}
 }
 
 // NewStruct makes a new struct for that view or table.
-func (v *extraTable) NewStruct() reform.Struct {
-	return new(Extra)
+func (v *iDOnlyTable) NewStruct() reform.Struct {
+	return new(IDOnly)
 }
 
 // NewRecord makes a new record for that table.
-func (v *extraTable) NewRecord() reform.Record {
-	return new(Extra)
+func (v *iDOnlyTable) NewRecord() reform.Record {
+	return new(IDOnly)
 }
 
 // PKColumnIndex returns an index of primary key column for that table in SQL database.
-func (v *extraTable) PKColumnIndex() uint {
+func (v *iDOnlyTable) PKColumnIndex() uint {
 	return uint(v.s.PKFieldIndex)
 }
 
-// ExtraTable represents extra view or table in SQL database.
-var ExtraTable = &extraTable{
-	s: parse.StructInfo{Type: "Extra", SQLSchema: "", SQLName: "extra", Fields: []parse.FieldInfo{{Name: "ID", PKType: "Integer", Column: "id"}, {Name: "Name", PKType: "", Column: "name"}, {Name: "Bytes", PKType: "", Column: "bytes"}, {Name: "Bytes2", PKType: "", Column: "bytes2"}, {Name: "Byte", PKType: "", Column: "byte"}, {Name: "Array", PKType: "", Column: "array"}}, PKFieldIndex: 0},
-	z: new(Extra).Values(),
+// IDOnlyTable represents id_only view or table in SQL database.
+var IDOnlyTable = &iDOnlyTable{
+	s: parse.StructInfo{Type: "IDOnly", SQLSchema: "", SQLName: "id_only", Fields: []parse.FieldInfo{{Name: "ID", PKType: "int32", Column: "id"}}, PKFieldIndex: 0},
+	z: new(IDOnly).Values(),
 }
 
 // String returns a string representation of this struct or record.
-func (s Extra) String() string {
-	res := make([]string, 6)
+func (s IDOnly) String() string {
+	res := make([]string, 1)
 	res[0] = "ID: " + reform.Inspect(s.ID, true)
-	res[1] = "Name: " + reform.Inspect(s.Name, true)
-	res[2] = "Bytes: " + reform.Inspect(s.Bytes, true)
-	res[3] = "Bytes2: " + reform.Inspect(s.Bytes2, true)
-	res[4] = "Byte: " + reform.Inspect(s.Byte, true)
-	res[5] = "Array: " + reform.Inspect(s.Array, true)
 	return strings.Join(res, ", ")
 }
 
 // Values returns a slice of struct or record field values.
 // Returned interface{} values are never untyped nils.
-func (s *Extra) Values() []interface{} {
+func (s *IDOnly) Values() []interface{} {
 	return []interface{}{
 		s.ID,
-		s.Name,
-		s.Bytes,
-		s.Bytes2,
-		s.Byte,
-		s.Array,
 	}
 }
 
 // Pointers returns a slice of pointers to struct or record fields.
 // Returned interface{} values are never untyped nils.
-func (s *Extra) Pointers() []interface{} {
+func (s *IDOnly) Pointers() []interface{} {
 	return []interface{}{
 		&s.ID,
-		&s.Name,
-		&s.Bytes,
-		&s.Bytes2,
-		&s.Byte,
-		&s.Array,
 	}
 }
 
 // View returns View object for that struct.
-func (s *Extra) View() reform.View {
-	return ExtraTable
+func (s *IDOnly) View() reform.View {
+	return IDOnlyTable
 }
 
 // Table returns Table object for that record.
-func (s *Extra) Table() reform.Table {
-	return ExtraTable
+func (s *IDOnly) Table() reform.Table {
+	return IDOnlyTable
 }
 
 // PKValue returns a value of primary key for that record.
 // Returned interface{} value is never untyped nil.
-func (s *Extra) PKValue() interface{} {
+func (s *IDOnly) PKValue() interface{} {
 	return s.ID
 }
 
 // PKPointer returns a pointer to primary key field for that record.
 // Returned interface{} value is never untyped nil.
-func (s *Extra) PKPointer() interface{} {
+func (s *IDOnly) PKPointer() interface{} {
 	return &s.ID
 }
 
 // HasPK returns true if record has non-zero primary key set, false otherwise.
-func (s *Extra) HasPK() bool {
-	return s.ID != ExtraTable.z[ExtraTable.s.PKFieldIndex]
+func (s *IDOnly) HasPK() bool {
+	return s.ID != IDOnlyTable.z[IDOnlyTable.s.PKFieldIndex]
 }
 
 // SetPK sets record primary key.
-func (s *Extra) SetPK(pk interface{}) {
+func (s *IDOnly) SetPK(pk interface{}) {
 	if i64, ok := pk.(int64); ok {
-		s.ID = Integer(i64)
+		s.ID = int32(i64)
 	} else {
-		s.ID = pk.(Integer)
+		s.ID = pk.(int32)
 	}
 }
 
 // check interfaces
 var (
-	_ reform.View   = ExtraTable
-	_ reform.Struct = new(Extra)
-	_ reform.Table  = ExtraTable
-	_ reform.Record = new(Extra)
-	_ fmt.Stringer  = new(Extra)
+	_ reform.View   = IDOnlyTable
+	_ reform.Struct = new(IDOnly)
+	_ reform.Table  = IDOnlyTable
+	_ reform.Record = new(IDOnly)
+	_ fmt.Stringer  = new(IDOnly)
 )
 
 func init() {
 	parse.AssertUpToDate(&PersonTable.s, new(Person))
 	parse.AssertUpToDate(&ProjectTable.s, new(Project))
 	parse.AssertUpToDate(&PersonProjectView.s, new(PersonProject))
-	parse.AssertUpToDate(&IDOnlyTable.s, new(IDOnly))
 	parse.AssertUpToDate(&LegacyPersonTable.s, new(LegacyPerson))
-	parse.AssertUpToDate(&ExtraTable.s, new(Extra))
+	parse.AssertUpToDate(&IDOnlyTable.s, new(IDOnly))
 }

@@ -49,15 +49,6 @@ var (
 		PKFieldIndex: -1,
 	}
 
-	idOnly = StructInfo{
-		Type:    "IDOnly",
-		SQLName: "id_only",
-		Fields: []FieldInfo{
-			{Name: "ID", PKType: "int32", Column: "id"},
-		},
-		PKFieldIndex: 0,
-	}
-
 	legacyPerson = StructInfo{
 		Type:      "LegacyPerson",
 		SQLSchema: "legacy",
@@ -65,6 +56,15 @@ var (
 		Fields: []FieldInfo{
 			{Name: "ID", PKType: "int32", Column: "id"},
 			{Name: "Name", Column: "name"},
+		},
+		PKFieldIndex: 0,
+	}
+
+	idOnly = StructInfo{
+		Type:    "IDOnly",
+		SQLName: "id_only",
+		Fields: []FieldInfo{
+			{Name: "ID", PKType: "int32", Column: "id"},
 		},
 		PKFieldIndex: 0,
 	}
@@ -87,13 +87,19 @@ var (
 func TestFileGood(t *testing.T) {
 	s, err := File("../internal/test/models/good.go")
 	assert.NoError(t, err)
-	require.Len(t, s, 6)
+	require.Len(t, s, 5)
 	assert.Equal(t, person, s[0])
 	assert.Equal(t, project, s[1])
 	assert.Equal(t, personProject, s[2])
-	assert.Equal(t, idOnly, s[3])
-	assert.Equal(t, legacyPerson, s[4])
-	assert.Equal(t, extra, s[5])
+	assert.Equal(t, legacyPerson, s[3])
+	assert.Equal(t, idOnly, s[4])
+}
+
+func TestFileExtra(t *testing.T) {
+	s, err := File("../internal/test/models/extra.go")
+	assert.NoError(t, err)
+	require.Len(t, s, 1)
+	assert.Equal(t, extra, s[0])
 }
 
 func TestFileBogus(t *testing.T) {
@@ -136,7 +142,13 @@ func TestObjectGood(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, &legacyPerson, s)
 
-	s, err = Object(new(models.Extra), "", "extra")
+	s, err = Object(new(models.IDOnly), "", "id_only")
+	assert.NoError(t, err)
+	assert.Equal(t, &idOnly, s)
+}
+
+func TestObjectExtra(t *testing.T) {
+	s, err := Object(new(models.Extra), "", "extra")
 	assert.NoError(t, err)
 	assert.Equal(t, &extra, s)
 }
@@ -163,7 +175,7 @@ func TestObjectBogus(t *testing.T) {
 	}
 }
 
-func TestHelpers(t *testing.T) {
+func TestHelpersGood(t *testing.T) {
 	assert.Equal(t, []string{"id", "group_id", "name", "email", "created_at", "updated_at"}, person.Columns())
 	assert.True(t, person.IsTable())
 	assert.Equal(t, FieldInfo{Name: "ID", PKType: "int32", Column: "id"}, person.PKField())
@@ -174,6 +186,20 @@ func TestHelpers(t *testing.T) {
 
 	assert.Equal(t, []string{"person_id", "project_id"}, personProject.Columns())
 	assert.False(t, personProject.IsTable())
+
+	assert.Equal(t, []string{"id", "name"}, legacyPerson.Columns())
+	assert.True(t, legacyPerson.IsTable())
+	assert.Equal(t, FieldInfo{Name: "ID", PKType: "int32", Column: "id"}, legacyPerson.PKField())
+
+	assert.Equal(t, []string{"id"}, idOnly.Columns())
+	assert.True(t, idOnly.IsTable())
+	assert.Equal(t, FieldInfo{Name: "ID", PKType: "int32", Column: "id"}, idOnly.PKField())
+}
+
+func TestHelpersExtra(t *testing.T) {
+	assert.Equal(t, []string{"id", "name", "bytes", "bytes2", "byte", "array"}, extra.Columns())
+	assert.True(t, extra.IsTable())
+	assert.Equal(t, FieldInfo{Name: "ID", PKType: "Integer", Column: "id"}, extra.PKField())
 }
 
 func TestAssertUpToDate(t *testing.T) {

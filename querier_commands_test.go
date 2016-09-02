@@ -74,7 +74,7 @@ func (s *ReformSuite) TestInsertWithPrimaryKey() {
 
 func (s *ReformSuite) TestInsertWithStringPrimaryKey() {
 	if s.q.Dialect.LastInsertIdMethod() == reform.LastInsertId {
-		s.T().Skip("%s uses LastInsertId", s.q.Dialect)
+		s.T().Skipf("%s uses LastInsertId", s.q.Dialect)
 	}
 
 	project := &Project{ID: "new", End: pointer.ToTime(time.Now().Truncate(24 * time.Hour))}

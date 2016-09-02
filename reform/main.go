@@ -53,10 +53,10 @@ func processFile(path, file, pack string) error {
 		t := strings.ToLower(str.Type[0:1]) + str.Type[1:]
 		v := str.Type
 		if str.IsTable() {
-			t += "Table"
+			t += "TableType"
 			v += "Table"
 		} else {
-			t += "View"
+			t += "ViewType"
 			v += "View"
 		}
 

@@ -10,43 +10,43 @@ import (
 	"gopkg.in/reform.v1/parse"
 )
 
-type extraTable struct {
+type extraTableType struct {
 	s parse.StructInfo
 	z []interface{}
 }
 
 // Schema returns a schema name in SQL database ("").
-func (v *extraTable) Schema() string {
+func (v *extraTableType) Schema() string {
 	return v.s.SQLSchema
 }
 
 // Name returns a view or table name in SQL database ("extra").
-func (v *extraTable) Name() string {
+func (v *extraTableType) Name() string {
 	return v.s.SQLName
 }
 
 // Columns returns a new slice of column names for that view or table in SQL database.
-func (v *extraTable) Columns() []string {
+func (v *extraTableType) Columns() []string {
 	return []string{"id", "name", "bytes", "bytes2", "byte", "array"}
 }
 
 // NewStruct makes a new struct for that view or table.
-func (v *extraTable) NewStruct() reform.Struct {
+func (v *extraTableType) NewStruct() reform.Struct {
 	return new(Extra)
 }
 
 // NewRecord makes a new record for that table.
-func (v *extraTable) NewRecord() reform.Record {
+func (v *extraTableType) NewRecord() reform.Record {
 	return new(Extra)
 }
 
 // PKColumnIndex returns an index of primary key column for that table in SQL database.
-func (v *extraTable) PKColumnIndex() uint {
+func (v *extraTableType) PKColumnIndex() uint {
 	return uint(v.s.PKFieldIndex)
 }
 
 // ExtraTable represents extra view or table in SQL database.
-var ExtraTable = &extraTable{
+var ExtraTable = &extraTableType{
 	s: parse.StructInfo{Type: "Extra", SQLSchema: "", SQLName: "extra", Fields: []parse.FieldInfo{{Name: "ID", PKType: "Integer", Column: "id"}, {Name: "Name", PKType: "", Column: "name"}, {Name: "Bytes", PKType: "", Column: "bytes"}, {Name: "Bytes2", PKType: "", Column: "bytes2"}, {Name: "Byte", PKType: "", Column: "byte"}, {Name: "Array", PKType: "", Column: "array"}}, PKFieldIndex: 0},
 	z: new(Extra).Values(),
 }
@@ -134,6 +134,116 @@ var (
 	_ fmt.Stringer  = new(Extra)
 )
 
+type notExportedTableType struct {
+	s parse.StructInfo
+	z []interface{}
+}
+
+// Schema returns a schema name in SQL database ("").
+func (v *notExportedTableType) Schema() string {
+	return v.s.SQLSchema
+}
+
+// Name returns a view or table name in SQL database ("not_exported").
+func (v *notExportedTableType) Name() string {
+	return v.s.SQLName
+}
+
+// Columns returns a new slice of column names for that view or table in SQL database.
+func (v *notExportedTableType) Columns() []string {
+	return []string{"id"}
+}
+
+// NewStruct makes a new struct for that view or table.
+func (v *notExportedTableType) NewStruct() reform.Struct {
+	return new(notExported)
+}
+
+// NewRecord makes a new record for that table.
+func (v *notExportedTableType) NewRecord() reform.Record {
+	return new(notExported)
+}
+
+// PKColumnIndex returns an index of primary key column for that table in SQL database.
+func (v *notExportedTableType) PKColumnIndex() uint {
+	return uint(v.s.PKFieldIndex)
+}
+
+// notExportedTable represents not_exported view or table in SQL database.
+var notExportedTable = &notExportedTableType{
+	s: parse.StructInfo{Type: "notExported", SQLSchema: "", SQLName: "not_exported", Fields: []parse.FieldInfo{{Name: "ID", PKType: "string", Column: "id"}}, PKFieldIndex: 0},
+	z: new(notExported).Values(),
+}
+
+// String returns a string representation of this struct or record.
+func (s notExported) String() string {
+	res := make([]string, 1)
+	res[0] = "ID: " + reform.Inspect(s.ID, true)
+	return strings.Join(res, ", ")
+}
+
+// Values returns a slice of struct or record field values.
+// Returned interface{} values are never untyped nils.
+func (s *notExported) Values() []interface{} {
+	return []interface{}{
+		s.ID,
+	}
+}
+
+// Pointers returns a slice of pointers to struct or record fields.
+// Returned interface{} values are never untyped nils.
+func (s *notExported) Pointers() []interface{} {
+	return []interface{}{
+		&s.ID,
+	}
+}
+
+// View returns View object for that struct.
+func (s *notExported) View() reform.View {
+	return notExportedTable
+}
+
+// Table returns Table object for that record.
+func (s *notExported) Table() reform.Table {
+	return notExportedTable
+}
+
+// PKValue returns a value of primary key for that record.
+// Returned interface{} value is never untyped nil.
+func (s *notExported) PKValue() interface{} {
+	return s.ID
+}
+
+// PKPointer returns a pointer to primary key field for that record.
+// Returned interface{} value is never untyped nil.
+func (s *notExported) PKPointer() interface{} {
+	return &s.ID
+}
+
+// HasPK returns true if record has non-zero primary key set, false otherwise.
+func (s *notExported) HasPK() bool {
+	return s.ID != notExportedTable.z[notExportedTable.s.PKFieldIndex]
+}
+
+// SetPK sets record primary key.
+func (s *notExported) SetPK(pk interface{}) {
+	if i64, ok := pk.(int64); ok {
+		s.ID = string(i64)
+	} else {
+		s.ID = pk.(string)
+	}
+}
+
+// check interfaces
+var (
+	_ reform.View   = notExportedTable
+	_ reform.Struct = new(notExported)
+	_ reform.Table  = notExportedTable
+	_ reform.Record = new(notExported)
+	_ fmt.Stringer  = new(notExported)
+)
+
 func init() {
 	parse.AssertUpToDate(&ExtraTable.s, new(Extra))
+	parse.AssertUpToDate(&notExportedTable.s, new(notExported))
 }

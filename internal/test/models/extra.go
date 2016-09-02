@@ -18,3 +18,8 @@ type Extra struct {
 	Byte   *byte     `reform:"byte"`
 	Array  [512]byte `reform:"array"`
 }
+
+//reform:not_exported
+type notExported struct {
+	ID string `reform:"id,pk"`
+}

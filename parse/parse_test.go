@@ -82,6 +82,15 @@ var (
 		},
 		PKFieldIndex: 0,
 	}
+
+	notExported = StructInfo{
+		Type:    "notExported",
+		SQLName: "not_exported",
+		Fields: []FieldInfo{
+			{Name: "ID", PKType: "string", Column: "id"},
+		},
+		PKFieldIndex: 0,
+	}
 )
 
 func TestFileGood(t *testing.T) {
@@ -98,8 +107,9 @@ func TestFileGood(t *testing.T) {
 func TestFileExtra(t *testing.T) {
 	s, err := File("../internal/test/models/extra.go")
 	assert.NoError(t, err)
-	require.Len(t, s, 1)
+	require.Len(t, s, 2)
 	assert.Equal(t, extra, s[0])
+	assert.Equal(t, notExported, s[1])
 }
 
 func TestFileBogus(t *testing.T) {
@@ -151,6 +161,10 @@ func TestObjectExtra(t *testing.T) {
 	s, err := Object(new(models.Extra), "", "extra")
 	assert.NoError(t, err)
 	assert.Equal(t, &extra, s)
+
+	// s, err := Object(new(models.notExported), "", "not_exported")
+	// assert.NoError(t, err)
+	// assert.Equal(t, &notExported, s)
 }
 
 func TestObjectBogus(t *testing.T) {
@@ -200,6 +214,10 @@ func TestHelpersExtra(t *testing.T) {
 	assert.Equal(t, []string{"id", "name", "bytes", "bytes2", "byte", "array"}, extra.Columns())
 	assert.True(t, extra.IsTable())
 	assert.Equal(t, FieldInfo{Name: "ID", PKType: "Integer", Column: "id"}, extra.PKField())
+
+	assert.Equal(t, []string{"id"}, notExported.Columns())
+	assert.True(t, notExported.IsTable())
+	assert.Equal(t, FieldInfo{Name: "ID", PKType: "string", Column: "id"}, notExported.PKField())
 }
 
 func TestAssertUpToDate(t *testing.T) {

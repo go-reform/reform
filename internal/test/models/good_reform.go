@@ -10,43 +10,43 @@ import (
 	"gopkg.in/reform.v1/parse"
 )
 
-type personTable struct {
+type personTableType struct {
 	s parse.StructInfo
 	z []interface{}
 }
 
 // Schema returns a schema name in SQL database ("").
-func (v *personTable) Schema() string {
+func (v *personTableType) Schema() string {
 	return v.s.SQLSchema
 }
 
 // Name returns a view or table name in SQL database ("people").
-func (v *personTable) Name() string {
+func (v *personTableType) Name() string {
 	return v.s.SQLName
 }
 
 // Columns returns a new slice of column names for that view or table in SQL database.
-func (v *personTable) Columns() []string {
+func (v *personTableType) Columns() []string {
 	return []string{"id", "group_id", "name", "email", "created_at", "updated_at"}
 }
 
 // NewStruct makes a new struct for that view or table.
-func (v *personTable) NewStruct() reform.Struct {
+func (v *personTableType) NewStruct() reform.Struct {
 	return new(Person)
 }
 
 // NewRecord makes a new record for that table.
-func (v *personTable) NewRecord() reform.Record {
+func (v *personTableType) NewRecord() reform.Record {
 	return new(Person)
 }
 
 // PKColumnIndex returns an index of primary key column for that table in SQL database.
-func (v *personTable) PKColumnIndex() uint {
+func (v *personTableType) PKColumnIndex() uint {
 	return uint(v.s.PKFieldIndex)
 }
 
 // PersonTable represents people view or table in SQL database.
-var PersonTable = &personTable{
+var PersonTable = &personTableType{
 	s: parse.StructInfo{Type: "Person", SQLSchema: "", SQLName: "people", Fields: []parse.FieldInfo{{Name: "ID", PKType: "int32", Column: "id"}, {Name: "GroupID", PKType: "", Column: "group_id"}, {Name: "Name", PKType: "", Column: "name"}, {Name: "Email", PKType: "", Column: "email"}, {Name: "CreatedAt", PKType: "", Column: "created_at"}, {Name: "UpdatedAt", PKType: "", Column: "updated_at"}}, PKFieldIndex: 0},
 	z: new(Person).Values(),
 }
@@ -134,43 +134,43 @@ var (
 	_ fmt.Stringer  = new(Person)
 )
 
-type projectTable struct {
+type projectTableType struct {
 	s parse.StructInfo
 	z []interface{}
 }
 
 // Schema returns a schema name in SQL database ("").
-func (v *projectTable) Schema() string {
+func (v *projectTableType) Schema() string {
 	return v.s.SQLSchema
 }
 
 // Name returns a view or table name in SQL database ("projects").
-func (v *projectTable) Name() string {
+func (v *projectTableType) Name() string {
 	return v.s.SQLName
 }
 
 // Columns returns a new slice of column names for that view or table in SQL database.
-func (v *projectTable) Columns() []string {
+func (v *projectTableType) Columns() []string {
 	return []string{"name", "id", "start", "end"}
 }
 
 // NewStruct makes a new struct for that view or table.
-func (v *projectTable) NewStruct() reform.Struct {
+func (v *projectTableType) NewStruct() reform.Struct {
 	return new(Project)
 }
 
 // NewRecord makes a new record for that table.
-func (v *projectTable) NewRecord() reform.Record {
+func (v *projectTableType) NewRecord() reform.Record {
 	return new(Project)
 }
 
 // PKColumnIndex returns an index of primary key column for that table in SQL database.
-func (v *projectTable) PKColumnIndex() uint {
+func (v *projectTableType) PKColumnIndex() uint {
 	return uint(v.s.PKFieldIndex)
 }
 
 // ProjectTable represents projects view or table in SQL database.
-var ProjectTable = &projectTable{
+var ProjectTable = &projectTableType{
 	s: parse.StructInfo{Type: "Project", SQLSchema: "", SQLName: "projects", Fields: []parse.FieldInfo{{Name: "Name", PKType: "", Column: "name"}, {Name: "ID", PKType: "string", Column: "id"}, {Name: "Start", PKType: "", Column: "start"}, {Name: "End", PKType: "", Column: "end"}}, PKFieldIndex: 1},
 	z: new(Project).Values(),
 }
@@ -252,33 +252,33 @@ var (
 	_ fmt.Stringer  = new(Project)
 )
 
-type personProjectView struct {
+type personProjectViewType struct {
 	s parse.StructInfo
 	z []interface{}
 }
 
 // Schema returns a schema name in SQL database ("").
-func (v *personProjectView) Schema() string {
+func (v *personProjectViewType) Schema() string {
 	return v.s.SQLSchema
 }
 
 // Name returns a view or table name in SQL database ("person_project").
-func (v *personProjectView) Name() string {
+func (v *personProjectViewType) Name() string {
 	return v.s.SQLName
 }
 
 // Columns returns a new slice of column names for that view or table in SQL database.
-func (v *personProjectView) Columns() []string {
+func (v *personProjectViewType) Columns() []string {
 	return []string{"person_id", "project_id"}
 }
 
 // NewStruct makes a new struct for that view or table.
-func (v *personProjectView) NewStruct() reform.Struct {
+func (v *personProjectViewType) NewStruct() reform.Struct {
 	return new(PersonProject)
 }
 
 // PersonProjectView represents person_project view or table in SQL database.
-var PersonProjectView = &personProjectView{
+var PersonProjectView = &personProjectViewType{
 	s: parse.StructInfo{Type: "PersonProject", SQLSchema: "", SQLName: "person_project", Fields: []parse.FieldInfo{{Name: "PersonID", PKType: "", Column: "person_id"}, {Name: "ProjectID", PKType: "", Column: "project_id"}}, PKFieldIndex: -1},
 	z: new(PersonProject).Values(),
 }
@@ -321,43 +321,43 @@ var (
 	_ fmt.Stringer  = new(PersonProject)
 )
 
-type legacyPersonTable struct {
+type legacyPersonTableType struct {
 	s parse.StructInfo
 	z []interface{}
 }
 
 // Schema returns a schema name in SQL database ("legacy").
-func (v *legacyPersonTable) Schema() string {
+func (v *legacyPersonTableType) Schema() string {
 	return v.s.SQLSchema
 }
 
 // Name returns a view or table name in SQL database ("people").
-func (v *legacyPersonTable) Name() string {
+func (v *legacyPersonTableType) Name() string {
 	return v.s.SQLName
 }
 
 // Columns returns a new slice of column names for that view or table in SQL database.
-func (v *legacyPersonTable) Columns() []string {
+func (v *legacyPersonTableType) Columns() []string {
 	return []string{"id", "name"}
 }
 
 // NewStruct makes a new struct for that view or table.
-func (v *legacyPersonTable) NewStruct() reform.Struct {
+func (v *legacyPersonTableType) NewStruct() reform.Struct {
 	return new(LegacyPerson)
 }
 
 // NewRecord makes a new record for that table.
-func (v *legacyPersonTable) NewRecord() reform.Record {
+func (v *legacyPersonTableType) NewRecord() reform.Record {
 	return new(LegacyPerson)
 }
 
 // PKColumnIndex returns an index of primary key column for that table in SQL database.
-func (v *legacyPersonTable) PKColumnIndex() uint {
+func (v *legacyPersonTableType) PKColumnIndex() uint {
 	return uint(v.s.PKFieldIndex)
 }
 
 // LegacyPersonTable represents people view or table in SQL database.
-var LegacyPersonTable = &legacyPersonTable{
+var LegacyPersonTable = &legacyPersonTableType{
 	s: parse.StructInfo{Type: "LegacyPerson", SQLSchema: "legacy", SQLName: "people", Fields: []parse.FieldInfo{{Name: "ID", PKType: "int32", Column: "id"}, {Name: "Name", PKType: "", Column: "name"}}, PKFieldIndex: 0},
 	z: new(LegacyPerson).Values(),
 }
@@ -433,43 +433,43 @@ var (
 	_ fmt.Stringer  = new(LegacyPerson)
 )
 
-type iDOnlyTable struct {
+type iDOnlyTableType struct {
 	s parse.StructInfo
 	z []interface{}
 }
 
 // Schema returns a schema name in SQL database ("").
-func (v *iDOnlyTable) Schema() string {
+func (v *iDOnlyTableType) Schema() string {
 	return v.s.SQLSchema
 }
 
 // Name returns a view or table name in SQL database ("id_only").
-func (v *iDOnlyTable) Name() string {
+func (v *iDOnlyTableType) Name() string {
 	return v.s.SQLName
 }
 
 // Columns returns a new slice of column names for that view or table in SQL database.
-func (v *iDOnlyTable) Columns() []string {
+func (v *iDOnlyTableType) Columns() []string {
 	return []string{"id"}
 }
 
 // NewStruct makes a new struct for that view or table.
-func (v *iDOnlyTable) NewStruct() reform.Struct {
+func (v *iDOnlyTableType) NewStruct() reform.Struct {
 	return new(IDOnly)
 }
 
 // NewRecord makes a new record for that table.
-func (v *iDOnlyTable) NewRecord() reform.Record {
+func (v *iDOnlyTableType) NewRecord() reform.Record {
 	return new(IDOnly)
 }
 
 // PKColumnIndex returns an index of primary key column for that table in SQL database.
-func (v *iDOnlyTable) PKColumnIndex() uint {
+func (v *iDOnlyTableType) PKColumnIndex() uint {
 	return uint(v.s.PKFieldIndex)
 }
 
 // IDOnlyTable represents id_only view or table in SQL database.
-var IDOnlyTable = &iDOnlyTable{
+var IDOnlyTable = &iDOnlyTableType{
 	s: parse.StructInfo{Type: "IDOnly", SQLSchema: "", SQLName: "id_only", Fields: []parse.FieldInfo{{Name: "ID", PKType: "int32", Column: "id"}}, PKFieldIndex: 0},
 	z: new(IDOnly).Values(),
 }

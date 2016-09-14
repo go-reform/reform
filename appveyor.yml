@@ -23,9 +23,9 @@ install:
   - powershell -file .github\appveyor-prepare-mssql.ps1
   - set PATH=%PATH%;C:\msys64\mingw64\bin;%GOPATH%\bin
 
+  - go version
   # - echo %PATH%
   # - go env
-  # - go version
   # - where mingw32-make
   # - where gcc
 

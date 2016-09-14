@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.2.1 (2016-09-14, https://github.com/go-reform/reform/milestones/v1.2.1)
+
+* `reform` tool now correctly handles non-exported types.
+* Querier.Insert now correctly INSERTs records with set non-integer primary keys, even if
+  dialect uses LastInsertId (MySQL, SQLite3).
+
 ## v1.2.0 (2016-08-10, https://github.com/go-reform/reform/milestones/v1.2.0)
 
 * Added support for Microsoft SQL Server. Huge thanks to [Aleksey Martynov](https://github.com/AlekseyMartynov).

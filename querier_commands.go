@@ -89,7 +89,7 @@ func (q *Querier) insert(str Struct, columns []string, values []interface{}) err
 		if err != nil {
 			return err
 		}
-		if record != nil {
+		if record != nil && !record.HasPK() {
 			id, err := res.LastInsertId()
 			if err != nil {
 				return err

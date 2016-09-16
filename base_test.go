@@ -26,7 +26,7 @@ import (
 	"gopkg.in/reform.v1/dialects/mysql"
 	"gopkg.in/reform.v1/dialects/postgresql"
 	"gopkg.in/reform.v1/dialects/sqlite3"
-	"gopkg.in/reform.v1/internal/test/models"
+	. "gopkg.in/reform.v1/internal/test/models"
 )
 
 var (
@@ -148,29 +148,29 @@ func (s *ReformSuite) RestartTransaction() {
 }
 
 func (s *ReformSuite) TestStringer() {
-	person, err := s.q.FindByPrimaryKeyFrom(models.PersonTable, 1)
+	person, err := s.q.FindByPrimaryKeyFrom(PersonTable, 1)
 	s.NoError(err)
 	expected := "ID: 1 (int32), GroupID: 65534 (*int32), Name: `Denis Mills` (string), Email: <nil> (*string), CreatedAt: 2009-11-10 23:00:00 +0000 UTC (time.Time), UpdatedAt: <nil> (*time.Time)"
 	s.Equal(expected, person.String())
 
-	project, err := s.q.FindByPrimaryKeyFrom(models.ProjectTable, "baron")
+	project, err := s.q.FindByPrimaryKeyFrom(ProjectTable, "baron")
 	s.NoError(err)
 	expected = "Name: `Vicious Baron` (string), ID: `baron` (string), Start: 2014-06-01 00:00:00 +0000 UTC (time.Time), End: 2016-02-21 00:00:00 +0000 UTC (*time.Time)"
 	s.Equal(expected, project.String())
 }
 
 func (s *ReformSuite) TestNeverNil() {
-	project := new(models.Project)
+	project := new(Project)
 
 	for i, v := range project.Values() {
 		if v == nil {
-			s.Fail("Value is nil", "%s %#v", models.ProjectTable.Columns()[i], v)
+			s.Fail("Value is nil", "%s %#v", ProjectTable.Columns()[i], v)
 		}
 	}
 
 	for i, v := range project.Pointers() {
 		if v == nil {
-			s.Fail("Pointer is nil", "%s %#v", models.ProjectTable.Columns()[i], v)
+			s.Fail("Pointer is nil", "%s %#v", ProjectTable.Columns()[i], v)
 		}
 	}
 
@@ -186,8 +186,8 @@ func (s *ReformSuite) TestNeverNil() {
 }
 
 func (s *ReformSuite) TestHasPK() {
-	person := new(models.Person)
-	project := new(models.Project)
+	person := new(Person)
+	project := new(Project)
 	s.False(person.HasPK())
 	s.False(project.HasPK())
 
@@ -213,7 +213,7 @@ func (s *ReformSuite) TestInTransaction() {
 	s.Require().NoError(err)
 	s.q = nil
 
-	person := &models.Person{ID: 42, Email: pointer.ToString(faker.Internet().Email())}
+	person := &Person{ID: 42, Email: pointer.ToString(faker.Internet().Email())}
 
 	err = DB.InTransaction(func(tx *reform.TX) error {
 		err := tx.Insert(person)
@@ -304,4 +304,17 @@ func (s *ReformSuite) TestTimezones() {
 		err = rows.Close()
 		s.NoError(err)
 	}
+}
+
+// database/sql.(*Rows).Columns() is not currently used, but may be useful in the future.
+// Test is in place to track drivers supporting it.
+func (s *ReformSuite) TestColumns() {
+	rows, err := s.q.SelectRows(PersonTable, "WHERE name = "+s.q.Placeholder(1)+" ORDER BY id", "Elfrieda Abbott")
+	s.NoError(err)
+	s.Require().NotNil(rows)
+	defer rows.Close()
+
+	columns, err := rows.Columns()
+	s.NoError(err)
+	s.Equal(PersonTable.Columns(), columns)
 }

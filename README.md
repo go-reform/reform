@@ -26,7 +26,7 @@ Supported SQL dialects:
     //go:generate reform
 
     //reform:people
-	Person struct {
+	type Person struct {
 		ID        int32      `reform:"id,pk"`
 		Name      string     `reform:"name"`
 		Email     *string    `reform:"email"`

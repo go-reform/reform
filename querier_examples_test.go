@@ -66,7 +66,7 @@ func ExampleNewDB() {
 	// Create *reform.DB instance with simple logger.
 	// Any Printf-like function (fmt.Printf, log.Printf, testing.T.Logf, etc) can be used with NewPrintfLogger.
 	// Change dialect for other databases.
-	_ = reform.NewDB(conn, postgresql.Dialect, reform.NewPrintfLogger(logger.Printf))
+	_ = reform.NewDB(conn, nil, postgresql.Dialect, reform.NewPrintfLogger(logger.Printf), false)
 }
 
 func ExampleQuerier_SelectRows() {

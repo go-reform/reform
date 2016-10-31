@@ -227,7 +227,7 @@ func TestAssertUpToDate(t *testing.T) {
 		defer func() {
 			expected := `reform:
 		Person struct information is not up-to-date.
-		Typically this means that Person type definition was changed, but 'reform' tool / 'go generate' was not run.
+		Typically this means that Person type definition was changed, but 'reform' command / 'go generate' was not run.
 
 		`
 			assert.Equal(t, expected, recover())

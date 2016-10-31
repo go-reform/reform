@@ -17,11 +17,14 @@ Supported SQL dialects:
 * SQLite3 (tested with [`github.com/mattn/go-sqlite3`](https://github.com/mattn/go-sqlite3)).
 * Microsoft SQL Server (tested with [`github.com/denisenkom/go-mssqldb`](https://github.com/denisenkom/go-mssqldb)).
 
+Support for Oracle is being implemented.
+
+
 ## Quickstart
 
 1. Make sure you are using Go 1.6+.
-2. Install or update it: `go get -u gopkg.in/reform.v1/reform` (see about versioning below)
-3. Define your first model in file `person.go`:
+2. Install or update `reform` package and command: `go get -u gopkg.in/reform.v1/reform` (see about versioning below).
+3. Define a model – `struct` representing a table or view row. For example, store this in file `person.go`:
 
     ```go
     //go:generate reform

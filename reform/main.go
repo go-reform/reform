@@ -1,3 +1,4 @@
+// Package reform implements reform command.
 package main
 
 import (

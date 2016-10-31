@@ -2,7 +2,7 @@
 
 ## v1.2.1 (2016-09-14, https://github.com/go-reform/reform/milestones/v1.2.1)
 
-* `reform` tool now correctly handles non-exported types.
+* `reform` command now correctly handles non-exported types.
 * Querier.Insert now correctly INSERTs records with set non-integer primary keys, even if
   dialect uses LastInsertId (MySQL, SQLite3).
 
@@ -14,7 +14,7 @@
 
 ## v1.1.2 (2016-07-20, https://github.com/go-reform/reform/milestones/v1.1.2)
 
-* `reform` tool now correctly ignores type information when it's not used.
+* `reform` command now correctly ignores type information when it's not used.
   This allows one to have fields of any custom types. The only exception is primary key fields,
   which are restricted to basic types (numbers and strings).
 * Package `gopkg.in/reform.v1/parse` is explicitly documented as internal.
@@ -24,7 +24,7 @@
 
 * Querier.UpdateColumns no longer allows to update primary key column. This behavior was allowed,
   but did not make any sense.
-* `reform` tool now correctly handles pointers to custom types and slices.
+* `reform` command now correctly handles pointers to custom types and slices.
 
 ## v1.1.0 (2016-07-01, https://github.com/go-reform/reform/milestones/v1.1.0)
 

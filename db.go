@@ -18,20 +18,24 @@ var _ DBInterface = new(sql.DB)
 // DB represents a connection to SQL database.
 type DB struct {
 	*Querier
-	db DBInterface
+	db       DBInterface
+	slaveDB  DBInterface
+	hasSlave bool
 }
 
 // NewDB creates new DB object for given SQL database connection.
-func NewDB(db *sql.DB, dialect Dialect, logger Logger) *DB {
-	return NewDBFromInterface(db, dialect, logger)
+func NewDB(db *sql.DB, slaveDB *sql.DB, dialect Dialect, logger Logger, hasSlave bool) *DB {
+	return NewDBFromInterface(db, slaveDB, dialect, logger, hasSlave)
 }
 
 // NewDBFromInterface creates new DB object for given DBInterface.
 // Can be used for easier integration with existing code or for passing test doubles.
-func NewDBFromInterface(db DBInterface, dialect Dialect, logger Logger) *DB {
+func NewDBFromInterface(db DBInterface, slaveDB DBInterface, dialect Dialect, logger Logger, hasSlave bool) *DB {
 	return &DB{
-		Querier: newQuerier(db, dialect, logger),
-		db:      db,
+		Querier:  newQuerier(db, slaveDB, dialect, logger, hasSlave, false),
+		db:       db,
+		slaveDB:  slaveDB,
+		hasSlave: hasSlave,
 	}
 }
 
@@ -44,7 +48,7 @@ func (db *DB) Begin() (*TX, error) {
 	if err != nil {
 		return nil, err
 	}
-	return NewTX(tx, db.Dialect, db.Logger), nil
+	return NewTX(tx, db.Dialect, db.Logger, db.hasSlave), nil
 }
 
 // InTransaction wraps function execution in transaction, rolling back it in case of error or panic,

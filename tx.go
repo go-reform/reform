@@ -19,20 +19,22 @@ var _ TXInterface = new(sql.Tx)
 // TX represents a SQL database transaction.
 type TX struct {
 	*Querier
-	tx TXInterface
+	tx       TXInterface
+	hasSlave bool
 }
 
 // NewTX creates new TX object for given SQL database transaction.
-func NewTX(tx *sql.Tx, dialect Dialect, logger Logger) *TX {
-	return NewTXFromInterface(tx, dialect, logger)
+func NewTX(tx *sql.Tx, dialect Dialect, logger Logger, hasSlave bool) *TX {
+	return NewTXFromInterface(tx, dialect, logger, hasSlave)
 }
 
 // NewTXFromInterface creates new TX object for given TXInterface.
 // Can be used for easier integration with existing code or for passing test doubles.
-func NewTXFromInterface(tx TXInterface, dialect Dialect, logger Logger) *TX {
+func NewTXFromInterface(tx TXInterface, dialect Dialect, logger Logger, hasSlave bool) *TX {
 	return &TX{
-		Querier: newQuerier(tx, dialect, logger),
-		tx:      tx,
+		Querier:  newQuerier(tx, nil, dialect, logger, hasSlave, true),
+		tx:       tx,
+		hasSlave: hasSlave,
 	}
 }
 

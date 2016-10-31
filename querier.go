@@ -2,21 +2,28 @@ package reform
 
 import (
 	"database/sql"
+	"strings"
 	"time"
 )
 
 // Querier performs queries and commands.
 type Querier struct {
-	dbtx DBTX
+	dbtx          DBTX
+	slavedbtx     DBTX
+	HasSlave      bool
+	InTransaction bool
 	Dialect
 	Logger Logger
 }
 
-func newQuerier(dbtx DBTX, dialect Dialect, logger Logger) *Querier {
+func newQuerier(dbtx DBTX, slavedbtx DBTX, dialect Dialect, logger Logger, hasSlave, inTransaction bool) *Querier {
 	return &Querier{
-		dbtx:    dbtx,
-		Dialect: dialect,
-		Logger:  logger,
+		dbtx:          dbtx,
+		slavedbtx:     slavedbtx,
+		Dialect:       dialect,
+		Logger:        logger,
+		HasSlave:      hasSlave,
+		InTransaction: inTransaction,
 	}
 }
 
@@ -51,12 +58,20 @@ func (q *Querier) QualifiedColumns(view View) []string {
 	return res
 }
 
+func (q *Querier) selectDBForQuery(query string) DBTX {
+	if q.HasSlave && !q.InTransaction && strings.HasPrefix(strings.TrimSpace(query), "SELECT") {
+		return q.slavedbtx
+	}
+	return q.dbtx
+}
+
 // Exec executes a query without returning any rows.
 // The args are for any placeholder parameters in the query.
 func (q *Querier) Exec(query string, args ...interface{}) (sql.Result, error) {
 	start := time.Now()
 	q.logBefore(query, args)
-	res, err := q.dbtx.Exec(query, args...)
+	dbtx := q.selectDBForQuery(query)
+	res, err := dbtx.Exec(query, args...)
 	q.logAfter(query, args, time.Now().Sub(start), err)
 	return res, err
 }
@@ -66,7 +81,8 @@ func (q *Querier) Exec(query string, args ...interface{}) (sql.Result, error) {
 func (q *Querier) Query(query string, args ...interface{}) (*sql.Rows, error) {
 	start := time.Now()
 	q.logBefore(query, args)
-	rows, err := q.dbtx.Query(query, args...)
+	dbtx := q.selectDBForQuery(query)
+	rows, err := dbtx.Query(query, args...)
 	q.logAfter(query, args, time.Now().Sub(start), err)
 	return rows, err
 }
@@ -76,7 +92,8 @@ func (q *Querier) Query(query string, args ...interface{}) (*sql.Rows, error) {
 func (q *Querier) QueryRow(query string, args ...interface{}) *sql.Row {
 	start := time.Now()
 	q.logBefore(query, args)
-	row := q.dbtx.QueryRow(query, args...)
+	dbtx := q.selectDBForQuery(query)
+	row := dbtx.QueryRow(query, args...)
 	q.logAfter(query, args, time.Now().Sub(start), nil)
 	return row
 }

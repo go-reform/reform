@@ -10,7 +10,7 @@ services:
 
 environment:
   GOPATH: c:\gopath
-  TARGET: test_denisenkom_go-mssqldb
+  TARGET: mssql
   COVERALLS_TOKEN:
     secure: +o9WB0T57udDJzTTSmKMg0O5hrP2e0rAuBL36/foBRYTg8VKccp2G8ovxJi4hsmD
   matrix:

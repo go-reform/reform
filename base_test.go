@@ -34,11 +34,11 @@ var (
 )
 
 func TestMain(m *testing.M) {
-	driver := os.Getenv("REFORM_TEST_DRIVER")
+	driver := os.Getenv("REFORM_DRIVER")
 	source := os.Getenv("REFORM_TEST_SOURCE")
 	log.Printf("driver = %q, source = %q", driver, source)
 	if driver == "" || source == "" {
-		log.Fatal("no driver or source, set REFORM_TEST_DRIVER and REFORM_TEST_SOURCE")
+		log.Fatal("no driver or source, set REFORM_DRIVER and REFORM_TEST_SOURCE")
 	}
 
 	db, err := sql.Open(driver, source)

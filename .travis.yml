@@ -7,14 +7,14 @@ env:
     - secure: "Q+bXWeD/7cOcyZniJOfhE2N2ilI+rZcEfElcDOtHykdkMAoIErszZMzhzeNtP77VQNeOGfszvyY22QIAP/l/G7UnmWfI8z9LBcM5UIu/8kIBdZe0f7Y5eK+YU9Gpls3VEoIjuh+bsWYW7lSgnDQMpnT+ugFb2tA5OCxYAoW00cRr1MNzt7IK16WK9g+wUvLAVOpxnVdbRi9qg9ma3ooLeIeX8fTj8FeYPZS26SvuQ8VBEgNOYeRGyMr8V18ZwnCE3ntPmd/XxWyPnqt21v3HCiSaOpLgYYmInAuPFRL5Kakq2GseXNYjNaq7DIutYgGROwvWDJZUXK7AuxwZzHKjCLmXL/rNYqTHUh7UpDozFT3vj7twz3IBRGA7c4tfI996+HD+4oK5jOkD5+IiA0Ve5pvcsCZU6cJk680ORChi+yPSJTYNU0kgqioX2Feb79cwlscpD9Bw4oXCVvj/z2QoF1R07gX6h3QLpOEsuM+c377z46vsdepIL3d9BiD0j5H0yPBKZg/Kv+eAb7POYDothRXbI73PpNssVFUnN5yPba5QzrZWJdaLGo9yQCxbggqQWBYqcUj6GgVUjMUZOVEYmfRD/jJjbxgPT2kX7gDW/WWomAYee9zSlKaTDUoT7dHj164m3KU+JtD0LZar4BXmP7tRU5f9RK7mA7Sp7WET97o="
 
   matrix:
-    - TARGET=test_lib_pq
-    - TARGET=test_mattn_go-sqlite3
-    - TARGET=test_go-sql-driver_mysql
-    - TARGET=parse
+    - TARGET=test
+    - TARGET=postgres
+    - TARGET=mysql
+    - TARGET=sqlite3
 
 go:
   - 1.6.3
-  - 1.7.1
+  - 1.7.3
   - tip
 
 before_install:
@@ -23,15 +23,10 @@ before_install:
   - mkdir $GOPATH/src/gopkg.in && mv $GOPATH/src/github.com/go-reform/reform $GOPATH/src/gopkg.in/reform.v1
   - cd $GOPATH/src/gopkg.in/reform.v1
 
-  # - echo $PATH
-  # - go env
-  # - go version
-
 install:
   - make init
 
 script:
-  - make test
   - make $TARGET
 
 after_success:

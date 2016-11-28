@@ -15,6 +15,10 @@ init:
 				github.com/enodata/faker \
 				github.com/mattn/goveralls
 
+	go install -v github.com/kisielk/errcheck \
+				github.com/golang/lint/golint \
+				github.com/mattn/goveralls
+
 test:
 	rm -f internal/test/models/*_reform.go
 	go install -v gopkg.in/reform.v1/...

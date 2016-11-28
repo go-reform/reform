@@ -27,7 +27,7 @@ install:
   - make init
 
 script:
-  - make $TARGET
+  - make $TARGET check
 
 after_success:
   - goveralls -coverprofile=$TARGET.cover

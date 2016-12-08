@@ -16,7 +16,7 @@ pipeline:
       - make download_deps
       - make test check
       - make test-db
-      - goveralls -service=drone -coverprofile=${REFORM_DRIVER}.cover
+      # - goveralls -service=drone -coverprofile=${REFORM_DRIVER}.cover
 
 services:
   postgres:

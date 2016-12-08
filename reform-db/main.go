@@ -4,13 +4,17 @@ import (
 	"bytes"
 	"database/sql"
 	"flag"
+	"fmt"
 	"io/ioutil"
 	"log"
+	"os"
 
 	_ "github.com/denisenkom/go-mssqldb"
 	_ "github.com/go-sql-driver/mysql"
 	_ "github.com/lib/pq"
 	_ "github.com/mattn/go-sqlite3"
+
+	"gopkg.in/reform.v1"
 )
 
 var (
@@ -20,8 +24,13 @@ var (
 )
 
 func main() {
-	log.SetPrefix("reform-db: ")
+	flag.Usage = func() {
+		fmt.Fprintf(os.Stderr, "reform-db. %s.\n\n", reform.Version)
+		flag.PrintDefaults()
+	}
 	flag.Parse()
+
+	log.SetPrefix("reform-db: ")
 	log.Print("Internal tool. Do not use it yet.")
 
 	b, err := ioutil.ReadFile(*fF)

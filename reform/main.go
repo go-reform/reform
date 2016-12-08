@@ -10,6 +10,7 @@ import (
 	"path/filepath"
 	"strings"
 
+	"gopkg.in/reform.v1"
 	"gopkg.in/reform.v1/parse"
 )
 
@@ -94,7 +95,7 @@ func gofmt(path string) {
 
 func main() {
 	flag.Usage = func() {
-		fmt.Fprintf(os.Stderr, "reform - a better ORM generator\n\n")
+		fmt.Fprintf(os.Stderr, "reform - a better ORM generator. %s.\n\n", reform.Version)
 		fmt.Fprintf(os.Stderr, "Usage:\n\n")
 		fmt.Fprintf(os.Stderr, "  %s [flags] [packages or directories]\n\n", os.Args[0])
 		fmt.Fprintf(os.Stderr, "  go generate [flags] [packages or files] (with '//go:generate reform' in files)\n\n")

@@ -13,13 +13,9 @@ pipeline:
     commands:
       - echo ${GO} ${DATABASE} ${VERSION} ${REFORM_DRIVER}
       - go version
-      - make deps
+      - make download_deps
       - make test check
-      - reform-db -db-driver=${REFORM_DRIVER} -db-source="${REFORM_INIT_SOURCE}" -f internal/test/sql/${DATABASE}_init.sql
-      - reform-db -db-driver=${REFORM_DRIVER} -db-source="${REFORM_INIT_SOURCE}" -f internal/test/sql/data.sql
-      - reform-db -db-driver=${REFORM_DRIVER} -db-source="${REFORM_INIT_SOURCE}" -f internal/test/sql/${DATABASE}_data.sql
-      - reform-db -db-driver=${REFORM_DRIVER} -db-source="${REFORM_INIT_SOURCE}" -f internal/test/sql/${DATABASE}_set.sql
-      - go test -coverprofile=${REFORM_DRIVER}.cover
+      - make test-db
       - goveralls -service=drone -coverprofile=${REFORM_DRIVER}.cover
 
 services:

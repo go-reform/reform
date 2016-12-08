@@ -3,7 +3,8 @@ workspace:
   path: src/gopkg.in/reform.v1
 
 pipeline:
-  deps:
+  # use volume to download dependencies, share them between steps to reduce build time
+  download_deps:
     image: ${GO}
     pull: true
     environment:
@@ -12,10 +13,10 @@ pipeline:
     volumes:
       - drone_cache:/go/src
     commands:
-      - make deps
+      - make download_deps
     when:
       matrix:
-        DEPS: 1
+        DOWNLOAD_DEPS: 1
 
   build:
     image: ${GO}
@@ -30,18 +31,14 @@ pipeline:
       - echo ${GO} ${DATABASE} ${VERSION} ${REFORM_DRIVER}
       - go version
       - make test check
-      - reform-db -db-driver=${REFORM_DRIVER} -db-source="${REFORM_INIT_SOURCE}" -f internal/test/sql/${DATABASE}_init.sql
-      - reform-db -db-driver=${REFORM_DRIVER} -db-source="${REFORM_INIT_SOURCE}" -f internal/test/sql/data.sql
-      - reform-db -db-driver=${REFORM_DRIVER} -db-source="${REFORM_INIT_SOURCE}" -f internal/test/sql/${DATABASE}_data.sql
-      - reform-db -db-driver=${REFORM_DRIVER} -db-source="${REFORM_INIT_SOURCE}" -f internal/test/sql/${DATABASE}_set.sql
-      - go test -coverprofile=${REFORM_DRIVER}.cover
+      - make test-db
 
 services:
   postgres:
     image: postgres:${VERSION}
     pull: true
     environment:
-      # - TODO TZ=Europe/Moscow
+      - TZ=Europe/Moscow
       - POSTGRES_DB=reform-database
       - POSTGRES_USER=reform-user
       - POSTGRES_PASSWORD=reform-password
@@ -53,7 +50,7 @@ services:
     image: mysql:${VERSION}
     pull: true
     environment:
-      # - TODO TZ=Europe/Moscow
+      - TZ=Europe/Moscow
       - MYSQL_DATABASE=reform-database
       - MYSQL_USER=reform-user
       - MYSQL_PASSWORD=reform-password
@@ -68,7 +65,7 @@ matrix:
         GO: "golang:1.7", DATABASE: postgres, VERSION: 9.6, REFORM_DRIVER: postgres,
         REFORM_INIT_SOURCE: "postgres://reform-user:reform-password@127.0.0.1/reform-database?sslmode=disable&TimeZone=UTC",
         REFORM_TEST_SOURCE: "postgres://reform-user:reform-password@127.0.0.1/reform-database?sslmode=disable&TimeZone=America/New_York",
-        DEPS: 1
+        DOWNLOAD_DEPS: 1
       }
     - {
         GO: "golang:1.7", DATABASE: mysql, VERSION: 5.7, REFORM_DRIVER: mysql,

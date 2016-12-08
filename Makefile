@@ -1,6 +1,6 @@
 all: check postgres mysql sqlite3
 
-deps:
+download_deps:
 	go get -v -u -d github.com/lib/pq \
 				github.com/go-sql-driver/mysql \
 				github.com/mattn/go-sqlite3 \
@@ -29,11 +29,15 @@ check: test
 	-errcheck ./...
 	golint ./...
 
-migrate:
+test-db:
 	reform-db -db-driver=$(REFORM_DRIVER) -db-source="$(REFORM_INIT_SOURCE)" -f internal/test/sql/$(DATABASE)_init.sql
 	reform-db -db-driver=$(REFORM_DRIVER) -db-source="$(REFORM_INIT_SOURCE)" -f internal/test/sql/data.sql
 	reform-db -db-driver=$(REFORM_DRIVER) -db-source="$(REFORM_INIT_SOURCE)" -f internal/test/sql/$(DATABASE)_data.sql
 	reform-db -db-driver=$(REFORM_DRIVER) -db-source="$(REFORM_INIT_SOURCE)" -f internal/test/sql/$(DATABASE)_set.sql
+	go test -coverprofile=$(REFORM_DRIVER).cover
+
+drone:
+	drone exec --repo.trusted .drone-local.yml
 
 postgres: export DATABASE = postgres
 postgres: export REFORM_DRIVER = postgres
@@ -42,8 +46,7 @@ postgres: export REFORM_TEST_SOURCE = postgres://localhost/reform-test?sslmode=d
 postgres: test
 	-dropdb reform-test
 	createdb reform-test
-	make migrate
-	go test -coverprofile=postgres.cover
+	make test-db
 
 mysql: export DATABASE = mysql
 mysql: export REFORM_DRIVER = mysql
@@ -52,8 +55,7 @@ mysql: export REFORM_TEST_SOURCE = root@/reform-test?parseTime=true&strict=true&
 mysql: test
 	echo 'DROP DATABASE IF EXISTS `reform-test`;' | mysql -uroot
 	echo 'CREATE DATABASE `reform-test`;' | mysql -uroot
-	make migrate
-	go test -coverprofile=mysql.cover
+	make test-db
 
 sqlite3: export DATABASE = sqlite3
 sqlite3: export REFORM_DRIVER = sqlite3
@@ -61,8 +63,7 @@ sqlite3: export REFORM_INIT_SOURCE = reform-test.sqlite3
 sqlite3: export REFORM_TEST_SOURCE = reform-test.sqlite3
 sqlite3: test
 	rm -f reform-test.sqlite3
-	make migrate
-	go test -coverprofile=sqlite3.cover
+	make test-db
 
 # this target is configured for Windows
 mssql: REFORM_SQL_INSTANCE ?= 127.0.0.1\SQLEXPRESS

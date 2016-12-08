@@ -114,12 +114,13 @@ using [gopkg.in](https://gopkg.in) and filling a [changelog](CHANGELOG.md).
 We use branch `v1-stable` (default on Github) for v1 development and tags `v1.Y.Z` for releases.
 All v1 releases are SemVer-compatible, breaking changes will not be applied.
 Canonical import path is `gopkg.in/reform.v1`.
-`go get -u gopkg.in/reform.v1` will install latest released version.
+`go get -u gopkg.in/reform.v1/reform` will install latest released version.
 To install not yet released v1 version one can do checkout manually while preserving import path:
 ```
-go get -u gopkg.in/reform.v1
-cd $GOPATH/gopkg.in/reform.v1
+cd $GOPATH/src/gopkg.in/reform.v1
+git fetch
 git checkout origin/v1-stable
+go install -v gopkg.in/reform.v1/reform
 ```
 
 Branch `v2-unstable` is used for v2 development. It doesn't have any releases yet, and no compatibility is guaranteed.
@@ -129,11 +130,16 @@ Canonical import path is `gopkg.in/reform.v2-unstable`.
 ## Additional packages
 
 * [github.com/AlekSi/pointer](https://github.com/AlekSi/pointer) is very useful for working with reform structs with pointers.
-* [github.com/mc2soft/pq-types](https://github.com/mc2soft/pq-types) is a collection of PostgreSQL types, we use it with reform.
 
 
-## Caveats
+## Caveats and limitations
 
 * There should be zero `pk` fields for Struct and exactly one `pk` field for Record.
+  Composite primary keys are not supported.
 * `pk` field can't be a pointer (`== nil` [doesn't work](https://golang.org/doc/faq#nil_error)).
 * Database row can't have a Go's zero value (0, empty string, etc.) in primary key column.
+
+
+## Contributing
+
+See [Contributing Guidelines](.github.com/CONTRIBUTING.md)

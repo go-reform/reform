@@ -29,36 +29,39 @@ check: test
 	-errcheck ./...
 	golint ./...
 
+migrate:
+	reform-db -db-driver=$(REFORM_DRIVER) -db-source="$(REFORM_INIT_SOURCE)" -f internal/test/sql/$(DATABASE)_init.sql
+	reform-db -db-driver=$(REFORM_DRIVER) -db-source="$(REFORM_INIT_SOURCE)" -f internal/test/sql/data.sql
+	reform-db -db-driver=$(REFORM_DRIVER) -db-source="$(REFORM_INIT_SOURCE)" -f internal/test/sql/$(DATABASE)_data.sql
+	reform-db -db-driver=$(REFORM_DRIVER) -db-source="$(REFORM_INIT_SOURCE)" -f internal/test/sql/$(DATABASE)_set.sql
+
+postgres: export DATABASE = postgres
 postgres: export REFORM_DRIVER = postgres
+postgres: export REFORM_INIT_SOURCE = postgres://localhost/reform-test?sslmode=disable&TimeZone=UTC
 postgres: export REFORM_TEST_SOURCE = postgres://localhost/reform-test?sslmode=disable&TimeZone=America/New_York
 postgres: test
 	-dropdb reform-test
 	createdb reform-test
-	env PGTZ=UTC psql -v ON_ERROR_STOP=1 -q -d reform-test < internal/test/sql/postgres_init.sql
-	env PGTZ=UTC psql -v ON_ERROR_STOP=1 -q -d reform-test < internal/test/sql/data.sql
-	env PGTZ=UTC psql -v ON_ERROR_STOP=1 -q -d reform-test < internal/test/sql/postgres_data.sql
-	env PGTZ=UTC psql -v ON_ERROR_STOP=1 -q -d reform-test < internal/test/sql/postgres_set.sql
+	make migrate
 	go test -coverprofile=postgres.cover
 
+mysql: export DATABASE = mysql
 mysql: export REFORM_DRIVER = mysql
+mysql: export REFORM_INIT_SOURCE = root@/reform-test?parseTime=true&strict=true&sql_notes=false&time_zone='UTC'&multiStatements=true
 mysql: export REFORM_TEST_SOURCE = root@/reform-test?parseTime=true&strict=true&sql_notes=false&time_zone='America%2FNew_York'
 mysql: test
 	echo 'DROP DATABASE IF EXISTS `reform-test`;' | mysql -uroot
 	echo 'CREATE DATABASE `reform-test`;' | mysql -uroot
-	mysql -uroot reform-test < internal/test/sql/mysql_init.sql
-	mysql -uroot reform-test < internal/test/sql/data.sql
-	mysql -uroot reform-test < internal/test/sql/mysql_data.sql
-	mysql -uroot reform-test < internal/test/sql/mysql_set.sql
+	make migrate
 	go test -coverprofile=mysql.cover
 
+sqlite3: export DATABASE = sqlite3
 sqlite3: export REFORM_DRIVER = sqlite3
+sqlite3: export REFORM_INIT_SOURCE = reform-test.sqlite3
 sqlite3: export REFORM_TEST_SOURCE = reform-test.sqlite3
 sqlite3: test
 	rm -f reform-test.sqlite3
-	sqlite3 -bail reform-test.sqlite3 < internal/test/sql/sqlite3_init.sql
-	sqlite3 -bail reform-test.sqlite3 < internal/test/sql/data.sql
-	sqlite3 -bail reform-test.sqlite3 < internal/test/sql/sqlite3_data.sql
-	sqlite3 -bail reform-test.sqlite3 < internal/test/sql/sqlite3_set.sql
+	make migrate
 	go test -coverprofile=sqlite3.cover
 
 # this target is configured for Windows

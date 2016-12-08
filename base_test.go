@@ -11,10 +11,8 @@ import (
 
 	_ "github.com/denisenkom/go-mssqldb"
 	_ "github.com/go-sql-driver/mysql"
-	_ "github.com/jackc/pgx/stdlib"
 	_ "github.com/lib/pq"
 	_ "github.com/mattn/go-sqlite3"
-	_ "github.com/ziutek/mymysql/godrv"
 
 	"github.com/AlekSi/pointer"
 	"github.com/enodata/faker"
@@ -59,7 +57,7 @@ func TestMain(m *testing.M) {
 
 	var dialect reform.Dialect
 	switch driver {
-	case "mysql", "mymysql":
+	case "mysql":
 		dialect = mysql.Dialect
 
 		var tz string
@@ -69,7 +67,7 @@ func TestMain(m *testing.M) {
 		}
 		log.Printf("MySQL time_zone = %q", tz)
 
-	case "postgres", "pgx":
+	case "postgres":
 		dialect = postgresql.Dialect
 
 		var tz string

@@ -23,7 +23,7 @@ before_install:
   - cd $GOPATH/src/gopkg.in/reform.v1
 
 install:
-  - make init
+  - make deps
 
 script:
   - make $TARGET check

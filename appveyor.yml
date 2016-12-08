@@ -30,7 +30,7 @@ install:
   # - where gcc
 
 build_script:
-  - mingw32-make init
+  - mingw32-make deps
 
 test_script:
   - mingw32-make test

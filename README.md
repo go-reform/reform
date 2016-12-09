@@ -18,8 +18,6 @@ Supported SQL dialects:
 * SQLite3 (tested with [`github.com/mattn/go-sqlite3`](https://github.com/mattn/go-sqlite3)).
 * Microsoft SQL Server (tested with [`github.com/denisenkom/go-mssqldb`](https://github.com/denisenkom/go-mssqldb)).
 
-Support for Oracle is being implemented.
-
 
 ## Quickstart
 

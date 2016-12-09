@@ -1,0 +1,203 @@
+workspace:
+  base: /drone
+  path: src/gopkg.in/reform.v1
+
+pipeline:
+  build:
+    image: ${GO}
+    pull: true
+    environment:
+      - GOPATH=/go:/drone
+      - PATH=/go/bin:/drone/bin:/usr/local/go/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+      - TZ=Europe/Moscow
+    commands:
+      - echo ${GO} ${DATABASE} ${VERSION} ${REFORM_DRIVER}
+      - go version
+      - make download_deps
+      - make test check
+      - make test-db
+      # - goveralls -service=drone -coverprofile=${REFORM_DRIVER}.cover
+
+services:
+  postgres:
+    image: postgres:${VERSION}
+    pull: true
+    environment:
+      # - TODO TZ=Europe/Moscow
+      - POSTGRES_DB=reform-database
+      - POSTGRES_USER=reform-user
+      - POSTGRES_PASSWORD=reform-password
+    when:
+      matrix:
+        DATABASE: postgres
+
+  mysql:
+    image: mysql:${VERSION}
+    pull: true
+    environment:
+      # - TODO TZ=Europe/Moscow
+      - MYSQL_DATABASE=reform-database
+      - MYSQL_USER=reform-user
+      - MYSQL_PASSWORD=reform-password
+      - MYSQL_ALLOW_EMPTY_PASSWORD=1
+    when:
+      matrix:
+        DATABASE: mysql
+
+# generated with 'go run .github/drone-gen.go'
+# Go [golang:1.6 golang:1.7 captncraig/go-tip]
+# postgres [9.2 9.3 9.4 9.5 9.6] [postgres]
+# mysql [5.5 5.6 5.7 8.0] [mysql]
+# sqlite3 [dummy] [sqlite3]
+matrix:
+  include:
+    - {
+        GO: "golang:1.6", DATABASE: postgres, VERSION: 9.2, REFORM_DRIVER: postgres,
+        REFORM_INIT_SOURCE: "postgres://reform-user:reform-password@127.0.0.1/reform-database?sslmode=disable&TimeZone=UTC",
+        REFORM_TEST_SOURCE: "postgres://reform-user:reform-password@127.0.0.1/reform-database?sslmode=disable&TimeZone=America/New_York"
+      }
+    - {
+        GO: "golang:1.6", DATABASE: postgres, VERSION: 9.3, REFORM_DRIVER: postgres,
+        REFORM_INIT_SOURCE: "postgres://reform-user:reform-password@127.0.0.1/reform-database?sslmode=disable&TimeZone=UTC",
+        REFORM_TEST_SOURCE: "postgres://reform-user:reform-password@127.0.0.1/reform-database?sslmode=disable&TimeZone=America/New_York"
+      }
+    - {
+        GO: "golang:1.6", DATABASE: postgres, VERSION: 9.4, REFORM_DRIVER: postgres,
+        REFORM_INIT_SOURCE: "postgres://reform-user:reform-password@127.0.0.1/reform-database?sslmode=disable&TimeZone=UTC",
+        REFORM_TEST_SOURCE: "postgres://reform-user:reform-password@127.0.0.1/reform-database?sslmode=disable&TimeZone=America/New_York"
+      }
+    - {
+        GO: "golang:1.6", DATABASE: postgres, VERSION: 9.5, REFORM_DRIVER: postgres,
+        REFORM_INIT_SOURCE: "postgres://reform-user:reform-password@127.0.0.1/reform-database?sslmode=disable&TimeZone=UTC",
+        REFORM_TEST_SOURCE: "postgres://reform-user:reform-password@127.0.0.1/reform-database?sslmode=disable&TimeZone=America/New_York"
+      }
+    - {
+        GO: "golang:1.6", DATABASE: postgres, VERSION: 9.6, REFORM_DRIVER: postgres,
+        REFORM_INIT_SOURCE: "postgres://reform-user:reform-password@127.0.0.1/reform-database?sslmode=disable&TimeZone=UTC",
+        REFORM_TEST_SOURCE: "postgres://reform-user:reform-password@127.0.0.1/reform-database?sslmode=disable&TimeZone=America/New_York"
+      }
+    - {
+        GO: "golang:1.6", DATABASE: mysql, VERSION: 5.5, REFORM_DRIVER: mysql,
+        REFORM_INIT_SOURCE: "root@/reform-database?parseTime=true&strict=true&sql_notes=false&time_zone='UTC'&multiStatements=true",
+        REFORM_TEST_SOURCE: "reform-user:reform-password@/reform-database?parseTime=true&strict=true&sql_notes=false&time_zone='America%2FNew_York'"
+      }
+    - {
+        GO: "golang:1.6", DATABASE: mysql, VERSION: 5.6, REFORM_DRIVER: mysql,
+        REFORM_INIT_SOURCE: "root@/reform-database?parseTime=true&strict=true&sql_notes=false&time_zone='UTC'&multiStatements=true",
+        REFORM_TEST_SOURCE: "reform-user:reform-password@/reform-database?parseTime=true&strict=true&sql_notes=false&time_zone='America%2FNew_York'"
+      }
+    - {
+        GO: "golang:1.6", DATABASE: mysql, VERSION: 5.7, REFORM_DRIVER: mysql,
+        REFORM_INIT_SOURCE: "root@/reform-database?parseTime=true&strict=true&sql_notes=false&time_zone='UTC'&multiStatements=true",
+        REFORM_TEST_SOURCE: "reform-user:reform-password@/reform-database?parseTime=true&strict=true&sql_notes=false&time_zone='America%2FNew_York'"
+      }
+    - {
+        GO: "golang:1.6", DATABASE: mysql, VERSION: 8.0, REFORM_DRIVER: mysql,
+        REFORM_INIT_SOURCE: "root@/reform-database?parseTime=true&strict=true&sql_notes=false&time_zone='UTC'&multiStatements=true",
+        REFORM_TEST_SOURCE: "reform-user:reform-password@/reform-database?parseTime=true&strict=true&sql_notes=false&time_zone='America%2FNew_York'"
+      }
+    - {
+        GO: "golang:1.6", DATABASE: sqlite3, VERSION: dummy, REFORM_DRIVER: sqlite3,
+        REFORM_INIT_SOURCE: "/tmp/reform-test.sqlite3",
+        REFORM_TEST_SOURCE: "/tmp/reform-test.sqlite3"
+      }
+    - {
+        GO: "golang:1.7", DATABASE: postgres, VERSION: 9.2, REFORM_DRIVER: postgres,
+        REFORM_INIT_SOURCE: "postgres://reform-user:reform-password@127.0.0.1/reform-database?sslmode=disable&TimeZone=UTC",
+        REFORM_TEST_SOURCE: "postgres://reform-user:reform-password@127.0.0.1/reform-database?sslmode=disable&TimeZone=America/New_York"
+      }
+    - {
+        GO: "golang:1.7", DATABASE: postgres, VERSION: 9.3, REFORM_DRIVER: postgres,
+        REFORM_INIT_SOURCE: "postgres://reform-user:reform-password@127.0.0.1/reform-database?sslmode=disable&TimeZone=UTC",
+        REFORM_TEST_SOURCE: "postgres://reform-user:reform-password@127.0.0.1/reform-database?sslmode=disable&TimeZone=America/New_York"
+      }
+    - {
+        GO: "golang:1.7", DATABASE: postgres, VERSION: 9.4, REFORM_DRIVER: postgres,
+        REFORM_INIT_SOURCE: "postgres://reform-user:reform-password@127.0.0.1/reform-database?sslmode=disable&TimeZone=UTC",
+        REFORM_TEST_SOURCE: "postgres://reform-user:reform-password@127.0.0.1/reform-database?sslmode=disable&TimeZone=America/New_York"
+      }
+    - {
+        GO: "golang:1.7", DATABASE: postgres, VERSION: 9.5, REFORM_DRIVER: postgres,
+        REFORM_INIT_SOURCE: "postgres://reform-user:reform-password@127.0.0.1/reform-database?sslmode=disable&TimeZone=UTC",
+        REFORM_TEST_SOURCE: "postgres://reform-user:reform-password@127.0.0.1/reform-database?sslmode=disable&TimeZone=America/New_York"
+      }
+    - {
+        GO: "golang:1.7", DATABASE: postgres, VERSION: 9.6, REFORM_DRIVER: postgres,
+        REFORM_INIT_SOURCE: "postgres://reform-user:reform-password@127.0.0.1/reform-database?sslmode=disable&TimeZone=UTC",
+        REFORM_TEST_SOURCE: "postgres://reform-user:reform-password@127.0.0.1/reform-database?sslmode=disable&TimeZone=America/New_York"
+      }
+    - {
+        GO: "golang:1.7", DATABASE: mysql, VERSION: 5.5, REFORM_DRIVER: mysql,
+        REFORM_INIT_SOURCE: "root@/reform-database?parseTime=true&strict=true&sql_notes=false&time_zone='UTC'&multiStatements=true",
+        REFORM_TEST_SOURCE: "reform-user:reform-password@/reform-database?parseTime=true&strict=true&sql_notes=false&time_zone='America%2FNew_York'"
+      }
+    - {
+        GO: "golang:1.7", DATABASE: mysql, VERSION: 5.6, REFORM_DRIVER: mysql,
+        REFORM_INIT_SOURCE: "root@/reform-database?parseTime=true&strict=true&sql_notes=false&time_zone='UTC'&multiStatements=true",
+        REFORM_TEST_SOURCE: "reform-user:reform-password@/reform-database?parseTime=true&strict=true&sql_notes=false&time_zone='America%2FNew_York'"
+      }
+    - {
+        GO: "golang:1.7", DATABASE: mysql, VERSION: 5.7, REFORM_DRIVER: mysql,
+        REFORM_INIT_SOURCE: "root@/reform-database?parseTime=true&strict=true&sql_notes=false&time_zone='UTC'&multiStatements=true",
+        REFORM_TEST_SOURCE: "reform-user:reform-password@/reform-database?parseTime=true&strict=true&sql_notes=false&time_zone='America%2FNew_York'"
+      }
+    - {
+        GO: "golang:1.7", DATABASE: mysql, VERSION: 8.0, REFORM_DRIVER: mysql,
+        REFORM_INIT_SOURCE: "root@/reform-database?parseTime=true&strict=true&sql_notes=false&time_zone='UTC'&multiStatements=true",
+        REFORM_TEST_SOURCE: "reform-user:reform-password@/reform-database?parseTime=true&strict=true&sql_notes=false&time_zone='America%2FNew_York'"
+      }
+    - {
+        GO: "golang:1.7", DATABASE: sqlite3, VERSION: dummy, REFORM_DRIVER: sqlite3,
+        REFORM_INIT_SOURCE: "/tmp/reform-test.sqlite3",
+        REFORM_TEST_SOURCE: "/tmp/reform-test.sqlite3"
+      }
+    - {
+        GO: "captncraig/go-tip", DATABASE: postgres, VERSION: 9.2, REFORM_DRIVER: postgres,
+        REFORM_INIT_SOURCE: "postgres://reform-user:reform-password@127.0.0.1/reform-database?sslmode=disable&TimeZone=UTC",
+        REFORM_TEST_SOURCE: "postgres://reform-user:reform-password@127.0.0.1/reform-database?sslmode=disable&TimeZone=America/New_York"
+      }
+    - {
+        GO: "captncraig/go-tip", DATABASE: postgres, VERSION: 9.3, REFORM_DRIVER: postgres,
+        REFORM_INIT_SOURCE: "postgres://reform-user:reform-password@127.0.0.1/reform-database?sslmode=disable&TimeZone=UTC",
+        REFORM_TEST_SOURCE: "postgres://reform-user:reform-password@127.0.0.1/reform-database?sslmode=disable&TimeZone=America/New_York"
+      }
+    - {
+        GO: "captncraig/go-tip", DATABASE: postgres, VERSION: 9.4, REFORM_DRIVER: postgres,
+        REFORM_INIT_SOURCE: "postgres://reform-user:reform-password@127.0.0.1/reform-database?sslmode=disable&TimeZone=UTC",
+        REFORM_TEST_SOURCE: "postgres://reform-user:reform-password@127.0.0.1/reform-database?sslmode=disable&TimeZone=America/New_York"
+      }
+    - {
+        GO: "captncraig/go-tip", DATABASE: postgres, VERSION: 9.5, REFORM_DRIVER: postgres,
+        REFORM_INIT_SOURCE: "postgres://reform-user:reform-password@127.0.0.1/reform-database?sslmode=disable&TimeZone=UTC",
+        REFORM_TEST_SOURCE: "postgres://reform-user:reform-password@127.0.0.1/reform-database?sslmode=disable&TimeZone=America/New_York"
+      }
+    - {
+        GO: "captncraig/go-tip", DATABASE: postgres, VERSION: 9.6, REFORM_DRIVER: postgres,
+        REFORM_INIT_SOURCE: "postgres://reform-user:reform-password@127.0.0.1/reform-database?sslmode=disable&TimeZone=UTC",
+        REFORM_TEST_SOURCE: "postgres://reform-user:reform-password@127.0.0.1/reform-database?sslmode=disable&TimeZone=America/New_York"
+      }
+    - {
+        GO: "captncraig/go-tip", DATABASE: mysql, VERSION: 5.5, REFORM_DRIVER: mysql,
+        REFORM_INIT_SOURCE: "root@/reform-database?parseTime=true&strict=true&sql_notes=false&time_zone='UTC'&multiStatements=true",
+        REFORM_TEST_SOURCE: "reform-user:reform-password@/reform-database?parseTime=true&strict=true&sql_notes=false&time_zone='America%2FNew_York'"
+      }
+    - {
+        GO: "captncraig/go-tip", DATABASE: mysql, VERSION: 5.6, REFORM_DRIVER: mysql,
+        REFORM_INIT_SOURCE: "root@/reform-database?parseTime=true&strict=true&sql_notes=false&time_zone='UTC'&multiStatements=true",
+        REFORM_TEST_SOURCE: "reform-user:reform-password@/reform-database?parseTime=true&strict=true&sql_notes=false&time_zone='America%2FNew_York'"
+      }
+    - {
+        GO: "captncraig/go-tip", DATABASE: mysql, VERSION: 5.7, REFORM_DRIVER: mysql,
+        REFORM_INIT_SOURCE: "root@/reform-database?parseTime=true&strict=true&sql_notes=false&time_zone='UTC'&multiStatements=true",
+        REFORM_TEST_SOURCE: "reform-user:reform-password@/reform-database?parseTime=true&strict=true&sql_notes=false&time_zone='America%2FNew_York'"
+      }
+    - {
+        GO: "captncraig/go-tip", DATABASE: mysql, VERSION: 8.0, REFORM_DRIVER: mysql,
+        REFORM_INIT_SOURCE: "root@/reform-database?parseTime=true&strict=true&sql_notes=false&time_zone='UTC'&multiStatements=true",
+        REFORM_TEST_SOURCE: "reform-user:reform-password@/reform-database?parseTime=true&strict=true&sql_notes=false&time_zone='America%2FNew_York'"
+      }
+    - {
+        GO: "captncraig/go-tip", DATABASE: sqlite3, VERSION: dummy, REFORM_DRIVER: sqlite3,
+        REFORM_INIT_SOURCE: "/tmp/reform-test.sqlite3",
+        REFORM_TEST_SOURCE: "/tmp/reform-test.sqlite3"
+      }

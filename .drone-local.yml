@@ -1,0 +1,79 @@
+workspace:
+  base: /drone
+  path: src/gopkg.in/reform.v1
+
+pipeline:
+  # use volume to download dependencies, share them between steps to reduce build time
+  download_deps:
+    image: ${GO}
+    pull: true
+    environment:
+      - GOPATH=/go:/drone
+      - PATH=/go/bin:/drone/bin:/usr/local/go/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+    volumes:
+      - drone_cache:/go/src
+    commands:
+      - make download_deps
+    when:
+      matrix:
+        DOWNLOAD_DEPS: 1
+
+  build:
+    image: ${GO}
+    pull: true
+    environment:
+      - GOPATH=/go:/drone
+      - PATH=/go/bin:/drone/bin:/usr/local/go/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+      - TZ=Europe/Moscow
+    volumes:
+      - drone_cache:/go/src:ro
+    commands:
+      - echo ${GO} ${DATABASE} ${VERSION} ${REFORM_DRIVER}
+      - go version
+      - make test check
+      - make test-db
+
+services:
+  postgres:
+    image: postgres:${VERSION}
+    pull: true
+    environment:
+      - TZ=Europe/Moscow
+      - POSTGRES_DB=reform-database
+      - POSTGRES_USER=reform-user
+      - POSTGRES_PASSWORD=reform-password
+    when:
+      matrix:
+        DATABASE: postgres
+
+  mysql:
+    image: mysql:${VERSION}
+    pull: true
+    environment:
+      - TZ=Europe/Moscow
+      - MYSQL_DATABASE=reform-database
+      - MYSQL_USER=reform-user
+      - MYSQL_PASSWORD=reform-password
+      - MYSQL_ALLOW_EMPTY_PASSWORD=1
+    when:
+      matrix:
+        DATABASE: mysql
+
+matrix:
+  include:
+    - {
+        GO: "golang:1.7", DATABASE: postgres, VERSION: 9.6, REFORM_DRIVER: postgres,
+        REFORM_INIT_SOURCE: "postgres://reform-user:reform-password@127.0.0.1/reform-database?sslmode=disable&TimeZone=UTC",
+        REFORM_TEST_SOURCE: "postgres://reform-user:reform-password@127.0.0.1/reform-database?sslmode=disable&TimeZone=America/New_York",
+        DOWNLOAD_DEPS: 1
+      }
+    - {
+        GO: "golang:1.7", DATABASE: mysql, VERSION: 5.7, REFORM_DRIVER: mysql,
+        REFORM_INIT_SOURCE: "root@/reform-database?parseTime=true&strict=true&sql_notes=false&time_zone='UTC'&multiStatements=true",
+        REFORM_TEST_SOURCE: "reform-user:reform-password@/reform-database?parseTime=true&strict=true&sql_notes=false&time_zone='America%2FNew_York'"
+      }
+    - {
+        GO: "golang:1.7", DATABASE: sqlite3, VERSION: dummy, REFORM_DRIVER: sqlite3,
+        REFORM_INIT_SOURCE: "/tmp/reform-test.sqlite3",
+        REFORM_TEST_SOURCE: "/tmp/reform-test.sqlite3"
+      }

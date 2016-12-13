@@ -2,22 +2,16 @@ version: '{build}'
 
 clone_folder: c:\gopath\src\gopkg.in\reform.v1
 
-services:
-  - mssql2008r2sp2
-  - mssql2012sp1
-  - mssql2014
-  - mssql2016
-
 environment:
   GOPATH: c:\gopath
   TARGET: mssql
   COVERALLS_TOKEN:
     secure: +o9WB0T57udDJzTTSmKMg0O5hrP2e0rAuBL36/foBRYTg8VKccp2G8ovxJi4hsmD
   matrix:
-    - REFORM_SQL_INSTANCE: 127.0.0.1\SQL2008R2SP2
-    - REFORM_SQL_INSTANCE: 127.0.0.1\SQL2012SP1
-    - REFORM_SQL_INSTANCE: 127.0.0.1\SQL2014
-    # FIXME - REFORM_SQL_INSTANCE: 127.0.0.1\SQL2016
+    - REFORM_SQL_INSTANCE: SQL2008R2SP2
+    - REFORM_SQL_INSTANCE: SQL2012SP1
+    - REFORM_SQL_INSTANCE: SQL2014
+    - REFORM_SQL_INSTANCE: SQL2016
 
 install:
   - powershell -file .github\appveyor-prepare-mssql.ps1

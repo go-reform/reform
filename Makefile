@@ -66,15 +66,17 @@ sqlite3: test
 	make test-db
 
 # this target is configured for Windows
-mssql: REFORM_SQL_INSTANCE ?= 127.0.0.1\SQLEXPRESS
+mssql: REFORM_SQL_HOST ?= 127.0.0.1
+mssql: REFORM_SQL_INSTANCE ?= SQLEXPRESS
+mssql: SQLCMD = sqlcmd -b -I -S "$(REFORM_SQL_HOST)\$(REFORM_SQL_INSTANCE)"
 mssql: export REFORM_DRIVER = mssql
-mssql: export REFORM_TEST_SOURCE = server=$(REFORM_SQL_INSTANCE);database=reform-test
+mssql: export REFORM_TEST_SOURCE = server=$(REFORM_SQL_HOST)\$(REFORM_SQL_INSTANCE);database=reform-test
 mssql: test
-	-sqlcmd -b -I -S "$(REFORM_SQL_INSTANCE)" -Q "DROP DATABASE [reform-test];"
-	sqlcmd -b -I -S "$(REFORM_SQL_INSTANCE)" -Q "CREATE DATABASE [reform-test];"
-	sqlcmd -b -I -S "$(REFORM_SQL_INSTANCE)" -d "reform-test" -i internal/test/sql/mssql_init.sql
-	sqlcmd -b -I -S "$(REFORM_SQL_INSTANCE)" -d "reform-test" -i internal/test/sql/mssql_data.sql
-	sqlcmd -b -I -S "$(REFORM_SQL_INSTANCE)" -d "reform-test" -i internal/test/sql/mssql_set.sql
+	-$(SQLCMD) -Q "DROP DATABASE [reform-test];"
+	$(SQLCMD) -Q "CREATE DATABASE [reform-test];"
+	$(SQLCMD) -d "reform-test" -i internal/test/sql/mssql_init.sql
+	$(SQLCMD) -d "reform-test" -i internal/test/sql/mssql_data.sql
+	$(SQLCMD) -d "reform-test" -i internal/test/sql/mssql_set.sql
 	go test -coverprofile=mssql.cover
 
 .PHONY: parse reform

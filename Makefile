@@ -33,7 +33,8 @@ check: test
 
 test-db:
 	reform-db -db-driver=$(REFORM_DRIVER) -db-source="$(REFORM_INIT_SOURCE)" -f internal/test/sql/$(DATABASE)_init.sql
-	reform-db -db-driver=$(REFORM_DRIVER) -db-source="$(REFORM_INIT_SOURCE)" -f internal/test/sql/data.sql
+	# TODO see comments in internal/test/sql/mssql_data.sql
+	[ "$(REFORM_DRIVER)" = "mssql" ] || reform-db -db-driver=$(REFORM_DRIVER) -db-source="$(REFORM_INIT_SOURCE)" -f internal/test/sql/data.sql
 	reform-db -db-driver=$(REFORM_DRIVER) -db-source="$(REFORM_INIT_SOURCE)" -f internal/test/sql/$(DATABASE)_data.sql
 	reform-db -db-driver=$(REFORM_DRIVER) -db-source="$(REFORM_INIT_SOURCE)" -f internal/test/sql/$(DATABASE)_set.sql
 	go test $(REFORM_TEST_FLAGS) -coverprofile=$(REFORM_DRIVER).cover
@@ -71,14 +72,13 @@ sqlite3: test
 mssql: REFORM_SQL_HOST ?= 127.0.0.1
 mssql: REFORM_SQL_INSTANCE ?= SQLEXPRESS
 mssql: SQLCMD = sqlcmd -b -I -S "$(REFORM_SQL_HOST)\$(REFORM_SQL_INSTANCE)"
+mssql: export DATABASE = mssql
 mssql: export REFORM_DRIVER = mssql
+mssql: export REFORM_INIT_SOURCE = server=$(REFORM_SQL_HOST)\$(REFORM_SQL_INSTANCE);database=reform-test
 mssql: export REFORM_TEST_SOURCE = server=$(REFORM_SQL_HOST)\$(REFORM_SQL_INSTANCE);database=reform-test
 mssql: test
 	-$(SQLCMD) -Q "DROP DATABASE [reform-test];"
 	$(SQLCMD) -Q "CREATE DATABASE [reform-test];"
-	$(SQLCMD) -d "reform-test" -i internal/test/sql/mssql_init.sql
-	$(SQLCMD) -d "reform-test" -i internal/test/sql/mssql_data.sql
-	$(SQLCMD) -d "reform-test" -i internal/test/sql/mssql_set.sql
-	go test $(REFORM_TEST_FLAGS) -coverprofile=mssql.cover
+	mingw32-make test-db
 
 .PHONY: parse reform

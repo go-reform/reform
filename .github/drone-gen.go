@@ -79,6 +79,20 @@ func main() {
 				},
 			},
 		},
+
+		{
+			"mssql",
+			[]string{
+				"latest",
+			},
+			[]Driver{
+				{
+					"mssql",
+					"server=localhost;user id=sa;password=Pass_123;database=tempdb",
+					"server=localhost;user id=sa;password=Pass_123;database=tempdb",
+				},
+			},
+		},
 	}
 
 	const start = `# generated with 'go run .github/drone-gen.go'`

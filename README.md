@@ -141,4 +141,4 @@ Canonical import path is `gopkg.in/reform.v2-unstable`.
 
 ## Contributing
 
-See [Contributing Guidelines](.github.com/CONTRIBUTING.md)
+See [Contributing Guidelines](.github/CONTRIBUTING.md)

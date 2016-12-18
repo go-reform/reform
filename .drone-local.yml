@@ -59,6 +59,16 @@ services:
       matrix:
         DATABASE: mysql
 
+  mssql:
+    image: microsoft/mssql-server-linux:${VERSION}
+    pull: true
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=Pass_123
+    when:
+      matrix:
+        DATABASE: mssql
+
 matrix:
   include:
     - {
@@ -76,4 +86,9 @@ matrix:
         GO: "golang:1.7", DATABASE: sqlite3, VERSION: dummy, REFORM_DRIVER: sqlite3,
         REFORM_INIT_SOURCE: "/tmp/reform-test.sqlite3",
         REFORM_TEST_SOURCE: "/tmp/reform-test.sqlite3"
+      }
+    - {
+        GO: "golang:1.7", DATABASE: mssql, VERSION: latest, REFORM_DRIVER: mssql,
+        REFORM_INIT_SOURCE: "server=localhost;user id=sa;password=Pass_123;database=tempdb",
+        REFORM_TEST_SOURCE: "server=localhost;user id=sa;password=Pass_123;database=tempdb"
       }

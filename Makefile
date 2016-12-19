@@ -1,5 +1,7 @@
 all: check postgres mysql sqlite3
 
+REFORM_TEST_FLAGS ?=
+
 download_deps:
 	go get -v -u -d github.com/lib/pq \
 				github.com/go-sql-driver/mysql \
@@ -34,7 +36,7 @@ test-db:
 	reform-db -db-driver=$(REFORM_DRIVER) -db-source="$(REFORM_INIT_SOURCE)" -f internal/test/sql/data.sql
 	reform-db -db-driver=$(REFORM_DRIVER) -db-source="$(REFORM_INIT_SOURCE)" -f internal/test/sql/$(DATABASE)_data.sql
 	reform-db -db-driver=$(REFORM_DRIVER) -db-source="$(REFORM_INIT_SOURCE)" -f internal/test/sql/$(DATABASE)_set.sql
-	go test -coverprofile=$(REFORM_DRIVER).cover
+	go test $(REFORM_TEST_FLAGS) -coverprofile=$(REFORM_DRIVER).cover
 
 drone:
 	drone exec --repo.trusted .drone-local.yml
@@ -77,6 +79,6 @@ mssql: test
 	$(SQLCMD) -d "reform-test" -i internal/test/sql/mssql_init.sql
 	$(SQLCMD) -d "reform-test" -i internal/test/sql/mssql_data.sql
 	$(SQLCMD) -d "reform-test" -i internal/test/sql/mssql_set.sql
-	go test -coverprofile=mssql.cover
+	go test $(REFORM_TEST_FLAGS) -coverprofile=mssql.cover
 
 .PHONY: parse reform

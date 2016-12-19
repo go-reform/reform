@@ -10,10 +10,11 @@ download_deps:
 
 	go get -v -u -d github.com/AlekSi/pointer \
 				github.com/kisielk/errcheck \
-				github.com/golang/lint/golint \
 				github.com/stretchr/testify/... \
 				github.com/enodata/faker \
-				github.com/AlekSi/goveralls
+				github.com/AlekSi/goveralls \
+				github.com/alecthomas/gometalinter
+	gometalinter --install
 
 test:
 	rm -f internal/test/models/*_reform.go
@@ -23,13 +24,15 @@ test:
 	go install -v gopkg.in/reform.v1/internal/test/models
 	go test -i -v
 	go install -v github.com/kisielk/errcheck \
-					github.com/golang/lint/golint \
+					github.com/alecthomas/gometalinter \
 					github.com/AlekSi/goveralls
+	gometalinter --install
 
 check: test
 	go vet ./...
 	-errcheck ./...
 	golint ./...
+	gometalinter ./...
 
 test-db:
 	reform-db -db-driver=$(REFORM_DRIVER) -db-source="$(REFORM_INIT_SOURCE)" -f internal/test/sql/$(DATABASE)_init.sql

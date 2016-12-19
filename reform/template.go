@@ -15,7 +15,7 @@ type StructData struct {
 
 var (
 	prologTemplate = template.Must(template.New("prolog").Parse(`
-// generated with gopkg.in/reform.v1
+// Generated with gopkg.in/reform.v1. Do not edit by hand.
 
 import (
 	"fmt"

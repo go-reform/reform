@@ -43,8 +43,8 @@ func main() {
 			}, []Driver{
 				{
 					"postgres",
-					"postgres://reform-user:reform-password@127.0.0.1/reform-database?sslmode=disable&TimeZone=UTC",
-					"postgres://reform-user:reform-password@127.0.0.1/reform-database?sslmode=disable&TimeZone=America/New_York",
+					"postgres://reform-user:reform-password123@127.0.0.1/reform-database?sslmode=disable&TimeZone=UTC",
+					"postgres://reform-user:reform-password123@127.0.0.1/reform-database?sslmode=disable&TimeZone=America/New_York",
 				},
 			},
 		},
@@ -61,7 +61,7 @@ func main() {
 				{
 					"mysql",
 					"root@/reform-database?parseTime=true&strict=true&sql_notes=false&time_zone='UTC'&multiStatements=true",
-					"reform-user:reform-password@/reform-database?parseTime=true&strict=true&sql_notes=false&time_zone='America%2FNew_York'",
+					"reform-user:reform-password123@/reform-database?parseTime=true&strict=true&sql_notes=false&time_zone='America%2FNew_York'",
 				},
 			},
 		},
@@ -88,8 +88,8 @@ func main() {
 			[]Driver{
 				{
 					"mssql",
-					"server=localhost;user id=sa;password=Pass_123;database=tempdb",
-					"server=localhost;user id=sa;password=Pass_123;database=tempdb",
+					"server=localhost;user id=sa;password=reform-password123;database=reform-database",
+					"server=localhost;user id=sa;password=reform-password123;database=reform-database",
 				},
 			},
 		},

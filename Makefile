@@ -53,8 +53,8 @@ postgres: test
 
 mysql: export DATABASE = mysql
 mysql: export REFORM_DRIVER = mysql
-mysql: export REFORM_INIT_SOURCE = root@/reform-test?parseTime=true&strict=true&sql_notes=false&time_zone='UTC'&multiStatements=true
-mysql: export REFORM_TEST_SOURCE = root@/reform-test?parseTime=true&strict=true&sql_notes=false&time_zone='America%2FNew_York'
+mysql: export REFORM_INIT_SOURCE = root@/reform-test?parseTime=true&strict=true&sql_mode='ANSI,NO_AUTO_CREATE_USER'&sql_notes=false&time_zone='UTC'&multiStatements=true
+mysql: export REFORM_TEST_SOURCE = root@/reform-test?parseTime=true&strict=true&sql_mode='ANSI,NO_AUTO_CREATE_USER'&sql_notes=false&time_zone='America%2FNew_York'
 mysql: test
 	echo 'DROP DATABASE IF EXISTS `reform-test`;' | mysql -uroot
 	echo 'CREATE DATABASE `reform-test`;' | mysql -uroot

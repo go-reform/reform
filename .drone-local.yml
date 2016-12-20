@@ -79,8 +79,8 @@ matrix:
       }
     - {
         GO: "golang:1.7", DATABASE: mysql, VERSION: 5.7, REFORM_DRIVER: mysql,
-        REFORM_INIT_SOURCE: "root@/reform-database?parseTime=true&strict=true&sql_notes=false&time_zone='UTC'&multiStatements=true",
-        REFORM_TEST_SOURCE: "reform-user:reform-password123@/reform-database?parseTime=true&strict=true&sql_notes=false&time_zone='America%2FNew_York'"
+        REFORM_INIT_SOURCE: "root@/reform-database?parseTime=true&strict=true&sql_mode='ANSI,NO_AUTO_CREATE_USER'&sql_notes=false&time_zone='UTC'&multiStatements=true",
+        REFORM_TEST_SOURCE: "reform-user:reform-password123@/reform-database?parseTime=true&strict=true&sql_mode='ANSI,NO_AUTO_CREATE_USER'&sql_notes=false&time_zone='America%2FNew_York'"
       }
     - {
         GO: "golang:1.7", DATABASE: sqlite3, VERSION: dummy, REFORM_DRIVER: sqlite3,

@@ -32,11 +32,11 @@ check: test
 	golint ./...
 
 test-db:
-	reform-db -db-driver=$(REFORM_DRIVER) -db-source="$(REFORM_INIT_SOURCE)" -f internal/test/sql/$(DATABASE)_init.sql
-	# TODO see comments in internal/test/sql/mssql_data.sql
-	[ "$(REFORM_DRIVER)" = "mssql" ] || reform-db -db-driver=$(REFORM_DRIVER) -db-source="$(REFORM_INIT_SOURCE)" -f internal/test/sql/data.sql
-	reform-db -db-driver=$(REFORM_DRIVER) -db-source="$(REFORM_INIT_SOURCE)" -f internal/test/sql/$(DATABASE)_data.sql
-	reform-db -db-driver=$(REFORM_DRIVER) -db-source="$(REFORM_INIT_SOURCE)" -f internal/test/sql/$(DATABASE)_set.sql
+	cat internal/test/sql/$(DATABASE)_init.sql \
+		internal/test/sql/data.sql \
+		internal/test/sql/$(DATABASE)_data.sql \
+		internal/test/sql/$(DATABASE)_set.sql \
+		| reform-db -db-driver=$(REFORM_DRIVER) -db-source="$(REFORM_INIT_SOURCE)"
 	go test $(REFORM_TEST_FLAGS) -coverprofile=$(REFORM_DRIVER).cover
 
 drone:

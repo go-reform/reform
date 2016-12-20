@@ -1,4 +1,4 @@
-SET GLOBAL sql_mode = 'ANSI';
+SET sql_mode = 'ANSI';
 
 CREATE TABLE people (
   id int NOT NULL AUTO_INCREMENT,

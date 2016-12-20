@@ -14,7 +14,6 @@ download_deps:
 				github.com/enodata/faker \
 				github.com/AlekSi/goveralls \
 				github.com/alecthomas/gometalinter
-	gometalinter --install
 
 test:
 	rm -f internal/test/models/*_reform.go

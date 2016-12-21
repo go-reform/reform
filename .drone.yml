@@ -23,7 +23,7 @@ services:
     image: postgres:${VERSION}
     pull: true
     environment:
-      # - TODO TZ=Europe/Moscow
+      - TZ=Europe/Moscow
       - POSTGRES_DB=reform-database
       - POSTGRES_USER=reform-user
       - POSTGRES_PASSWORD=reform-password123
@@ -35,7 +35,7 @@ services:
     image: mysql:${VERSION}
     pull: true
     environment:
-      # - TODO TZ=Europe/Moscow
+      - TZ=Europe/Moscow
       - MYSQL_DATABASE=reform-database
       - MYSQL_USER=reform-user
       - MYSQL_PASSWORD=reform-password123

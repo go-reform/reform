@@ -27,10 +27,10 @@ test:
 	go install -v github.com/kisielk/errcheck \
 					github.com/alecthomas/gometalinter \
 					github.com/AlekSi/goveralls
-	gometalinter --install --no-vendored-linters
+	gometalinter --install
 
 check: test
-	gometalinter ./... --deadline 10s --severity=vet:error
+	-- gometalinter ./... --deadline 20s --severity=vet:error
 
 test-db:
 	reform-db -db-driver=$(REFORM_DRIVER) -db-source="$(REFORM_INIT_SOURCE)" -f internal/test/sql/$(DATABASE)_init.sql

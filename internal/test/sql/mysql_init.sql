@@ -1,5 +1,3 @@
-SET GLOBAL sql_mode = 'ANSI';
-
 CREATE TABLE people (
   id int NOT NULL AUTO_INCREMENT,
   group_id int DEFAULT 65534,

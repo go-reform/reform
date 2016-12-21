@@ -33,7 +33,7 @@ func main() {
 	log.SetPrefix("reform-db: ")
 	log.Print("Internal tool. Do not use it yet.")
 
-	b, err := ioutil.ReadFile(*fF)
+	b, err := readSQL(*fF)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -55,4 +55,11 @@ func main() {
 			log.Fatal(err)
 		}
 	}
+}
+
+func readSQL(path string) ([]byte, error) {
+	if path == "" {
+		return ioutil.ReadAll(os.Stdin)
+	}
+	return ioutil.ReadFile(path)
 }

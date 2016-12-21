@@ -30,7 +30,7 @@ test:
 	gometalinter --install
 
 check: test
-	-- gometalinter ./... --deadline 20s --severity=vet:error
+	- gometalinter ./... --deadline 20s --severity=vet:error
 
 test-db:
 	cat internal/test/sql/$(DATABASE)_init.sql \

@@ -33,10 +33,11 @@ check: test
 	- gometalinter ./... --deadline 20s --severity=vet:error
 
 test-db:
-	reform-db -db-driver=$(REFORM_DRIVER) -db-source="$(REFORM_INIT_SOURCE)" -f internal/test/sql/$(DATABASE)_init.sql
-	reform-db -db-driver=$(REFORM_DRIVER) -db-source="$(REFORM_INIT_SOURCE)" -f internal/test/sql/data.sql
-	reform-db -db-driver=$(REFORM_DRIVER) -db-source="$(REFORM_INIT_SOURCE)" -f internal/test/sql/$(DATABASE)_data.sql
-	reform-db -db-driver=$(REFORM_DRIVER) -db-source="$(REFORM_INIT_SOURCE)" -f internal/test/sql/$(DATABASE)_set.sql
+	cat internal/test/sql/$(DATABASE)_init.sql \
+		internal/test/sql/data.sql \
+		internal/test/sql/$(DATABASE)_data.sql \
+		internal/test/sql/$(DATABASE)_set.sql \
+		| reform-db -db-driver=$(REFORM_DRIVER) -db-source="$(REFORM_INIT_SOURCE)"
 	go test $(REFORM_TEST_FLAGS) -coverprofile=$(REFORM_DRIVER).cover
 
 drone:
@@ -53,8 +54,8 @@ postgres: test
 
 mysql: export DATABASE = mysql
 mysql: export REFORM_DRIVER = mysql
-mysql: export REFORM_INIT_SOURCE = root@/reform-test?parseTime=true&strict=true&sql_notes=false&time_zone='UTC'&multiStatements=true
-mysql: export REFORM_TEST_SOURCE = root@/reform-test?parseTime=true&strict=true&sql_notes=false&time_zone='America%2FNew_York'
+mysql: export REFORM_INIT_SOURCE = root@/reform-test?parseTime=true&strict=true&sql_mode='ANSI,NO_AUTO_CREATE_USER'&sql_notes=false&time_zone='UTC'&multiStatements=true
+mysql: export REFORM_TEST_SOURCE = root@/reform-test?parseTime=true&strict=true&sql_mode='ANSI,NO_AUTO_CREATE_USER'&sql_notes=false&time_zone='America%2FNew_York'
 mysql: test
 	echo 'DROP DATABASE IF EXISTS `reform-test`;' | mysql -uroot
 	echo 'CREATE DATABASE `reform-test`;' | mysql -uroot
@@ -72,14 +73,13 @@ sqlite3: test
 mssql: REFORM_SQL_HOST ?= 127.0.0.1
 mssql: REFORM_SQL_INSTANCE ?= SQLEXPRESS
 mssql: SQLCMD = sqlcmd -b -I -S "$(REFORM_SQL_HOST)\$(REFORM_SQL_INSTANCE)"
+mssql: export DATABASE = mssql
 mssql: export REFORM_DRIVER = mssql
+mssql: export REFORM_INIT_SOURCE = server=$(REFORM_SQL_HOST)\$(REFORM_SQL_INSTANCE);database=reform-test
 mssql: export REFORM_TEST_SOURCE = server=$(REFORM_SQL_HOST)\$(REFORM_SQL_INSTANCE);database=reform-test
 mssql: test
 	-$(SQLCMD) -Q "DROP DATABASE [reform-test];"
 	$(SQLCMD) -Q "CREATE DATABASE [reform-test];"
-	$(SQLCMD) -d "reform-test" -i internal/test/sql/mssql_init.sql
-	$(SQLCMD) -d "reform-test" -i internal/test/sql/mssql_data.sql
-	$(SQLCMD) -d "reform-test" -i internal/test/sql/mssql_set.sql
-	go test $(REFORM_TEST_FLAGS) -coverprofile=mssql.cover
+	mingw32-make test-db
 
 .PHONY: parse reform

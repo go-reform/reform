@@ -23,3 +23,5 @@ CREATE TABLE [person_project] (
 CREATE TABLE id_only (
   [id] int identity(1, 1) PRIMARY KEY
 );
+
+SET IDENTITY_INSERT people ON;

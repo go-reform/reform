@@ -41,7 +41,7 @@ services:
       - TZ=Europe/Moscow
       - POSTGRES_DB=reform-database
       - POSTGRES_USER=reform-user
-      - POSTGRES_PASSWORD=reform-password
+      - POSTGRES_PASSWORD=reform-password123
     when:
       matrix:
         DATABASE: postgres
@@ -53,27 +53,42 @@ services:
       - TZ=Europe/Moscow
       - MYSQL_DATABASE=reform-database
       - MYSQL_USER=reform-user
-      - MYSQL_PASSWORD=reform-password
+      - MYSQL_PASSWORD=reform-password123
       - MYSQL_ALLOW_EMPTY_PASSWORD=1
     when:
       matrix:
         DATABASE: mysql
 
+  mssql:
+    image: microsoft/mssql-server-linux:${VERSION}
+    pull: true
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=reform-password123
+    when:
+      matrix:
+        DATABASE: mssql
+
 matrix:
   include:
     - {
         GO: "golang:1.7", DATABASE: postgres, VERSION: 9.6, REFORM_DRIVER: postgres,
-        REFORM_INIT_SOURCE: "postgres://reform-user:reform-password@127.0.0.1/reform-database?sslmode=disable&TimeZone=UTC",
-        REFORM_TEST_SOURCE: "postgres://reform-user:reform-password@127.0.0.1/reform-database?sslmode=disable&TimeZone=America/New_York",
+        REFORM_INIT_SOURCE: "postgres://reform-user:reform-password123@127.0.0.1/reform-database?sslmode=disable&TimeZone=UTC",
+        REFORM_TEST_SOURCE: "postgres://reform-user:reform-password123@127.0.0.1/reform-database?sslmode=disable&TimeZone=America/New_York",
         DOWNLOAD_DEPS: 1
       }
     - {
         GO: "golang:1.7", DATABASE: mysql, VERSION: 5.7, REFORM_DRIVER: mysql,
-        REFORM_INIT_SOURCE: "root@/reform-database?parseTime=true&strict=true&sql_notes=false&time_zone='UTC'&multiStatements=true",
-        REFORM_TEST_SOURCE: "reform-user:reform-password@/reform-database?parseTime=true&strict=true&sql_notes=false&time_zone='America%2FNew_York'"
+        REFORM_INIT_SOURCE: "root@/reform-database?parseTime=true&strict=true&sql_mode='ANSI,NO_AUTO_CREATE_USER'&sql_notes=false&time_zone='UTC'&multiStatements=true",
+        REFORM_TEST_SOURCE: "reform-user:reform-password123@/reform-database?parseTime=true&strict=true&sql_mode='ANSI,NO_AUTO_CREATE_USER'&sql_notes=false&time_zone='America%2FNew_York'"
       }
     - {
         GO: "golang:1.7", DATABASE: sqlite3, VERSION: dummy, REFORM_DRIVER: sqlite3,
         REFORM_INIT_SOURCE: "/tmp/reform-test.sqlite3",
         REFORM_TEST_SOURCE: "/tmp/reform-test.sqlite3"
+      }
+    - {
+        GO: "golang:1.7", DATABASE: mssql, VERSION: latest, REFORM_DRIVER: mssql,
+        REFORM_INIT_SOURCE: "server=localhost;user id=sa;password=reform-password123;database=reform-database",
+        REFORM_TEST_SOURCE: "server=localhost;user id=sa;password=reform-password123;database=reform-database"
       }

@@ -33,26 +33,41 @@ func main() {
 	log.SetPrefix("reform-db: ")
 	log.Print("Internal tool. Do not use it yet.")
 
-	b, err := ioutil.ReadFile(*fF)
+	b, err := readSQL(*fF)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("failed to read %q: %s", *fF, err)
 	}
 
 	db, err := sql.Open(*driverF, *sourceF)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("failed to connect to %s %q: %s", *driverF, *sourceF, err)
 	}
 	defer db.Close()
+
+	// Use single connection so various session-related variables work.
+	// For example: "PRAGMA foreign_keys" for SQLite3, "SET IDENTITY_INSERT" for MS SQL, etc.
+	db.SetMaxIdleConns(1)
+	db.SetMaxOpenConns(1)
+	db.SetConnMaxLifetime(0)
+
 	err = db.Ping()
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("failed to ping database: %s", err)
 	}
 
 	b = bytes.TrimSpace(b)
 	if len(b) > 0 {
-		_, err = db.Exec(string(b))
+		q := string(b)
+		_, err := db.Exec(q)
 		if err != nil {
-			log.Fatal(err)
+			log.Fatalf("failed to execute %s: %s", q, err)
 		}
 	}
+}
+
+func readSQL(path string) ([]byte, error) {
+	if path == "" {
+		return ioutil.ReadAll(os.Stdin)
+	}
+	return ioutil.ReadFile(path)
 }

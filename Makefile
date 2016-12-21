@@ -30,7 +30,7 @@ test:
 	gometalinter --install
 
 check: test
-	-- gometalinter ./... --deadline 20s --severity=vet:error
+	- gometalinter ./... --deadline 20s --severity=vet:error
 
 test-db:
 	reform-db -db-driver=$(REFORM_DRIVER) -db-source="$(REFORM_INIT_SOURCE)" -f internal/test/sql/$(DATABASE)_init.sql

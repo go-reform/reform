@@ -14,6 +14,8 @@ download_deps:
 				github.com/enodata/faker \
 				github.com/AlekSi/goveralls \
 				github.com/alecthomas/gometalinter
+	gometalinter --install --no-vendored-linters --download-only
+
 
 test:
 	rm -f internal/test/models/*_reform.go
@@ -25,7 +27,7 @@ test:
 	go install -v github.com/kisielk/errcheck \
 					github.com/alecthomas/gometalinter \
 					github.com/AlekSi/goveralls
-	gometalinter --install
+	gometalinter --install --no-vendored-linters
 
 check: test
 	gometalinter ./... --deadline 10s --severity=vet:error

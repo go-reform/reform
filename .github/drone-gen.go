@@ -58,10 +58,18 @@ func main() {
 				"5.7",
 				"8.0",
 			}, []Driver{
+				// ANSI mode
 				{
 					"mysql",
-					"root@/reform-database?parseTime=true&strict=true&sql_mode='ANSI,NO_AUTO_CREATE_USER'&sql_notes=false&time_zone='UTC'&multiStatements=true",
-					"reform-user:reform-password123@/reform-database?parseTime=true&strict=true&sql_mode='ANSI,NO_AUTO_CREATE_USER'&sql_notes=false&time_zone='America%2FNew_York'",
+					"root@/reform-database?parseTime=true&time_zone='UTC'&sql_mode='ANSI'&multiStatements=true",
+					"reform-user:reform-password123@/reform-database?parseTime=true&time_zone='America%2FNew_York'&sql_mode='ANSI'",
+				},
+
+				// TRADITIONAL mode + interpolateParams=true
+				{
+					"mysql",
+					"root@/reform-database?parseTime=true&time_zone='UTC'&sql_mode='ANSI'&multiStatements=true",
+					"reform-user:reform-password123@/reform-database?parseTime=true&time_zone='America%2FNew_York'&sql_mode='TRADITIONAL'&interpolateParams=true",
 				},
 			},
 		},

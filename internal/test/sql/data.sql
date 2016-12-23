@@ -5,6 +5,7 @@ INSERT INTO people (id, name, email, created_at) VALUES (101, 'Noble Schumm', NU
 INSERT INTO people (id, name, email, created_at) VALUES (102, 'Elfrieda Abbott', 'elfrieda_abbott@example.org', '2014-01-01 00:00:00');
 INSERT INTO people (id, name, email, created_at) VALUES (103, 'Elfrieda Abbott', NULL, '2014-01-01 00:00:00');
 
+-- ANSI quotes for keyword "end"
 INSERT INTO projects (id, name, start, "end") VALUES ('baron', 'Vicious Baron', '2014-06-01', '2016-02-21');
 INSERT INTO projects (id, name, start, "end") VALUES ('queen', 'Thirsty Queen', '2016-01-15', NULL);
 INSERT INTO projects (id, name, start, "end") VALUES ('traveler', 'Kosher Traveler', '2016-02-01', NULL);

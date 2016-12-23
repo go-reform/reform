@@ -23,7 +23,7 @@ services:
     image: postgres:${VERSION}
     pull: true
     environment:
-      # - TODO TZ=Europe/Moscow
+      - TZ=Europe/Moscow
       - POSTGRES_DB=reform-database
       - POSTGRES_USER=reform-user
       - POSTGRES_PASSWORD=reform-password123
@@ -35,7 +35,7 @@ services:
     image: mysql:${VERSION}
     pull: true
     environment:
-      # - TODO TZ=Europe/Moscow
+      - TZ=Europe/Moscow
       - MYSQL_DATABASE=reform-database
       - MYSQL_USER=reform-user
       - MYSQL_PASSWORD=reform-password123
@@ -57,7 +57,7 @@ services:
 # generated with 'go run .github/drone-gen.go'
 # Go [golang:1.6 golang:1.7 captncraig/go-tip]
 # postgres [9.2 9.3 9.4 9.5 9.6] [postgres]
-# mysql [5.5 5.6 5.7 8.0] [mysql]
+# mysql [5.5 5.6 5.7 8.0] [mysql mysql]
 # sqlite3 [dummy] [sqlite3]
 # mssql [latest] [mssql]
 matrix:
@@ -89,23 +89,43 @@ matrix:
       }
     - {
         GO: "golang:1.6", DATABASE: mysql, VERSION: 5.5, REFORM_DRIVER: mysql,
-        REFORM_INIT_SOURCE: "root@/reform-database?parseTime=true&strict=true&sql_mode='ANSI,NO_AUTO_CREATE_USER'&sql_notes=false&time_zone='UTC'&multiStatements=true",
-        REFORM_TEST_SOURCE: "reform-user:reform-password123@/reform-database?parseTime=true&strict=true&sql_mode='ANSI,NO_AUTO_CREATE_USER'&sql_notes=false&time_zone='America%2FNew_York'"
+        REFORM_INIT_SOURCE: "root@/reform-database?parseTime=true&time_zone='UTC'&sql_mode='ANSI'&multiStatements=true",
+        REFORM_TEST_SOURCE: "reform-user:reform-password123@/reform-database?parseTime=true&time_zone='America%2FNew_York'&sql_mode='ANSI'"
+      }
+    - {
+        GO: "golang:1.6", DATABASE: mysql, VERSION: 5.5, REFORM_DRIVER: mysql,
+        REFORM_INIT_SOURCE: "root@/reform-database?parseTime=true&time_zone='UTC'&sql_mode='ANSI'&multiStatements=true",
+        REFORM_TEST_SOURCE: "reform-user:reform-password123@/reform-database?parseTime=true&time_zone='America%2FNew_York'&sql_mode='TRADITIONAL'&interpolateParams=true"
       }
     - {
         GO: "golang:1.6", DATABASE: mysql, VERSION: 5.6, REFORM_DRIVER: mysql,
-        REFORM_INIT_SOURCE: "root@/reform-database?parseTime=true&strict=true&sql_mode='ANSI,NO_AUTO_CREATE_USER'&sql_notes=false&time_zone='UTC'&multiStatements=true",
-        REFORM_TEST_SOURCE: "reform-user:reform-password123@/reform-database?parseTime=true&strict=true&sql_mode='ANSI,NO_AUTO_CREATE_USER'&sql_notes=false&time_zone='America%2FNew_York'"
+        REFORM_INIT_SOURCE: "root@/reform-database?parseTime=true&time_zone='UTC'&sql_mode='ANSI'&multiStatements=true",
+        REFORM_TEST_SOURCE: "reform-user:reform-password123@/reform-database?parseTime=true&time_zone='America%2FNew_York'&sql_mode='ANSI'"
+      }
+    - {
+        GO: "golang:1.6", DATABASE: mysql, VERSION: 5.6, REFORM_DRIVER: mysql,
+        REFORM_INIT_SOURCE: "root@/reform-database?parseTime=true&time_zone='UTC'&sql_mode='ANSI'&multiStatements=true",
+        REFORM_TEST_SOURCE: "reform-user:reform-password123@/reform-database?parseTime=true&time_zone='America%2FNew_York'&sql_mode='TRADITIONAL'&interpolateParams=true"
       }
     - {
         GO: "golang:1.6", DATABASE: mysql, VERSION: 5.7, REFORM_DRIVER: mysql,
-        REFORM_INIT_SOURCE: "root@/reform-database?parseTime=true&strict=true&sql_mode='ANSI,NO_AUTO_CREATE_USER'&sql_notes=false&time_zone='UTC'&multiStatements=true",
-        REFORM_TEST_SOURCE: "reform-user:reform-password123@/reform-database?parseTime=true&strict=true&sql_mode='ANSI,NO_AUTO_CREATE_USER'&sql_notes=false&time_zone='America%2FNew_York'"
+        REFORM_INIT_SOURCE: "root@/reform-database?parseTime=true&time_zone='UTC'&sql_mode='ANSI'&multiStatements=true",
+        REFORM_TEST_SOURCE: "reform-user:reform-password123@/reform-database?parseTime=true&time_zone='America%2FNew_York'&sql_mode='ANSI'"
+      }
+    - {
+        GO: "golang:1.6", DATABASE: mysql, VERSION: 5.7, REFORM_DRIVER: mysql,
+        REFORM_INIT_SOURCE: "root@/reform-database?parseTime=true&time_zone='UTC'&sql_mode='ANSI'&multiStatements=true",
+        REFORM_TEST_SOURCE: "reform-user:reform-password123@/reform-database?parseTime=true&time_zone='America%2FNew_York'&sql_mode='TRADITIONAL'&interpolateParams=true"
       }
     - {
         GO: "golang:1.6", DATABASE: mysql, VERSION: 8.0, REFORM_DRIVER: mysql,
-        REFORM_INIT_SOURCE: "root@/reform-database?parseTime=true&strict=true&sql_mode='ANSI,NO_AUTO_CREATE_USER'&sql_notes=false&time_zone='UTC'&multiStatements=true",
-        REFORM_TEST_SOURCE: "reform-user:reform-password123@/reform-database?parseTime=true&strict=true&sql_mode='ANSI,NO_AUTO_CREATE_USER'&sql_notes=false&time_zone='America%2FNew_York'"
+        REFORM_INIT_SOURCE: "root@/reform-database?parseTime=true&time_zone='UTC'&sql_mode='ANSI'&multiStatements=true",
+        REFORM_TEST_SOURCE: "reform-user:reform-password123@/reform-database?parseTime=true&time_zone='America%2FNew_York'&sql_mode='ANSI'"
+      }
+    - {
+        GO: "golang:1.6", DATABASE: mysql, VERSION: 8.0, REFORM_DRIVER: mysql,
+        REFORM_INIT_SOURCE: "root@/reform-database?parseTime=true&time_zone='UTC'&sql_mode='ANSI'&multiStatements=true",
+        REFORM_TEST_SOURCE: "reform-user:reform-password123@/reform-database?parseTime=true&time_zone='America%2FNew_York'&sql_mode='TRADITIONAL'&interpolateParams=true"
       }
     - {
         GO: "golang:1.6", DATABASE: sqlite3, VERSION: dummy, REFORM_DRIVER: sqlite3,
@@ -144,23 +164,43 @@ matrix:
       }
     - {
         GO: "golang:1.7", DATABASE: mysql, VERSION: 5.5, REFORM_DRIVER: mysql,
-        REFORM_INIT_SOURCE: "root@/reform-database?parseTime=true&strict=true&sql_mode='ANSI,NO_AUTO_CREATE_USER'&sql_notes=false&time_zone='UTC'&multiStatements=true",
-        REFORM_TEST_SOURCE: "reform-user:reform-password123@/reform-database?parseTime=true&strict=true&sql_mode='ANSI,NO_AUTO_CREATE_USER'&sql_notes=false&time_zone='America%2FNew_York'"
+        REFORM_INIT_SOURCE: "root@/reform-database?parseTime=true&time_zone='UTC'&sql_mode='ANSI'&multiStatements=true",
+        REFORM_TEST_SOURCE: "reform-user:reform-password123@/reform-database?parseTime=true&time_zone='America%2FNew_York'&sql_mode='ANSI'"
+      }
+    - {
+        GO: "golang:1.7", DATABASE: mysql, VERSION: 5.5, REFORM_DRIVER: mysql,
+        REFORM_INIT_SOURCE: "root@/reform-database?parseTime=true&time_zone='UTC'&sql_mode='ANSI'&multiStatements=true",
+        REFORM_TEST_SOURCE: "reform-user:reform-password123@/reform-database?parseTime=true&time_zone='America%2FNew_York'&sql_mode='TRADITIONAL'&interpolateParams=true"
       }
     - {
         GO: "golang:1.7", DATABASE: mysql, VERSION: 5.6, REFORM_DRIVER: mysql,
-        REFORM_INIT_SOURCE: "root@/reform-database?parseTime=true&strict=true&sql_mode='ANSI,NO_AUTO_CREATE_USER'&sql_notes=false&time_zone='UTC'&multiStatements=true",
-        REFORM_TEST_SOURCE: "reform-user:reform-password123@/reform-database?parseTime=true&strict=true&sql_mode='ANSI,NO_AUTO_CREATE_USER'&sql_notes=false&time_zone='America%2FNew_York'"
+        REFORM_INIT_SOURCE: "root@/reform-database?parseTime=true&time_zone='UTC'&sql_mode='ANSI'&multiStatements=true",
+        REFORM_TEST_SOURCE: "reform-user:reform-password123@/reform-database?parseTime=true&time_zone='America%2FNew_York'&sql_mode='ANSI'"
+      }
+    - {
+        GO: "golang:1.7", DATABASE: mysql, VERSION: 5.6, REFORM_DRIVER: mysql,
+        REFORM_INIT_SOURCE: "root@/reform-database?parseTime=true&time_zone='UTC'&sql_mode='ANSI'&multiStatements=true",
+        REFORM_TEST_SOURCE: "reform-user:reform-password123@/reform-database?parseTime=true&time_zone='America%2FNew_York'&sql_mode='TRADITIONAL'&interpolateParams=true"
       }
     - {
         GO: "golang:1.7", DATABASE: mysql, VERSION: 5.7, REFORM_DRIVER: mysql,
-        REFORM_INIT_SOURCE: "root@/reform-database?parseTime=true&strict=true&sql_mode='ANSI,NO_AUTO_CREATE_USER'&sql_notes=false&time_zone='UTC'&multiStatements=true",
-        REFORM_TEST_SOURCE: "reform-user:reform-password123@/reform-database?parseTime=true&strict=true&sql_mode='ANSI,NO_AUTO_CREATE_USER'&sql_notes=false&time_zone='America%2FNew_York'"
+        REFORM_INIT_SOURCE: "root@/reform-database?parseTime=true&time_zone='UTC'&sql_mode='ANSI'&multiStatements=true",
+        REFORM_TEST_SOURCE: "reform-user:reform-password123@/reform-database?parseTime=true&time_zone='America%2FNew_York'&sql_mode='ANSI'"
+      }
+    - {
+        GO: "golang:1.7", DATABASE: mysql, VERSION: 5.7, REFORM_DRIVER: mysql,
+        REFORM_INIT_SOURCE: "root@/reform-database?parseTime=true&time_zone='UTC'&sql_mode='ANSI'&multiStatements=true",
+        REFORM_TEST_SOURCE: "reform-user:reform-password123@/reform-database?parseTime=true&time_zone='America%2FNew_York'&sql_mode='TRADITIONAL'&interpolateParams=true"
       }
     - {
         GO: "golang:1.7", DATABASE: mysql, VERSION: 8.0, REFORM_DRIVER: mysql,
-        REFORM_INIT_SOURCE: "root@/reform-database?parseTime=true&strict=true&sql_mode='ANSI,NO_AUTO_CREATE_USER'&sql_notes=false&time_zone='UTC'&multiStatements=true",
-        REFORM_TEST_SOURCE: "reform-user:reform-password123@/reform-database?parseTime=true&strict=true&sql_mode='ANSI,NO_AUTO_CREATE_USER'&sql_notes=false&time_zone='America%2FNew_York'"
+        REFORM_INIT_SOURCE: "root@/reform-database?parseTime=true&time_zone='UTC'&sql_mode='ANSI'&multiStatements=true",
+        REFORM_TEST_SOURCE: "reform-user:reform-password123@/reform-database?parseTime=true&time_zone='America%2FNew_York'&sql_mode='ANSI'"
+      }
+    - {
+        GO: "golang:1.7", DATABASE: mysql, VERSION: 8.0, REFORM_DRIVER: mysql,
+        REFORM_INIT_SOURCE: "root@/reform-database?parseTime=true&time_zone='UTC'&sql_mode='ANSI'&multiStatements=true",
+        REFORM_TEST_SOURCE: "reform-user:reform-password123@/reform-database?parseTime=true&time_zone='America%2FNew_York'&sql_mode='TRADITIONAL'&interpolateParams=true"
       }
     - {
         GO: "golang:1.7", DATABASE: sqlite3, VERSION: dummy, REFORM_DRIVER: sqlite3,
@@ -199,23 +239,43 @@ matrix:
       }
     - {
         GO: "captncraig/go-tip", DATABASE: mysql, VERSION: 5.5, REFORM_DRIVER: mysql,
-        REFORM_INIT_SOURCE: "root@/reform-database?parseTime=true&strict=true&sql_mode='ANSI,NO_AUTO_CREATE_USER'&sql_notes=false&time_zone='UTC'&multiStatements=true",
-        REFORM_TEST_SOURCE: "reform-user:reform-password123@/reform-database?parseTime=true&strict=true&sql_mode='ANSI,NO_AUTO_CREATE_USER'&sql_notes=false&time_zone='America%2FNew_York'"
+        REFORM_INIT_SOURCE: "root@/reform-database?parseTime=true&time_zone='UTC'&sql_mode='ANSI'&multiStatements=true",
+        REFORM_TEST_SOURCE: "reform-user:reform-password123@/reform-database?parseTime=true&time_zone='America%2FNew_York'&sql_mode='ANSI'"
+      }
+    - {
+        GO: "captncraig/go-tip", DATABASE: mysql, VERSION: 5.5, REFORM_DRIVER: mysql,
+        REFORM_INIT_SOURCE: "root@/reform-database?parseTime=true&time_zone='UTC'&sql_mode='ANSI'&multiStatements=true",
+        REFORM_TEST_SOURCE: "reform-user:reform-password123@/reform-database?parseTime=true&time_zone='America%2FNew_York'&sql_mode='TRADITIONAL'&interpolateParams=true"
       }
     - {
         GO: "captncraig/go-tip", DATABASE: mysql, VERSION: 5.6, REFORM_DRIVER: mysql,
-        REFORM_INIT_SOURCE: "root@/reform-database?parseTime=true&strict=true&sql_mode='ANSI,NO_AUTO_CREATE_USER'&sql_notes=false&time_zone='UTC'&multiStatements=true",
-        REFORM_TEST_SOURCE: "reform-user:reform-password123@/reform-database?parseTime=true&strict=true&sql_mode='ANSI,NO_AUTO_CREATE_USER'&sql_notes=false&time_zone='America%2FNew_York'"
+        REFORM_INIT_SOURCE: "root@/reform-database?parseTime=true&time_zone='UTC'&sql_mode='ANSI'&multiStatements=true",
+        REFORM_TEST_SOURCE: "reform-user:reform-password123@/reform-database?parseTime=true&time_zone='America%2FNew_York'&sql_mode='ANSI'"
+      }
+    - {
+        GO: "captncraig/go-tip", DATABASE: mysql, VERSION: 5.6, REFORM_DRIVER: mysql,
+        REFORM_INIT_SOURCE: "root@/reform-database?parseTime=true&time_zone='UTC'&sql_mode='ANSI'&multiStatements=true",
+        REFORM_TEST_SOURCE: "reform-user:reform-password123@/reform-database?parseTime=true&time_zone='America%2FNew_York'&sql_mode='TRADITIONAL'&interpolateParams=true"
       }
     - {
         GO: "captncraig/go-tip", DATABASE: mysql, VERSION: 5.7, REFORM_DRIVER: mysql,
-        REFORM_INIT_SOURCE: "root@/reform-database?parseTime=true&strict=true&sql_mode='ANSI,NO_AUTO_CREATE_USER'&sql_notes=false&time_zone='UTC'&multiStatements=true",
-        REFORM_TEST_SOURCE: "reform-user:reform-password123@/reform-database?parseTime=true&strict=true&sql_mode='ANSI,NO_AUTO_CREATE_USER'&sql_notes=false&time_zone='America%2FNew_York'"
+        REFORM_INIT_SOURCE: "root@/reform-database?parseTime=true&time_zone='UTC'&sql_mode='ANSI'&multiStatements=true",
+        REFORM_TEST_SOURCE: "reform-user:reform-password123@/reform-database?parseTime=true&time_zone='America%2FNew_York'&sql_mode='ANSI'"
+      }
+    - {
+        GO: "captncraig/go-tip", DATABASE: mysql, VERSION: 5.7, REFORM_DRIVER: mysql,
+        REFORM_INIT_SOURCE: "root@/reform-database?parseTime=true&time_zone='UTC'&sql_mode='ANSI'&multiStatements=true",
+        REFORM_TEST_SOURCE: "reform-user:reform-password123@/reform-database?parseTime=true&time_zone='America%2FNew_York'&sql_mode='TRADITIONAL'&interpolateParams=true"
       }
     - {
         GO: "captncraig/go-tip", DATABASE: mysql, VERSION: 8.0, REFORM_DRIVER: mysql,
-        REFORM_INIT_SOURCE: "root@/reform-database?parseTime=true&strict=true&sql_mode='ANSI,NO_AUTO_CREATE_USER'&sql_notes=false&time_zone='UTC'&multiStatements=true",
-        REFORM_TEST_SOURCE: "reform-user:reform-password123@/reform-database?parseTime=true&strict=true&sql_mode='ANSI,NO_AUTO_CREATE_USER'&sql_notes=false&time_zone='America%2FNew_York'"
+        REFORM_INIT_SOURCE: "root@/reform-database?parseTime=true&time_zone='UTC'&sql_mode='ANSI'&multiStatements=true",
+        REFORM_TEST_SOURCE: "reform-user:reform-password123@/reform-database?parseTime=true&time_zone='America%2FNew_York'&sql_mode='ANSI'"
+      }
+    - {
+        GO: "captncraig/go-tip", DATABASE: mysql, VERSION: 8.0, REFORM_DRIVER: mysql,
+        REFORM_INIT_SOURCE: "root@/reform-database?parseTime=true&time_zone='UTC'&sql_mode='ANSI'&multiStatements=true",
+        REFORM_TEST_SOURCE: "reform-user:reform-password123@/reform-database?parseTime=true&time_zone='America%2FNew_York'&sql_mode='TRADITIONAL'&interpolateParams=true"
       }
     - {
         GO: "captncraig/go-tip", DATABASE: sqlite3, VERSION: dummy, REFORM_DRIVER: sqlite3,

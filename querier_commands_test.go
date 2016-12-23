@@ -73,8 +73,8 @@ func (s *ReformSuite) TestInsertWithPrimaryKey() {
 }
 
 func (s *ReformSuite) TestInsertWithStringPrimaryKey() {
-	today := time.Now().Truncate(24 * time.Hour)
-	project := &Project{ID: "new", Start: today, End: pointer.ToTime(today.AddDate(0, 0, 1))}
+	start := time.Now().UTC().Truncate(24 * time.Hour)
+	project := &Project{ID: "new", Start: start, End: pointer.ToTime(start.AddDate(0, 0, 1))}
 	err := s.q.Insert(project)
 	s.NoError(err)
 	s.Equal("new", project.ID)

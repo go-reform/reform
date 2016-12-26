@@ -18,6 +18,10 @@ pipeline:
       - make test-db
       # - goveralls -service=drone -coverprofile=${REFORM_DRIVER}.cover
 
+  gitter:
+    image: plugins/gitter
+    pull: true
+
 services:
   postgres:
     image: postgres:${VERSION}

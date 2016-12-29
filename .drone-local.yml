@@ -30,6 +30,7 @@ pipeline:
     commands:
       - echo ${GO} ${DATABASE} ${VERSION} ${REFORM_DRIVER}
       - go version
+      - make install_deps
       - make test check
       - make test-db
 

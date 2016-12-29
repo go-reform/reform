@@ -24,6 +24,7 @@ before_install:
 
 install:
   - make download_deps
+  - make install_deps
 
 script:
   - make $TARGET check

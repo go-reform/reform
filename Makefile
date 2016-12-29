@@ -1,19 +1,27 @@
 all: check postgres mysql sqlite3
 
+# extra flags like -v
 REFORM_TEST_FLAGS ?=
 
 download_deps:
+	# download drivers
 	go get -v -u -d github.com/lib/pq \
-				github.com/go-sql-driver/mysql \
-				github.com/mattn/go-sqlite3 \
-				github.com/denisenkom/go-mssqldb
+		github.com/go-sql-driver/mysql \
+		github.com/mattn/go-sqlite3 \
+		github.com/denisenkom/go-mssqldb
 
+	# download other deps
 	go get -v -u -d github.com/AlekSi/pointer \
-				github.com/kisielk/errcheck \
-				github.com/golang/lint/golint \
-				github.com/stretchr/testify/... \
-				github.com/enodata/faker \
-				github.com/AlekSi/goveralls
+		github.com/stretchr/testify/... \
+		github.com/enodata/faker \
+		github.com/alecthomas/gometalinter \
+		github.com/AlekSi/goveralls
+
+install_deps:
+	go install -v github.com/alecthomas/gometalinter \
+		github.com/AlekSi/goveralls
+	gometalinter --install --vendored-linters
+	go test -i -v
 
 test:
 	rm -f internal/test/models/*_reform.go
@@ -21,15 +29,9 @@ test:
 	go test -coverprofile=parse.cover gopkg.in/reform.v1/parse
 	go generate -v -x gopkg.in/reform.v1/internal/test/models
 	go install -v gopkg.in/reform.v1/internal/test/models
-	go test -i -v
-	go install -v github.com/kisielk/errcheck \
-					github.com/golang/lint/golint \
-					github.com/AlekSi/goveralls
 
 check: test
-	go vet ./...
-	-errcheck ./...
-	golint ./...
+	-gometalinter ./... --deadline=60s --severity=vet:error
 
 test-db:
 	cat internal/test/sql/$(DATABASE)_init.sql \

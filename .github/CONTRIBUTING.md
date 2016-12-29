@@ -24,6 +24,7 @@ brew install mysql
 brew services start mysql
 ```
 
+Download dependencies with `make download_deps` and install them with `make install_deps`.
 Then run tests with `make`. See [`Makefile`](../Makefile) for connection parameters.
 
 

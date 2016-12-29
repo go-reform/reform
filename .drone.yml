@@ -14,6 +14,7 @@ pipeline:
       - echo ${GO} ${DATABASE} ${VERSION} ${REFORM_DRIVER}
       - go version
       - make download_deps
+      - make install_deps
       - make test check
       - make test-db
       # - goveralls -service=drone -coverprofile=${REFORM_DRIVER}.cover

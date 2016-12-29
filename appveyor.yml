@@ -25,6 +25,7 @@ install:
 
 build_script:
   - mingw32-make download_deps
+  - mingw32-make install_deps
 
 test_script:
   - mingw32-make test

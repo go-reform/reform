@@ -17,10 +17,14 @@ download_deps:
 		github.com/alecthomas/gometalinter \
 		github.com/AlekSi/goveralls
 
+	# download linters
+	go install -v github.com/alecthomas/gometalinter
+	gometalinter --install --update --download-only
+
 install_deps:
 	go install -v github.com/alecthomas/gometalinter \
 		github.com/AlekSi/goveralls
-	gometalinter --install --vendored-linters
+	gometalinter --install
 	go test -i -v
 
 test:

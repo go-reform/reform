@@ -128,10 +128,10 @@ func (s *Extra) SetPK(pk interface{}) {
 // check interfaces
 var (
 	_ reform.View   = ExtraTable
-	_ reform.Struct = new(Extra)
+	_ reform.Struct = (*Extra)(nil)
 	_ reform.Table  = ExtraTable
-	_ reform.Record = new(Extra)
-	_ fmt.Stringer  = new(Extra)
+	_ reform.Record = (*Extra)(nil)
+	_ fmt.Stringer  = (*Extra)(nil)
 )
 
 type notExportedTableType struct {
@@ -237,10 +237,10 @@ func (s *notExported) SetPK(pk interface{}) {
 // check interfaces
 var (
 	_ reform.View   = notExportedTable
-	_ reform.Struct = new(notExported)
+	_ reform.Struct = (*notExported)(nil)
 	_ reform.Table  = notExportedTable
-	_ reform.Record = new(notExported)
-	_ fmt.Stringer  = new(notExported)
+	_ reform.Record = (*notExported)(nil)
+	_ fmt.Stringer  = (*notExported)(nil)
 )
 
 func init() {

@@ -140,12 +140,12 @@ func (s *{{ .Type }}) SetPK(pk interface{}) {
 // check interfaces
 var (
 	_ reform.View   = {{ .TableVar }}
-	_ reform.Struct = new({{ .Type }})
+	_ reform.Struct = (*{{ .Type }})(nil)
 {{- if .IsTable }}
 	_ reform.Table  = {{ .TableVar }}
-	_ reform.Record = new({{ .Type }})
+	_ reform.Record = (*{{ .Type }})(nil)
 {{- end }}
-	_ fmt.Stringer  = new({{ .Type }})
+	_ fmt.Stringer  = (*{{ .Type }})(nil)
 )
 `))
 

@@ -82,4 +82,4 @@ func (q *Querier) QueryRow(query string, args ...interface{}) *sql.Row {
 }
 
 // check interface
-var _ DBTX = new(Querier)
+var _ DBTX = (*Querier)(nil)

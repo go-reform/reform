@@ -128,10 +128,10 @@ func (s *Person) SetPK(pk interface{}) {
 // check interfaces
 var (
 	_ reform.View   = PersonTable
-	_ reform.Struct = new(Person)
+	_ reform.Struct = (*Person)(nil)
 	_ reform.Table  = PersonTable
-	_ reform.Record = new(Person)
-	_ fmt.Stringer  = new(Person)
+	_ reform.Record = (*Person)(nil)
+	_ fmt.Stringer  = (*Person)(nil)
 )
 
 type projectTableType struct {
@@ -246,10 +246,10 @@ func (s *Project) SetPK(pk interface{}) {
 // check interfaces
 var (
 	_ reform.View   = ProjectTable
-	_ reform.Struct = new(Project)
+	_ reform.Struct = (*Project)(nil)
 	_ reform.Table  = ProjectTable
-	_ reform.Record = new(Project)
-	_ fmt.Stringer  = new(Project)
+	_ reform.Record = (*Project)(nil)
+	_ fmt.Stringer  = (*Project)(nil)
 )
 
 type personProjectViewType struct {
@@ -317,8 +317,8 @@ func (s *PersonProject) View() reform.View {
 // check interfaces
 var (
 	_ reform.View   = PersonProjectView
-	_ reform.Struct = new(PersonProject)
-	_ fmt.Stringer  = new(PersonProject)
+	_ reform.Struct = (*PersonProject)(nil)
+	_ fmt.Stringer  = (*PersonProject)(nil)
 )
 
 type legacyPersonTableType struct {
@@ -427,10 +427,10 @@ func (s *LegacyPerson) SetPK(pk interface{}) {
 // check interfaces
 var (
 	_ reform.View   = LegacyPersonTable
-	_ reform.Struct = new(LegacyPerson)
+	_ reform.Struct = (*LegacyPerson)(nil)
 	_ reform.Table  = LegacyPersonTable
-	_ reform.Record = new(LegacyPerson)
-	_ fmt.Stringer  = new(LegacyPerson)
+	_ reform.Record = (*LegacyPerson)(nil)
+	_ fmt.Stringer  = (*LegacyPerson)(nil)
 )
 
 type iDOnlyTableType struct {
@@ -536,10 +536,10 @@ func (s *IDOnly) SetPK(pk interface{}) {
 // check interfaces
 var (
 	_ reform.View   = IDOnlyTable
-	_ reform.Struct = new(IDOnly)
+	_ reform.Struct = (*IDOnly)(nil)
 	_ reform.Table  = IDOnlyTable
-	_ reform.Record = new(IDOnly)
-	_ fmt.Stringer  = new(IDOnly)
+	_ reform.Record = (*IDOnly)(nil)
+	_ fmt.Stringer  = (*IDOnly)(nil)
 )
 
 func init() {

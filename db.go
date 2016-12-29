@@ -13,7 +13,7 @@ type DBInterface interface {
 }
 
 // check interface
-var _ DBInterface = new(sql.DB)
+var _ DBInterface = (*sql.DB)(nil)
 
 // DB represents a connection to SQL database.
 type DB struct {
@@ -74,4 +74,4 @@ func (db *DB) InTransaction(f func(t *TX) error) error {
 }
 
 // check interface
-var _ DBTX = new(DB)
+var _ DBTX = (*DB)(nil)

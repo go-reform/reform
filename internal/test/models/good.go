@@ -119,10 +119,10 @@ type IDOnly struct {
 
 // check interfaces
 var (
-	_ reform.BeforeInserter = new(Person)
-	_ reform.BeforeUpdater  = new(Person)
-	_ reform.AfterFinder    = new(Person)
-	_ reform.BeforeInserter = new(Project)
-	_ reform.BeforeUpdater  = new(Project)
-	_ reform.AfterFinder    = new(Project)
+	_ reform.BeforeInserter = (*Person)(nil)
+	_ reform.BeforeUpdater  = (*Person)(nil)
+	_ reform.AfterFinder    = (*Person)(nil)
+	_ reform.BeforeInserter = (*Project)(nil)
+	_ reform.BeforeUpdater  = (*Project)(nil)
+	_ reform.AfterFinder    = (*Project)(nil)
 )

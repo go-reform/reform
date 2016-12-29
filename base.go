@@ -181,6 +181,6 @@ type Dialect interface {
 
 // check interface
 var (
-	_ DBTX = new(sql.DB)
-	_ DBTX = new(sql.Tx)
+	_ DBTX = (*sql.DB)(nil)
+	_ DBTX = (*sql.Tx)(nil)
 )

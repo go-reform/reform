@@ -96,4 +96,4 @@ func (pl *PrintfLogger) After(query string, args []interface{}, d time.Duration,
 }
 
 // check interface
-var _ Logger = new(PrintfLogger)
+var _ Logger = (*PrintfLogger)(nil)

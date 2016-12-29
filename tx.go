@@ -14,7 +14,7 @@ type TXInterface interface {
 }
 
 // check interface
-var _ TXInterface = new(sql.Tx)
+var _ TXInterface = (*sql.Tx)(nil)
 
 // TX represents a SQL database transaction.
 type TX struct {
@@ -55,4 +55,4 @@ func (tx *TX) Rollback() error {
 }
 
 // check interface
-var _ DBTX = new(TX)
+var _ DBTX = (*TX)(nil)

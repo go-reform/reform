@@ -1,21 +1,21 @@
 all: check postgres mysql sqlite3
 
+# extra flags like -v
 REFORM_TEST_FLAGS ?=
 
 download_deps:
+	# download drivers
 	go get -v -u -d github.com/lib/pq \
 				github.com/go-sql-driver/mysql \
 				github.com/mattn/go-sqlite3 \
 				github.com/denisenkom/go-mssqldb
 
+	# download other deps
 	go get -v -u -d github.com/AlekSi/pointer \
-				github.com/kisielk/errcheck \
 				github.com/stretchr/testify/... \
 				github.com/enodata/faker \
-				github.com/AlekSi/goveralls \
-				github.com/alecthomas/gometalinter
-	gometalinter --install --no-vendored-linters --download-only
-
+				github.com/alecthomas/gometalinter \
+				github.com/AlekSi/goveralls
 
 test:
 	rm -f internal/test/models/*_reform.go
@@ -24,13 +24,11 @@ test:
 	go generate -v -x gopkg.in/reform.v1/internal/test/models
 	go install -v gopkg.in/reform.v1/internal/test/models
 	go test -i -v
-	go install -v github.com/kisielk/errcheck \
-					github.com/alecthomas/gometalinter \
-					github.com/AlekSi/goveralls
-	gometalinter --install
 
 check: test
-	- gometalinter ./... --deadline 20s --severity=vet:error
+	go install -v github.com/alecthomas/gometalinter
+	gometalinter --install --vendored-linters
+	-gometalinter ./... --deadline=60s --severity=vet:error
 
 test-db:
 	cat internal/test/sql/$(DATABASE)_init.sql \

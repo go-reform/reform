@@ -30,3 +30,8 @@ script:
 
 after_success:
   - goveralls -coverprofile=$TARGET.cover
+
+notifications:
+  webhooks:
+    urls:
+      - secure: "M5FL6dahsnY6TsU03QptqRoVriulkFPGLoKmbwLWAmPTk+h6SreMKIJHTmSba77snYVWR/gMLMNW01yMBrbV+ZmVgU6Sdp6yYlciA4cQcvIM7pwKuIfzeKhMCE2oeNVB3G2IHeu+FysbFXzI1JV9oU1I453aksyAPi4flf8eVUeMUa3nxWQt84MFC5RFn/pJ0G8lwUgAmHq56FjiOZ+5hF224s++CEEGGSclGZLH0/+T7SVH9sWSpyBuFtB6LZsl78JQ3mdxpFe95VAlpaB/PWdi7BXnZQ8XHgG1U1+1Z5at1uEmMmYjsQ5GzxaTEfjBRdC5AT6bRHjhW5wpI0tFKX77+1eexQXypuKyGIax7/7wFhKoEsU/9IUneqm17H9C5ZecF0xfvgTT4e2sHihm4qmYhQOFhGW+zlZdkp6rKzT17H0+g2q0IH3MJOKghyMO8l/YDy+wt2jdHggobfZLgcWLhyaHkUy0570jVUc+s+Zk/OOHr8kExvUcBuQeE38sQD6KEQoeeevXNlNtwrHvafjTfH1cUrc5JwFzP7go3VBEYxaHu+ctO7+DcUswOUsnTRiTQrp2FgNQP0TdlGgHgFV9cN5C+VcCwiB4NuU4ZM6J2TYmR6Wih4h/NooFKa8DiD++mqdyf6PhBn3tfHHtBFaLuE2GYMJ61MAv4kMNcBk="

@@ -43,39 +43,51 @@ func TestMain(m *testing.M) {
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	// Use single connection so various session-related variables work.
+	// For example: "PRAGMA foreign_keys" for SQLite3, "SET IDENTITY_INSERT" for MS SQL, etc.
 	db.SetMaxIdleConns(1)
 	db.SetMaxOpenConns(1)
 	db.SetConnMaxLifetime(-1)
+
 	err = db.Ping()
 	if err != nil {
 		log.Fatal(err)
 	}
 
+	// print useful information for debugging
 	now := time.Now()
 	log.Printf("time.Now()       = %s", now)
 	log.Printf("time.Now().UTC() = %s", now.UTC())
 
+	// select dialect for driver
 	var dialect reform.Dialect
 	switch driver {
 	case "mysql":
 		dialect = mysql.Dialect
 
-		var tz string
-		err = db.QueryRow("SHOW VARIABLES LIKE 'time_zone'").Scan(&tz, &tz)
+		var s string
+		err = db.QueryRow("SELECT @@sql_mode").Scan(&s)
 		if err != nil {
 			log.Fatal(err)
 		}
-		log.Printf("MySQL time_zone = %q", tz)
+		log.Printf("MySQL sql_mode   = %q", s)
+
+		err = db.QueryRow("SELECT @@time_zone").Scan(&s)
+		if err != nil {
+			log.Fatal(err)
+		}
+		log.Printf("MySQL time_zone  = %q", s)
 
 	case "postgres":
 		dialect = postgresql.Dialect
 
-		var tz string
-		err = db.QueryRow("SHOW TimeZone").Scan(&tz)
+		var s string
+		err = db.QueryRow("SHOW TimeZone").Scan(&s)
 		if err != nil {
 			log.Fatal(err)
 		}
-		log.Printf("PostgreSQL TimeZone = %q", tz)
+		log.Printf("PostgreSQL TimeZone = %q", s)
 
 	case "sqlite3":
 		dialect = sqlite3.Dialect

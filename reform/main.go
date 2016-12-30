@@ -74,11 +74,7 @@ func processFile(path, file, pack string) error {
 		}
 	}
 
-	if err = initTemplate.Execute(f, sds); err != nil {
-		return err
-	}
-
-	return nil
+	return initTemplate.Execute(f, sds)
 }
 
 func gofmt(path string) {

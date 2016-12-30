@@ -109,6 +109,19 @@ func TestMain(m *testing.M) {
 	os.Exit(m.Run())
 }
 
+// checkForeignKeys checks that foreign keys are still enforced for sqlite3.
+func checkForeignKeys(t *testing.T, q *reform.Querier) {
+	if q.Dialect != sqlite3.Dialect {
+		return
+	}
+
+	var enabled bool
+	err := q.QueryRow("PRAGMA foreign_keys").Scan(&enabled)
+	require.NoError(t, err)
+	require.True(t, enabled)
+}
+
+// setIdentityInsert allows or disallows insertions of rows with set primary keys for MS SQL.
 func setIdentityInsert(t *testing.T, tx *reform.TX, table string, allow bool) {
 	if tx.Dialect != mssql.Dialect {
 		return
@@ -147,9 +160,13 @@ func (s *ReformSuite) SetupTest() {
 func (s *ReformSuite) TearDownTest() {
 	// some transactional tests rollback and nilify transaction
 	if s.q != nil {
+		checkForeignKeys(s.T(), s.q.Querier)
+
 		err := s.q.Rollback()
 		s.Require().NoError(err)
 	}
+
+	checkForeignKeys(s.T(), DB.Querier)
 }
 
 func (s *ReformSuite) RestartTransaction() {

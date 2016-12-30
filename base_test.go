@@ -2,7 +2,6 @@ package reform_test
 
 import (
 	"database/sql"
-	"errors"
 	"fmt"
 	"log"
 	"os"
@@ -14,8 +13,6 @@ import (
 	_ "github.com/lib/pq"
 	_ "github.com/mattn/go-sqlite3"
 
-	"github.com/AlekSi/pointer"
-	"github.com/enodata/faker"
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
 
@@ -231,44 +228,6 @@ func (s *ReformSuite) TestPlaceholders() {
 
 	s.Equal([]string{"$1", "$2", "$3", "$4", "$5"}, s.q.Placeholders(1, 5))
 	s.Equal([]string{"$2", "$3", "$4", "$5", "$6"}, s.q.Placeholders(2, 5))
-}
-
-func (s *ReformSuite) TestInTransaction() {
-	setIdentityInsert(s.T(), s.q, "people", true)
-
-	err := s.q.Rollback()
-	s.Require().NoError(err)
-	s.q = nil
-
-	person := &Person{ID: 42, Email: pointer.ToString(faker.Internet().Email())}
-
-	err = DB.InTransaction(func(tx *reform.TX) error {
-		err := tx.Insert(person)
-		s.NoError(err)
-		return errors.New("epic error")
-	})
-	s.EqualError(err, "epic error")
-
-	s.Panics(func() {
-		err = DB.InTransaction(func(tx *reform.TX) error {
-			err := tx.Insert(person)
-			s.NoError(err)
-			panic("epic panic!")
-		})
-	})
-
-	err = DB.InTransaction(func(tx *reform.TX) error {
-		err := tx.Insert(person)
-		s.NoError(err)
-		return nil
-	})
-	s.NoError(err)
-
-	err = DB.Insert(person)
-	s.Error(err)
-
-	err = DB.Delete(person)
-	s.NoError(err)
 }
 
 func (s *ReformSuite) TestTimezones() {

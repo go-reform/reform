@@ -31,8 +31,9 @@ pipeline:
       - echo ${GO} ${DATABASE} ${VERSION} ${REFORM_DRIVER}
       - go version
       - make install_deps
-      - make test check
+      - make test
       - make test-db
+      - make check
 
 services:
   postgres:

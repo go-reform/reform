@@ -1,4 +1,4 @@
-all: check postgres mysql sqlite3
+all: test postgres mysql sqlite3 check
 
 # extra flags like -v
 REFORM_TEST_FLAGS ?=
@@ -34,9 +34,6 @@ test:
 	go generate -v -x gopkg.in/reform.v1/internal/test/models
 	go install -v gopkg.in/reform.v1/internal/test/models
 
-check: test
-	-gometalinter ./... --deadline=60s --severity=vet:error
-
 test-db:
 	cat internal/test/sql/$(DATABASE)_init.sql \
 		internal/test/sql/data.sql \
@@ -44,6 +41,9 @@ test-db:
 		internal/test/sql/$(DATABASE)_set.sql \
 		| reform-db -db-driver=$(REFORM_DRIVER) -db-source="$(REFORM_INIT_SOURCE)"
 	go test $(REFORM_TEST_FLAGS) -coverprofile=$(REFORM_DRIVER).cover
+
+check:
+	-gometalinter ./... --deadline=60s --severity=vet:error
 
 drone:
 	drone exec --repo.trusted .drone-local.yml

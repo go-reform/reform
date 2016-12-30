@@ -15,8 +15,9 @@ pipeline:
       - go version
       - make download_deps
       - make install_deps
-      - make test check
+      - make test
       - make test-db
+      - make check
       # - goveralls -service=drone -coverprofile=${REFORM_DRIVER}.cover
 
   gitter:

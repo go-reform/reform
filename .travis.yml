@@ -27,7 +27,8 @@ install:
   - make install_deps
 
 script:
-  - make $TARGET check
+  - make test $TARGET
+  - make check
 
 after_success:
   - goveralls -coverprofile=$TARGET.cover

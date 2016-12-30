@@ -28,8 +28,8 @@ build_script:
   - mingw32-make install_deps
 
 test_script:
-  - mingw32-make test
-  - mingw32-make %TARGET%
+  - mingw32-make test %TARGET%
+  - mingw32-make check
 
 on_success:
   - if defined COVERALLS_TOKEN goveralls -coverprofile=%TARGET%.cover -service=

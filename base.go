@@ -13,6 +13,8 @@ var (
 	// committed or rolled back.
 	ErrTxDone = sql.ErrTxDone
 
+	ErrNoSavepoint = errors.New("reform: no savepoint")
+
 	// ErrNoPK is returned from various methods when primary key is required and not set.
 	ErrNoPK = errors.New("reform: no primary key")
 )

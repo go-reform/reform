@@ -2,7 +2,7 @@
 
 ## Not released yet
 
-* `ErrTxDone`.
+* `ErrTxDone`, `ErrNoSavepoint`, savepoints.
 
 ## v1.2.1 (2016-09-14, https://github.com/go-reform/reform/milestones/v1.2.1)
 

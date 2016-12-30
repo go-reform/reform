@@ -2,6 +2,7 @@ package reform
 
 import (
 	"database/sql"
+	"strconv"
 	"time"
 )
 
@@ -19,7 +20,8 @@ var _ TXInterface = (*sql.Tx)(nil)
 // TX represents a SQL database transaction.
 type TX struct {
 	*Querier
-	tx TXInterface
+	tx        TXInterface
+	savepoint int
 }
 
 // NewTX creates new TX object for given SQL database transaction.
@@ -51,6 +53,70 @@ func (tx *TX) Rollback() error {
 	start := time.Now()
 	err := tx.tx.Rollback()
 	tx.logAfter("ROLLBACK", nil, time.Since(start), err)
+	return err
+}
+
+func (tx *TX) Savepoint() error {
+	tx.savepoint++
+	query := "SAVEPOINT reform_" + strconv.Itoa(tx.savepoint)
+	_, err := tx.Exec(query)
+	if err != nil {
+		tx.savepoint--
+	}
+	return err
+}
+
+func (tx *TX) ReleaseSavepoint() error {
+	if tx.savepoint == 0 {
+		return ErrNoSavepoint
+	}
+
+	query := "RELEASE SAVEPOINT reform_" + strconv.Itoa(tx.savepoint)
+	tx.savepoint--
+	_, err := tx.Exec(query)
+	if err != nil {
+		tx.savepoint++
+	}
+	return err
+}
+
+func (tx *TX) RollbackToSavepoint() error {
+	if tx.savepoint == 0 {
+		return ErrNoSavepoint
+	}
+
+	query := "ROLLBACK TO SAVEPOINT reform_" + strconv.Itoa(tx.savepoint)
+	tx.savepoint--
+	_, err := tx.Exec(query)
+	if err != nil {
+		tx.savepoint++
+	}
+	return err
+}
+
+// InSavepoint wraps function execution in savepoint, rolling back it in case of error or panic,
+// committing (releasing) otherwise.
+func (tx *TX) InSavepoint(f func() error) error {
+	err := tx.Savepoint()
+	if err != nil {
+		return err
+	}
+
+	var released bool
+	defer func() {
+		if !released {
+			// always return f() or ReleaseSavepoint() error, not possible RollbackSavepoint() error
+			_ = tx.RollbackToSavepoint()
+		}
+	}()
+
+	err = f()
+	if err == nil {
+		err = tx.ReleaseSavepoint()
+	}
+	if err == nil {
+		released = true
+	}
 	return err
 }
 

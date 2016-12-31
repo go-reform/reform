@@ -93,6 +93,17 @@ func TestMain(m *testing.M) {
 	case "mssql":
 		dialect = mssql.Dialect
 
+		var options uint16
+		err = db.QueryRow("SELECT @@OPTIONS").Scan(&options)
+		if err != nil {
+			log.Fatal(err)
+		}
+		xact := "ON"
+		if options&0x4000 == 0 {
+			xact = "OFF"
+		}
+		log.Printf("MS SQL OPTIONS = %#4x (XACT_ABORT %s)", options, xact)
+
 	default:
 		log.Fatal("reform: no dialect for driver " + driver)
 	}

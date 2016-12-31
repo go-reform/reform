@@ -63,28 +63,24 @@ func TestMain(m *testing.M) {
 	case "mysql":
 		dialect = mysql.Dialect
 
-		var s string
-		err = db.QueryRow("SELECT @@sql_mode").Scan(&s)
+		var mode, autocommit, tz string
+		err = db.QueryRow("SELECT @@sql_mode, @@autocommit, @@time_zone").Scan(&mode, &autocommit, &tz)
 		if err != nil {
 			log.Fatal(err)
 		}
-		log.Printf("MySQL sql_mode   = %q", s)
-
-		err = db.QueryRow("SELECT @@time_zone").Scan(&s)
-		if err != nil {
-			log.Fatal(err)
-		}
-		log.Printf("MySQL time_zone  = %q", s)
+		log.Printf("MySQL sql_mode   = %q", mode)
+		log.Printf("MySQL autocommit = %q", autocommit)
+		log.Printf("MySQL time_zone  = %q", tz)
 
 	case "postgres":
 		dialect = postgresql.Dialect
 
-		var s string
-		err = db.QueryRow("SHOW TimeZone").Scan(&s)
+		var tz string
+		err = db.QueryRow("SHOW TimeZone").Scan(&tz)
 		if err != nil {
 			log.Fatal(err)
 		}
-		log.Printf("PostgreSQL TimeZone = %q", s)
+		log.Printf("PostgreSQL TimeZone = %q", tz)
 
 	case "sqlite3":
 		dialect = sqlite3.Dialect

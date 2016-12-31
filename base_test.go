@@ -126,8 +126,8 @@ func checkForeignKeys(t *testing.T, q *reform.Querier) {
 }
 
 // setIdentityInsert allows or disallows insertions of rows with set primary keys for MS SQL.
-func setIdentityInsert(t *testing.T, tx *reform.TX, table string, allow bool) {
-	if tx.Dialect != mssql.Dialect {
+func setIdentityInsert(t *testing.T, q *reform.Querier, table string, allow bool) {
+	if q.Dialect != mssql.Dialect {
 		return
 	}
 
@@ -135,8 +135,8 @@ func setIdentityInsert(t *testing.T, tx *reform.TX, table string, allow bool) {
 	if allow {
 		allowString = "ON"
 	}
-	sql := fmt.Sprintf("SET IDENTITY_INSERT %s %s", tx.QuoteIdentifier(table), allowString)
-	_, err := tx.Exec(sql)
+	sql := fmt.Sprintf("SET IDENTITY_INSERT %s %s", q.QuoteIdentifier(table), allowString)
+	_, err := q.Exec(sql)
 	require.NoError(t, err)
 }
 
@@ -158,7 +158,7 @@ func (s *ReformSuite) SetupTest() {
 	s.q, err = DB.Begin()
 	s.Require().NoError(err)
 
-	setIdentityInsert(s.T(), s.q, "people", false)
+	setIdentityInsert(s.T(), s.q.Querier, "people", false)
 }
 
 func (s *ReformSuite) TearDownTest() {
@@ -238,7 +238,7 @@ func (s *ReformSuite) TestPlaceholders() {
 }
 
 func (s *ReformSuite) TestTimezones() {
-	setIdentityInsert(s.T(), s.q, "people", true)
+	setIdentityInsert(s.T(), s.q.Querier, "people", true)
 
 	t1 := time.Now()
 	t2 := t1.UTC()

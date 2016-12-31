@@ -15,10 +15,10 @@ import (
 )
 
 func (s *ReformSuite) TestBeginCommit() {
-	setIdentityInsert(s.T(), s.q, "people", true)
-
 	s.Require().NoError(s.q.Rollback())
 	s.q = nil
+
+	setIdentityInsert(s.T(), DB.Querier, "people", true)
 
 	person := &Person{ID: 42, Email: pointer.ToString(faker.Internet().Email())}
 
@@ -33,10 +33,10 @@ func (s *ReformSuite) TestBeginCommit() {
 }
 
 func (s *ReformSuite) TestBeginRollback() {
-	setIdentityInsert(s.T(), s.q, "people", true)
-
 	s.Require().NoError(s.q.Rollback())
 	s.q = nil
+
+	setIdentityInsert(s.T(), DB.Querier, "people", true)
 
 	person := &Person{ID: 42, Email: pointer.ToString(faker.Internet().Email())}
 
@@ -55,10 +55,10 @@ func (s *ReformSuite) TestErrorInTransaction() {
 		s.T().Skip(s.q.Dialect.String() + " works differently, see TestAbortedTransaction")
 	}
 
-	setIdentityInsert(s.T(), s.q, "people", true)
-
 	s.Require().NoError(s.q.Rollback())
 	s.q = nil
+
+	setIdentityInsert(s.T(), DB.Querier, "people", true)
 
 	person1 := &Person{ID: 42, Email: pointer.ToString(faker.Internet().Email())}
 	person2 := &Person{ID: 43, Email: pointer.ToString(faker.Internet().Email())}
@@ -91,6 +91,7 @@ func (s *ReformSuite) TestErrorInTransaction() {
 }
 
 // This behavior is checked for documentation purposes only. reform does not rely on it.
+// http://postgresql.nabble.com/Current-transaction-is-aborted-commands-ignored-until-end-of-transaction-block-td5109252.html
 func (s *ReformSuite) TestAbortedTransaction() {
 	if s.q.Dialect == mysql.Dialect || s.q.Dialect == sqlite3.Dialect || s.q.Dialect == mssql.Dialect {
 		s.T().Skip(s.q.Dialect.String() + " works differently, see TestErrorInTransaction")
@@ -98,6 +99,8 @@ func (s *ReformSuite) TestAbortedTransaction() {
 
 	s.Require().NoError(s.q.Rollback())
 	s.q = nil
+
+	setIdentityInsert(s.T(), DB.Querier, "people", true)
 
 	person1 := &Person{ID: 42, Email: pointer.ToString(faker.Internet().Email())}
 	person2 := &Person{ID: 43, Email: pointer.ToString(faker.Internet().Email())}
@@ -127,10 +130,10 @@ func (s *ReformSuite) TestAbortedTransaction() {
 }
 
 func (s *ReformSuite) TestInTransaction() {
-	setIdentityInsert(s.T(), s.q, "people", true)
-
 	s.Require().NoError(s.q.Rollback())
 	s.q = nil
+
+	setIdentityInsert(s.T(), DB.Querier, "people", true)
 
 	person := &Person{ID: 42, Email: pointer.ToString(faker.Internet().Email())}
 

@@ -67,8 +67,8 @@ func (s *ReformSuite) TestErrorInTransaction() {
 	tx, err := DB.Begin()
 	s.Require().NoError(err)
 	s.NoError(tx.Insert(person1))
-	s.Error(tx.Insert(person1)) // duplicate PK
-	s.NoError(tx.Insert(person2))
+	s.Error(tx.Insert(person1))   // duplicate PK
+	s.NoError(tx.Insert(person2)) // INSERT works
 	s.NoError(tx.Commit())
 	s.Equal(tx.Commit(), reform.ErrTxDone)
 	s.Equal(tx.Rollback(), reform.ErrTxDone)
@@ -81,8 +81,8 @@ func (s *ReformSuite) TestErrorInTransaction() {
 	tx, err = DB.Begin()
 	s.Require().NoError(err)
 	s.NoError(tx.Insert(person1))
-	s.Error(tx.Insert(person1)) // duplicate PK
-	s.NoError(tx.Insert(person2))
+	s.Error(tx.Insert(person1))   // duplicate PK
+	s.NoError(tx.Insert(person2)) // INSERT works
 	s.NoError(tx.Rollback())
 	s.Equal(tx.Commit(), reform.ErrTxDone)
 	s.Equal(tx.Rollback(), reform.ErrTxDone)
@@ -99,27 +99,31 @@ func (s *ReformSuite) TestAbortedTransaction() {
 	s.Require().NoError(s.q.Rollback())
 	s.q = nil
 
-	person := &Person{ID: 42, Email: pointer.ToString(faker.Internet().Email())}
+	person1 := &Person{ID: 42, Email: pointer.ToString(faker.Internet().Email())}
+	person2 := &Person{ID: 43, Email: pointer.ToString(faker.Internet().Email())}
 
 	// commit fails
 	tx, err := DB.Begin()
 	s.Require().NoError(err)
-	s.NoError(tx.Insert(person))
-	s.EqualError(tx.Insert(person), `pq: duplicate key value violates unique constraint "people_pkey"`)
+	s.NoError(tx.Insert(person1))
+	s.EqualError(tx.Insert(person1), `pq: duplicate key value violates unique constraint "people_pkey"`)
+	s.EqualError(tx.Insert(person2), `pq: current transaction is aborted, commands ignored until end of transaction block`)
 	s.EqualError(tx.Commit(), `pq: Could not complete operation in a failed transaction`)
-	s.Equal(tx.Commit(), reform.ErrTxDone)
 	s.Equal(tx.Rollback(), reform.ErrTxDone)
-	s.EqualError(DB.Reload(person), reform.ErrNoRows.Error())
+	s.EqualError(DB.Reload(person1), reform.ErrNoRows.Error())
+	s.EqualError(DB.Reload(person2), reform.ErrNoRows.Error())
 
 	// rollback works
 	tx, err = DB.Begin()
 	s.Require().NoError(err)
-	s.NoError(tx.Insert(person))
-	s.EqualError(tx.Insert(person), `pq: duplicate key value violates unique constraint "people_pkey"`)
+	s.NoError(tx.Insert(person1))
+	s.EqualError(tx.Insert(person1), `pq: duplicate key value violates unique constraint "people_pkey"`)
+	s.EqualError(tx.Insert(person2), `pq: current transaction is aborted, commands ignored until end of transaction block`)
 	s.NoError(tx.Rollback())
 	s.Equal(tx.Commit(), reform.ErrTxDone)
 	s.Equal(tx.Rollback(), reform.ErrTxDone)
-	s.EqualError(DB.Reload(person), reform.ErrNoRows.Error())
+	s.EqualError(DB.Reload(person1), reform.ErrNoRows.Error())
+	s.EqualError(DB.Reload(person2), reform.ErrNoRows.Error())
 }
 
 func (s *ReformSuite) TestInTransaction() {

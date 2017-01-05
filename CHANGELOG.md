@@ -1,5 +1,9 @@
 # Changelog
 
+## Not released yet
+
+* `ErrTxDone`.
+
 ## v1.2.1 (2016-09-14, https://github.com/go-reform/reform/milestones/v1.2.1)
 
 * `reform` command now correctly handles non-exported types.

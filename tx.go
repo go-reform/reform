@@ -38,19 +38,19 @@ func NewTXFromInterface(tx TXInterface, dialect Dialect, logger Logger) *TX {
 
 // Commit commits the transaction.
 func (tx *TX) Commit() error {
-	start := time.Now()
 	tx.logBefore("COMMIT", nil)
+	start := time.Now()
 	err := tx.tx.Commit()
-	tx.logAfter("COMMIT", nil, time.Now().Sub(start), err)
+	tx.logAfter("COMMIT", nil, time.Since(start), err)
 	return err
 }
 
 // Rollback aborts the transaction.
 func (tx *TX) Rollback() error {
-	start := time.Now()
 	tx.logBefore("ROLLBACK", nil)
+	start := time.Now()
 	err := tx.tx.Rollback()
-	tx.logAfter("ROLLBACK", nil, time.Now().Sub(start), err)
+	tx.logAfter("ROLLBACK", nil, time.Since(start), err)
 	return err
 }
 

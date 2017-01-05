@@ -52,7 +52,7 @@ func (s *ReformSuite) TestInsertWithValues() {
 }
 
 func (s *ReformSuite) TestInsertWithPrimaryKey() {
-	setIdentityInsert(s.T(), s.q, "people", true)
+	setIdentityInsert(s.T(), s.q.Querier, "people", true)
 
 	newEmail := faker.Internet().Email()
 	person := &Person{ID: 50, Email: &newEmail}
@@ -160,7 +160,7 @@ func (s *ReformSuite) TestInsertMulti() {
 }
 
 func (s *ReformSuite) TestInsertMultiWithPrimaryKeys() {
-	setIdentityInsert(s.T(), s.q, "people", true)
+	setIdentityInsert(s.T(), s.q.Querier, "people", true)
 
 	newEmail := faker.Internet().Email()
 	newName := faker.Name().Name()

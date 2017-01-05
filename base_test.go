@@ -142,7 +142,8 @@ func setIdentityInsert(t *testing.T, q *reform.Querier, table string, allow bool
 
 type ReformSuite struct {
 	suite.Suite
-	q *reform.TX
+	tx *reform.TX
+	q  *reform.Querier
 }
 
 func TestReformSuite(t *testing.T) {
@@ -155,18 +156,20 @@ func (s *ReformSuite) SetupTest() {
 	DB.Logger = pl
 
 	var err error
-	s.q, err = DB.Begin()
+	s.tx, err = DB.Begin()
 	s.Require().NoError(err)
 
-	setIdentityInsert(s.T(), s.q.Querier, "people", false)
+	s.q = s.tx.WithTag("test")
+
+	setIdentityInsert(s.T(), s.q, "people", false)
 }
 
 func (s *ReformSuite) TearDownTest() {
-	// some transactional tests rollback and nilify transaction
+	// some transactional tests rollback and nilify q
 	if s.q != nil {
-		checkForeignKeys(s.T(), s.q.Querier)
+		checkForeignKeys(s.T(), s.q)
 
-		err := s.q.Rollback()
+		err := s.tx.Rollback()
 		s.Require().NoError(err)
 	}
 
@@ -238,7 +241,7 @@ func (s *ReformSuite) TestPlaceholders() {
 }
 
 func (s *ReformSuite) TestTimezones() {
-	setIdentityInsert(s.T(), s.q.Querier, "people", true)
+	setIdentityInsert(s.T(), s.q, "people", true)
 
 	t1 := time.Now()
 	t2 := t1.UTC()

@@ -30,7 +30,7 @@ install_deps:
 test:
 	rm -f internal/test/models/*_reform.go
 	go install -v gopkg.in/reform.v1/...
-	go test -coverprofile=parse.cover gopkg.in/reform.v1/parse
+	go test $(REFORM_TEST_FLAGS) -coverprofile=parse.cover gopkg.in/reform.v1/parse
 	go generate -v -x gopkg.in/reform.v1/internal/test/models
 	go install -v gopkg.in/reform.v1/internal/test/models
 

@@ -37,14 +37,14 @@ func (q *Querier) NextRow(str Struct, rows *sql.Rows) error {
 
 // selectQuery returns full SELECT query for given view and tail.
 func (q *Querier) selectQuery(view View, tail string, limit1 bool) string {
-	command := "SELECT"
+	query := q.startQuery("SELECT")
 
 	if limit1 && q.SelectLimitMethod() == SelectTop {
-		command += " TOP 1"
+		query += " TOP 1"
 	}
 
 	return fmt.Sprintf("%s %s FROM %s %s",
-		command, strings.Join(q.QualifiedColumns(view), ", "), q.QualifiedView(view), tail)
+		query, strings.Join(q.QualifiedColumns(view), ", "), q.QualifiedView(view), tail)
 }
 
 // SelectOneTo queries str's View with tail and args and scans first result to str.

@@ -69,6 +69,17 @@ func ExampleNewDB() {
 	_ = reform.NewDB(conn, postgresql.Dialect, reform.NewPrintfLogger(logger.Printf))
 }
 
+func ExampleQuerier_WithTag() {
+	id := "baron"
+	person, err := DB.WithTag("GetProject:%v", id).FindByPrimaryKeyFrom(ProjectTable, id)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(person)
+	// Output:
+	// Name: `Vicious Baron` (string), ID: `baron` (string), Start: 2014-06-01 00:00:00 +0000 UTC (time.Time), End: 2016-02-21 00:00:00 +0000 UTC (*time.Time)
+}
+
 func ExampleQuerier_SelectRows() {
 	tail := fmt.Sprintf("WHERE created_at < %s ORDER BY id", DB.Placeholder(1))
 	y2010 := time.Date(2010, 1, 1, 0, 0, 0, 0, time.UTC)

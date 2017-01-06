@@ -15,7 +15,7 @@ import (
 )
 
 func (s *ReformSuite) TestBeginCommit() {
-	s.Require().NoError(s.q.Rollback())
+	s.Require().NoError(s.tx.Rollback())
 	s.q = nil
 
 	setIdentityInsert(s.T(), DB.Querier, "people", true)
@@ -33,7 +33,7 @@ func (s *ReformSuite) TestBeginCommit() {
 }
 
 func (s *ReformSuite) TestBeginRollback() {
-	s.Require().NoError(s.q.Rollback())
+	s.Require().NoError(s.tx.Rollback())
 	s.q = nil
 
 	setIdentityInsert(s.T(), DB.Querier, "people", true)
@@ -55,7 +55,7 @@ func (s *ReformSuite) TestErrorInTransaction() {
 		s.T().Skip(s.q.Dialect.String() + " works differently, see TestAbortedTransaction")
 	}
 
-	s.Require().NoError(s.q.Rollback())
+	s.Require().NoError(s.tx.Rollback())
 	s.q = nil
 
 	setIdentityInsert(s.T(), DB.Querier, "people", true)
@@ -97,7 +97,7 @@ func (s *ReformSuite) TestAbortedTransaction() {
 		s.T().Skip(s.q.Dialect.String() + " works differently, see TestErrorInTransaction")
 	}
 
-	s.Require().NoError(s.q.Rollback())
+	s.Require().NoError(s.tx.Rollback())
 	s.q = nil
 
 	setIdentityInsert(s.T(), DB.Querier, "people", true)
@@ -130,7 +130,7 @@ func (s *ReformSuite) TestAbortedTransaction() {
 }
 
 func (s *ReformSuite) TestInTransaction() {
-	s.Require().NoError(s.q.Rollback())
+	s.Require().NoError(s.tx.Rollback())
 	s.q = nil
 
 	setIdentityInsert(s.T(), DB.Querier, "people", true)

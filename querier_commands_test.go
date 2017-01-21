@@ -263,9 +263,7 @@ func (s *ReformSuite) TestUpdateColumns() {
 		s.NoError(err)
 
 		columnsCopy := make([]string, len(columns))
-		for i, c := range columns {
-			columnsCopy[i] = c
-		}
+		copy(columnsCopy, columns)
 
 		person.Name = p.Name
 		person.Email = p.Email

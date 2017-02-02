@@ -40,10 +40,7 @@ func parseStructTypeSpec(ts *ast.TypeSpec, str *ast.StructType) (*StructInfo, er
 			continue
 		}
 		tag = reflect.StructTag(tag[1 : len(tag)-1]).Get("reform") // strip quotes
-		if len(tag) == 0 {
-			continue
-		}
-		if tag == "-" {
+		if tag == "" || tag == "-" {
 			continue
 		}
 

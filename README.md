@@ -39,7 +39,8 @@ Supported SQL dialects:
     ```
 
     Magic comment `//reform:people` links this model to `people` table or view in SQL database.
-    First value in `reform` tag is a column name. `pk` marks primary key.
+    The first value in field's `reform` tag is a column name. `pk` marks primary key.
+    Use value `-` or omit tag completely to skip a field.
     Use pointers for nullable fields.
 
 4. Run `reform [package or directory]` or `go generate [package or file]`. This will create `person_reform.go`

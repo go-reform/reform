@@ -49,7 +49,7 @@ func Object(obj interface{}, schema, table string) (res *StructInfo, err error) 
 	for i := 0; i < t.NumField(); i++ {
 		f := t.Field(i)
 		tag := f.Tag.Get("reform")
-		if len(tag) == 0 {
+		if tag == "" || tag == "-" {
 			continue
 		}
 

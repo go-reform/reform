@@ -11,12 +11,15 @@ type (
 
 //reform:extra
 type Extra struct {
-	ID     Integer   `reform:"id,pk"`
-	Name   *String   `reform:"name"`
-	Bytes  []byte    `reform:"bytes"`
-	Bytes2 Bytes     `reform:"bytes2"`
-	Byte   *byte     `reform:"byte"`
-	Array  [512]byte `reform:"array"`
+	ID       Integer   `reform:"id,pk"`
+	Name     *String   `reform:"name"`
+	Bytes    []byte    `reform:"bytes"`
+	Bytes2   Bytes     `reform:"bytes2"`
+	Byte     *byte     `reform:"byte"`
+	Array    [512]byte `reform:"array"`
+	Ignored1 string
+	Ignored2 string `reform:""`
+	Ignored3 string `reform:"-"`
 }
 
 //reform:not_exported

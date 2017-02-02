@@ -2,6 +2,7 @@
 
 ## Not released yet
 
+* Field with `reform` tag with value `"-"` is ignored now (just like with value `""` and without tag at all).
 * `ErrTxDone`.
 
 ## v1.2.1 (2016-09-14, https://github.com/go-reform/reform/milestones/v1.2.1)

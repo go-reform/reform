@@ -52,6 +52,9 @@ func Object(obj interface{}, schema, table string) (res *StructInfo, err error) 
 		if len(tag) == 0 {
 			continue
 		}
+		if tag == "-" {
+			continue
+		}
 
 		// check for anonymous fields
 		if f.Anonymous {

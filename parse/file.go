@@ -43,6 +43,9 @@ func parseStructTypeSpec(ts *ast.TypeSpec, str *ast.StructType) (*StructInfo, er
 		if len(tag) == 0 {
 			continue
 		}
+		if tag == "-" {
+			continue
+		}
 
 		// check for anonymous fields
 		if len(f.Names) == 0 {

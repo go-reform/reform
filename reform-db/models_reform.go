@@ -10,6 +10,162 @@ import (
 	"gopkg.in/reform.v1/parse"
 )
 
+type tableViewType struct {
+	s parse.StructInfo
+	z []interface{}
+}
+
+// Schema returns a schema name in SQL database ("information_schema").
+func (v *tableViewType) Schema() string {
+	return v.s.SQLSchema
+}
+
+// Name returns a view or table name in SQL database ("tables").
+func (v *tableViewType) Name() string {
+	return v.s.SQLName
+}
+
+// Columns returns a new slice of column names for that view or table in SQL database.
+func (v *tableViewType) Columns() []string {
+	return []string{"table_catalog", "table_schema", "table_name", "table_type"}
+}
+
+// NewStruct makes a new struct for that view or table.
+func (v *tableViewType) NewStruct() reform.Struct {
+	return new(table)
+}
+
+// tableView represents tables view or table in SQL database.
+var tableView = &tableViewType{
+	s: parse.StructInfo{Type: "table", SQLSchema: "information_schema", SQLName: "tables", Fields: []parse.FieldInfo{{Name: "Catalog", PKType: "", Column: "table_catalog"}, {Name: "Schema", PKType: "", Column: "table_schema"}, {Name: "Name", PKType: "", Column: "table_name"}, {Name: "Type", PKType: "", Column: "table_type"}}, PKFieldIndex: -1},
+	z: new(table).Values(),
+}
+
+// String returns a string representation of this struct or record.
+func (s table) String() string {
+	res := make([]string, 4)
+	res[0] = "Catalog: " + reform.Inspect(s.Catalog, true)
+	res[1] = "Schema: " + reform.Inspect(s.Schema, true)
+	res[2] = "Name: " + reform.Inspect(s.Name, true)
+	res[3] = "Type: " + reform.Inspect(s.Type, true)
+	return strings.Join(res, ", ")
+}
+
+// Values returns a slice of struct or record field values.
+// Returned interface{} values are never untyped nils.
+func (s *table) Values() []interface{} {
+	return []interface{}{
+		s.Catalog,
+		s.Schema,
+		s.Name,
+		s.Type,
+	}
+}
+
+// Pointers returns a slice of pointers to struct or record fields.
+// Returned interface{} values are never untyped nils.
+func (s *table) Pointers() []interface{} {
+	return []interface{}{
+		&s.Catalog,
+		&s.Schema,
+		&s.Name,
+		&s.Type,
+	}
+}
+
+// View returns View object for that struct.
+func (s *table) View() reform.View {
+	return tableView
+}
+
+// check interfaces
+var (
+	_ reform.View   = tableView
+	_ reform.Struct = (*table)(nil)
+	_ fmt.Stringer  = (*table)(nil)
+)
+
+type columnViewType struct {
+	s parse.StructInfo
+	z []interface{}
+}
+
+// Schema returns a schema name in SQL database ("information_schema").
+func (v *columnViewType) Schema() string {
+	return v.s.SQLSchema
+}
+
+// Name returns a view or table name in SQL database ("columns").
+func (v *columnViewType) Name() string {
+	return v.s.SQLName
+}
+
+// Columns returns a new slice of column names for that view or table in SQL database.
+func (v *columnViewType) Columns() []string {
+	return []string{"table_catalog", "table_schema", "table_name", "column_name", "is_nullable", "data_type"}
+}
+
+// NewStruct makes a new struct for that view or table.
+func (v *columnViewType) NewStruct() reform.Struct {
+	return new(column)
+}
+
+// columnView represents columns view or table in SQL database.
+var columnView = &columnViewType{
+	s: parse.StructInfo{Type: "column", SQLSchema: "information_schema", SQLName: "columns", Fields: []parse.FieldInfo{{Name: "TableCatalog", PKType: "", Column: "table_catalog"}, {Name: "TableSchema", PKType: "", Column: "table_schema"}, {Name: "TableName", PKType: "", Column: "table_name"}, {Name: "Name", PKType: "", Column: "column_name"}, {Name: "IsNullable", PKType: "", Column: "is_nullable"}, {Name: "Type", PKType: "", Column: "data_type"}}, PKFieldIndex: -1},
+	z: new(column).Values(),
+}
+
+// String returns a string representation of this struct or record.
+func (s column) String() string {
+	res := make([]string, 6)
+	res[0] = "TableCatalog: " + reform.Inspect(s.TableCatalog, true)
+	res[1] = "TableSchema: " + reform.Inspect(s.TableSchema, true)
+	res[2] = "TableName: " + reform.Inspect(s.TableName, true)
+	res[3] = "Name: " + reform.Inspect(s.Name, true)
+	res[4] = "IsNullable: " + reform.Inspect(s.IsNullable, true)
+	res[5] = "Type: " + reform.Inspect(s.Type, true)
+	return strings.Join(res, ", ")
+}
+
+// Values returns a slice of struct or record field values.
+// Returned interface{} values are never untyped nils.
+func (s *column) Values() []interface{} {
+	return []interface{}{
+		s.TableCatalog,
+		s.TableSchema,
+		s.TableName,
+		s.Name,
+		s.IsNullable,
+		s.Type,
+	}
+}
+
+// Pointers returns a slice of pointers to struct or record fields.
+// Returned interface{} values are never untyped nils.
+func (s *column) Pointers() []interface{} {
+	return []interface{}{
+		&s.TableCatalog,
+		&s.TableSchema,
+		&s.TableName,
+		&s.Name,
+		&s.IsNullable,
+		&s.Type,
+	}
+}
+
+// View returns View object for that struct.
+func (s *column) View() reform.View {
+	return columnView
+}
+
+// check interfaces
+var (
+	_ reform.View   = columnView
+	_ reform.Struct = (*column)(nil)
+	_ fmt.Stringer  = (*column)(nil)
+)
+
 type sqliteMasterViewType struct {
 	s parse.StructInfo
 	z []interface{}
@@ -158,6 +314,8 @@ var (
 )
 
 func init() {
+	parse.AssertUpToDate(&tableView.s, new(table))
+	parse.AssertUpToDate(&columnView.s, new(column))
 	parse.AssertUpToDate(&sqliteMasterView.s, new(sqliteMaster))
 	parse.AssertUpToDate(&sqliteTableInfoView.s, new(sqliteTableInfo))
 }

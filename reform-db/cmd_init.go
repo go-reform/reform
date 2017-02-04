@@ -6,18 +6,65 @@ import (
 	"strings"
 
 	"gopkg.in/reform.v1"
+	"gopkg.in/reform.v1/dialects/mssql"
+	"gopkg.in/reform.v1/dialects/mysql"
+	"gopkg.in/reform.v1/dialects/postgresql"
 	"gopkg.in/reform.v1/dialects/sqlite3"
 	"gopkg.in/reform.v1/parse"
 )
 
-func goType(sqlType string) string {
+func goType(sqlType string, dialect reform.Dialect) string {
+	// https://www.postgresql.org/docs/current/static/datatype.html
+	// https://dev.mysql.com/doc/refman/5.7/en/data-types.html
+	// https://www.sqlite.org/datatype3.html
+
+	// handle integer types
+	switch dialect {
+	case postgresql.Dialect:
+		switch sqlType {
+		case "smallint":
+			return "int16"
+		case "integer":
+			return "int32"
+		case "bigint":
+			return "int64"
+		}
+
+	case mysql.Dialect:
+		switch sqlType {
+		case "tinyint":
+			return "int8"
+		case "smallint":
+			return "int16"
+		case "mediumint", "int":
+			return "int32"
+		case "bigint":
+			return "int64"
+		}
+
+	case sqlite3.Dialect:
+		switch sqlType {
+		case "integer":
+			return "int8"
+		}
+
+	case mssql.Dialect:
+	}
+
+	// order: PostgreSQL, MySQL, SQLite3, MS SQL
 	switch sqlType {
-	case "integer":
-		return "int"
-	case "varchar":
+	case "character", "character varying", "text":
+		fallthrough
+	case "char", "varchar", "tinytext", "mediumtext", "longtext":
 		return "string"
-	case "date", "time", "datetime":
+
+	// TODO blobs to []byte
+
+	case "date", "time", "time with time zone", "timestamp", "timestamp with time zone":
+		fallthrough
+	case "datetime":
 		return "time.Time"
+
 	default:
 		return fmt.Sprintf("interface{} /* FIXME unhandled database type %q, please change it */", sqlType)
 	}
@@ -28,19 +75,79 @@ func toCamelCase(sqlName string) string {
 	return strings.Replace(t, " ", "", -1)
 }
 
-func initModelsSQLite3(db *reform.DB) {
+func initModelsPostgreSQL(db *reform.DB) (structs []parse.StructInfo) {
+	tables, err := db.SelectAllFrom(tableView, `WHERE table_schema NOT IN ($1, $2)`, "pg_catalog", "information_schema")
+	if err != nil {
+		logger.Fatal(err)
+	}
+
+	for _, t := range tables {
+		table := t.(*table)
+		str := parse.StructInfo{Type: toCamelCase(table.Name), SQLName: table.Name}
+
+		tail := `WHERE table_catalog = $1 AND table_schema = $2 AND table_name = $3 ORDER BY ordinal_position`
+		columns, err := db.SelectAllFrom(columnView, tail, table.Catalog, table.Schema, table.Name)
+		if err != nil {
+			logger.Fatal(err)
+		}
+		for _, c := range columns {
+			column := c.(*column)
+			str.Fields = append(str.Fields, parse.FieldInfo{
+				Name:   toCamelCase(column.Name),
+				PKType: goType(column.Type, postgresql.Dialect), // FIXME this is Type, not PKType (not only PK)
+				Column: column.Name,
+			})
+		}
+
+		structs = append(structs, str)
+	}
+
+	return
+}
+
+func initModelsMySQL(db *reform.DB) (structs []parse.StructInfo) {
+	tables, err := db.SelectAllFrom(tableView, `WHERE table_schema = DATABASE()`)
+	if err != nil {
+		logger.Fatal(err)
+	}
+
+	for _, t := range tables {
+		table := t.(*table)
+		str := parse.StructInfo{Type: toCamelCase(table.Name), SQLName: table.Name}
+
+		tail := `WHERE table_catalog = ? AND table_schema = ? AND table_name = ? ORDER BY ordinal_position`
+		columns, err := db.SelectAllFrom(columnView, tail, table.Catalog, table.Schema, table.Name)
+		if err != nil {
+			logger.Fatal(err)
+		}
+		for _, c := range columns {
+			column := c.(*column)
+			str.Fields = append(str.Fields, parse.FieldInfo{
+				Name:   toCamelCase(column.Name),
+				PKType: goType(column.Type, mysql.Dialect), // FIXME this is Type, not PKType (not only PK)
+				Column: column.Name,
+			})
+		}
+
+		structs = append(structs, str)
+	}
+
+	return
+}
+
+func initModelsSQLite3(db *reform.DB) (structs []parse.StructInfo) {
 	tables, err := db.SelectAllFrom(sqliteMasterView, "WHERE type = ?", "table")
 	if err != nil {
 		logger.Fatal(err)
 	}
+
 	for _, table := range tables {
 		tableName := table.(*sqliteMaster).Name
 		if tableName == "sqlite_sequence" {
 			continue
 		}
 
-		// logger.Printf("%s:", tableName)
-		info := parse.StructInfo{Type: toCamelCase(tableName), SQLName: tableName}
+		str := parse.StructInfo{Type: toCamelCase(tableName), SQLName: tableName}
 		rows, err := db.Query("PRAGMA table_info(" + tableName + ")") // no placeholders for PRAGMA
 		if err != nil {
 			logger.Fatal(err)
@@ -51,10 +158,9 @@ func initModelsSQLite3(db *reform.DB) {
 			if err != nil {
 				break
 			}
-			// logger.Println(column)
-			info.Fields = append(info.Fields, parse.FieldInfo{
+			str.Fields = append(str.Fields, parse.FieldInfo{
 				Name:   toCamelCase(column.Name),
-				PKType: goType(column.Type), // FIXME this is Type, not PKType (not only PK)
+				PKType: goType(column.Type, sqlite3.Dialect), // FIXME this is Type, not PKType (not only PK)
 				Column: column.Name,
 			})
 		}
@@ -62,19 +168,29 @@ func initModelsSQLite3(db *reform.DB) {
 			logger.Fatal(err)
 		}
 		rows.Close()
-		// logger.Printf("%+v", info)
 
-		if err = structTemplate.Execute(os.Stdout, info); err != nil {
-			logger.Fatal(err)
-		}
+		structs = append(structs, str)
 	}
+
+	return
 }
 
 func cmdInit(db *reform.DB, dialect reform.Dialect) {
+	var structs []parse.StructInfo
 	switch dialect {
+	case postgresql.Dialect:
+		structs = initModelsPostgreSQL(db)
+	case mysql.Dialect:
+		structs = initModelsMySQL(db)
 	case sqlite3.Dialect:
-		initModelsSQLite3(db)
+		structs = initModelsSQLite3(db)
 	default:
 		logger.Fatalf("unhandled dialect %s", dialect)
+	}
+
+	for _, s := range structs {
+		if err := structTemplate.Execute(os.Stdout, s); err != nil {
+			logger.Fatal(err)
+		}
 	}
 }

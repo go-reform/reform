@@ -29,7 +29,7 @@ install_deps:
 
 test:
 	rm -f internal/test/models/*_reform.go
-	go install -v gopkg.in/reform.v1/...
+	go install -v gopkg.in/reform.v1/reform
 	go test $(REFORM_TEST_FLAGS) -coverprofile=parse.cover gopkg.in/reform.v1/parse
 	go generate -v -x gopkg.in/reform.v1/internal/test/models
 	go install -v gopkg.in/reform.v1/internal/test/models
@@ -37,12 +37,12 @@ test:
 	go install -v gopkg.in/reform.v1/reform-db
 
 test-db:
-	reform-db -db-driver=$(REFORM_DRIVER) -db-source="$(REFORM_INIT_SOURCE)" init
 	reform-db -db-driver=$(REFORM_DRIVER) -db-source="$(REFORM_INIT_SOURCE)" exec \
 		internal/test/sql/$(DATABASE)_init.sql \
 		internal/test/sql/data.sql \
 		internal/test/sql/$(DATABASE)_data.sql \
 		internal/test/sql/$(DATABASE)_set.sql
+	reform-db -db-driver=$(REFORM_DRIVER) -db-source="$(REFORM_INIT_SOURCE)" init
 	go test $(REFORM_TEST_FLAGS) -coverprofile=$(REFORM_DRIVER).cover
 
 check:

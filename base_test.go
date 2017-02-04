@@ -61,17 +61,6 @@ func TestMain(m *testing.M) {
 	// select dialect for driver
 	dialect := internal.DialectForDriver(driver)
 	switch dialect {
-	case mysql.Dialect:
-		var version, mode, autocommit, tz string
-		err = db.QueryRow("SELECT @@version, @@sql_mode, @@autocommit, @@time_zone").Scan(&version, &mode, &autocommit, &tz)
-		if err != nil {
-			log.Fatal(err)
-		}
-		log.Printf("MySQL version    = %q", version)
-		log.Printf("MySQL sql_mode   = %q", mode)
-		log.Printf("MySQL autocommit = %q", autocommit)
-		log.Printf("MySQL time_zone  = %q", tz)
-
 	case postgresql.Dialect:
 		var version, tz string
 		err = db.QueryRow("SHOW server_version").Scan(&version)
@@ -84,6 +73,17 @@ func TestMain(m *testing.M) {
 		}
 		log.Printf("PostgreSQL version  = %q", version)
 		log.Printf("PostgreSQL TimeZone = %q", tz)
+
+	case mysql.Dialect:
+		var version, mode, autocommit, tz string
+		err = db.QueryRow("SELECT @@version, @@sql_mode, @@autocommit, @@time_zone").Scan(&version, &mode, &autocommit, &tz)
+		if err != nil {
+			log.Fatal(err)
+		}
+		log.Printf("MySQL version    = %q", version)
+		log.Printf("MySQL sql_mode   = %q", mode)
+		log.Printf("MySQL autocommit = %q", autocommit)
+		log.Printf("MySQL time_zone  = %q", tz)
 
 	case sqlite3.Dialect:
 		var version, source string

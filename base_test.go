@@ -21,6 +21,7 @@ import (
 	"gopkg.in/reform.v1/dialects/mysql"
 	"gopkg.in/reform.v1/dialects/postgresql"
 	"gopkg.in/reform.v1/dialects/sqlite3"
+	"gopkg.in/reform.v1/internal"
 	. "gopkg.in/reform.v1/internal/test/models"
 )
 
@@ -58,11 +59,9 @@ func TestMain(m *testing.M) {
 	log.Printf("time.Now().UTC() = %s", now.UTC())
 
 	// select dialect for driver
-	var dialect reform.Dialect
-	switch driver {
-	case "mysql":
-		dialect = mysql.Dialect
-
+	dialect := internal.DialectForDriver(driver)
+	switch dialect {
+	case mysql.Dialect:
 		var version, mode, autocommit, tz string
 		err = db.QueryRow("SELECT @@version, @@sql_mode, @@autocommit, @@time_zone").Scan(&version, &mode, &autocommit, &tz)
 		if err != nil {
@@ -73,9 +72,7 @@ func TestMain(m *testing.M) {
 		log.Printf("MySQL autocommit = %q", autocommit)
 		log.Printf("MySQL time_zone  = %q", tz)
 
-	case "postgres":
-		dialect = postgresql.Dialect
-
+	case postgresql.Dialect:
 		var version, tz string
 		err = db.QueryRow("SHOW server_version").Scan(&version)
 		if err != nil {
@@ -88,9 +85,7 @@ func TestMain(m *testing.M) {
 		log.Printf("PostgreSQL version  = %q", version)
 		log.Printf("PostgreSQL TimeZone = %q", tz)
 
-	case "sqlite3":
-		dialect = sqlite3.Dialect
-
+	case sqlite3.Dialect:
 		var version, source string
 		err = db.QueryRow("SELECT sqlite_version(), sqlite_source_id()").Scan(&version, &source)
 		if err != nil {
@@ -104,9 +99,7 @@ func TestMain(m *testing.M) {
 			log.Fatal(err)
 		}
 
-	case "mssql":
-		dialect = mssql.Dialect
-
+	case mssql.Dialect:
 		var version string
 		var options uint16
 		err = db.QueryRow("SELECT @@VERSION, @@OPTIONS").Scan(&version, &options)
@@ -121,7 +114,7 @@ func TestMain(m *testing.M) {
 		log.Printf("MS SQL OPTIONS = %#4x (XACT_ABORT %s)", options, xact)
 
 	default:
-		log.Fatal("reform: no dialect for driver " + driver)
+		log.Fatalf("reform: no dialect for driver %s", driver)
 	}
 
 	DB = reform.NewDB(db, dialect, nil)

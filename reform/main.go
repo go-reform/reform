@@ -11,14 +11,15 @@ import (
 	"strings"
 
 	"gopkg.in/reform.v1"
+	"gopkg.in/reform.v1/internal"
 	"gopkg.in/reform.v1/parse"
 )
 
 var (
+	logger *internal.Logger
+
 	debugF = flag.Bool("debug", false, "Enable debug logging")
 	gofmtF = flag.Bool("gofmt", true, "Format with gofmt")
-
-	logger = NewLogger()
 )
 
 func processFile(path, file, pack string) error {
@@ -100,9 +101,7 @@ func main() {
 	}
 	flag.Parse()
 
-	if *debugF {
-		logger.Debug = true
-	}
+	logger = internal.NewLogger("reform: ", *debugF)
 
 	logger.Debugf("Environment:")
 	for _, pair := range os.Environ() {

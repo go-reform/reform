@@ -1,4 +1,4 @@
-package main
+package internal
 
 import (
 	"fmt"
@@ -9,20 +9,24 @@ import (
 // Logger is our custom logger with Debugf method.
 type Logger struct {
 	*log.Logger
-	Debug bool
+	debug bool
 }
 
 // NewLogger creates a new logger.
-func NewLogger() *Logger {
+func NewLogger(prefix string, debug bool) *Logger {
+	var flags int
+	if debug {
+		flags = log.Lshortfile
+	}
 	return &Logger{
-		Logger: log.New(os.Stderr, "reform: ", 0),
-		Debug:  false,
+		Logger: log.New(os.Stderr, prefix, flags),
+		debug:  debug,
 	}
 }
 
 // Debugf prints message only when Logger debug flag is set to true.
 func (l *Logger) Debugf(format string, args ...interface{}) {
-	if l.Debug {
+	if l.debug {
 		l.Output(2, fmt.Sprintf(format, args...))
 	}
 }

@@ -1,12 +1,9 @@
 package main
 
 import (
-	"bytes"
 	"database/sql"
 	"flag"
 	"fmt"
-	"io/ioutil"
-	"log"
 	"os"
 
 	_ "github.com/denisenkom/go-mssqldb"
@@ -15,10 +12,13 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 
 	"gopkg.in/reform.v1"
+	"gopkg.in/reform.v1/internal"
 )
 
 var (
-	fF      = flag.String("f", "", "file to execute")
+	logger *internal.Logger
+
+	debugF  = flag.Bool("debug", false, "Enable debug logging")
 	driverF = flag.String("db-driver", "", "database driver")
 	sourceF = flag.String("db-source", "", "database connection string")
 )
@@ -26,48 +26,50 @@ var (
 func main() {
 	flag.Usage = func() {
 		fmt.Fprintf(os.Stderr, "reform-db. %s.\n\n", reform.Version)
+		fmt.Fprintf(os.Stderr, "Usage:\n\n")
+		fmt.Fprintf(os.Stderr, "  %s [flags] [command] [arguments]\n\n", os.Args[0])
+		fmt.Fprintf(os.Stderr, "Commands:\n")
+		fmt.Fprintf(os.Stderr, "  exec\n")
+		fmt.Fprintf(os.Stderr, "  init\n\n")
+		fmt.Fprintf(os.Stderr, "Flags:\n")
 		flag.PrintDefaults()
 	}
 	flag.Parse()
 
-	log.SetPrefix("reform-db: ")
-	log.Print("Internal tool. Do not use it yet.")
+	logger = internal.NewLogger("reform-db: ", *debugF)
+	logger.Print("Internal tool. Do not use it yet.")
 
-	b, err := readSQL(*fF)
-	if err != nil {
-		log.Fatalf("failed to read %q: %s", *fF, err)
+	if flag.NArg() == 0 {
+		flag.Usage()
+		os.Exit(1)
 	}
 
-	db, err := sql.Open(*driverF, *sourceF)
+	sqlDB, err := sql.Open(*driverF, *sourceF)
 	if err != nil {
-		log.Fatalf("failed to connect to %s %q: %s", *driverF, *sourceF, err)
+		logger.Fatalf("failed to connect to %s %q: %s", *driverF, *sourceF, err)
 	}
-	defer db.Close()
+	defer sqlDB.Close()
 
 	// Use single connection so various session-related variables work.
 	// For example: "PRAGMA foreign_keys" for SQLite3, "SET IDENTITY_INSERT" for MS SQL, etc.
-	db.SetMaxIdleConns(1)
-	db.SetMaxOpenConns(1)
-	db.SetConnMaxLifetime(0)
+	sqlDB.SetMaxIdleConns(1)
+	sqlDB.SetMaxOpenConns(1)
+	sqlDB.SetConnMaxLifetime(0)
 
-	err = db.Ping()
+	err = sqlDB.Ping()
 	if err != nil {
-		log.Fatalf("failed to ping database: %s", err)
+		logger.Fatalf("failed to ping database: %s", err)
 	}
 
-	b = bytes.TrimSpace(b)
-	if len(b) > 0 {
-		q := string(b)
-		_, err := db.Exec(q)
-		if err != nil {
-			log.Fatalf("failed to execute %s: %s", q, err)
-		}
-	}
-}
+	dialect := internal.DialectForDriver(*driverF)
+	db := reform.NewDB(sqlDB, dialect, reform.NewPrintfLogger(logger.Debugf))
 
-func readSQL(path string) ([]byte, error) {
-	if path == "" {
-		return ioutil.ReadAll(os.Stdin)
+	switch flag.Arg(0) {
+	case "exec":
+		cmdExec(db, flag.Args()[1:])
+	case "init":
+		cmdInit(db, dialect)
+	default:
+		logger.Fatalf("Unexpected command %q", flag.Arg(0))
 	}
-	return ioutil.ReadFile(path)
 }

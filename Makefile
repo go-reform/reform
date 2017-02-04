@@ -33,13 +33,16 @@ test:
 	go test $(REFORM_TEST_FLAGS) -coverprofile=parse.cover gopkg.in/reform.v1/parse
 	go generate -v -x gopkg.in/reform.v1/internal/test/models
 	go install -v gopkg.in/reform.v1/internal/test/models
+	go generate -v -x gopkg.in/reform.v1/reform-db
+	go install -v gopkg.in/reform.v1/reform-db
 
 test-db:
-	cat internal/test/sql/$(DATABASE)_init.sql \
+	reform-db -db-driver=$(REFORM_DRIVER) -db-source="$(REFORM_INIT_SOURCE)" init
+	reform-db -db-driver=$(REFORM_DRIVER) -db-source="$(REFORM_INIT_SOURCE)" exec \
+		internal/test/sql/$(DATABASE)_init.sql \
 		internal/test/sql/data.sql \
 		internal/test/sql/$(DATABASE)_data.sql \
-		internal/test/sql/$(DATABASE)_set.sql \
-		| reform-db -db-driver=$(REFORM_DRIVER) -db-source="$(REFORM_INIT_SOURCE)"
+		internal/test/sql/$(DATABASE)_set.sql
 	go test $(REFORM_TEST_FLAGS) -coverprofile=$(REFORM_DRIVER).cover
 
 check:

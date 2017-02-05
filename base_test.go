@@ -48,8 +48,7 @@ func TestMain(m *testing.M) {
 	db.SetMaxOpenConns(1)
 	db.SetConnMaxLifetime(-1)
 
-	err = db.Ping()
-	if err != nil {
+	if err = db.Ping(); err != nil {
 		log.Fatal(err)
 	}
 
@@ -63,21 +62,19 @@ func TestMain(m *testing.M) {
 	switch dialect {
 	case postgresql.Dialect:
 		var version, tz string
-		err = db.QueryRow("SHOW server_version").Scan(&version)
-		if err != nil {
+		if err = db.QueryRow("SHOW server_version").Scan(&version); err != nil {
 			log.Fatal(err)
 		}
-		err = db.QueryRow("SHOW TimeZone").Scan(&tz)
-		if err != nil {
+		if err = db.QueryRow("SHOW TimeZone").Scan(&tz); err != nil {
 			log.Fatal(err)
 		}
 		log.Printf("PostgreSQL version  = %q", version)
 		log.Printf("PostgreSQL TimeZone = %q", tz)
 
 	case mysql.Dialect:
+		q := "SELECT @@version, @@sql_mode, @@autocommit, @@time_zone"
 		var version, mode, autocommit, tz string
-		err = db.QueryRow("SELECT @@version, @@sql_mode, @@autocommit, @@time_zone").Scan(&version, &mode, &autocommit, &tz)
-		if err != nil {
+		if err = db.QueryRow(q).Scan(&version, &mode, &autocommit, &tz); err != nil {
 			log.Fatal(err)
 		}
 		log.Printf("MySQL version    = %q", version)
@@ -87,23 +84,20 @@ func TestMain(m *testing.M) {
 
 	case sqlite3.Dialect:
 		var version, source string
-		err = db.QueryRow("SELECT sqlite_version(), sqlite_source_id()").Scan(&version, &source)
-		if err != nil {
+		if err = db.QueryRow("SELECT sqlite_version(), sqlite_source_id()").Scan(&version, &source); err != nil {
 			log.Fatal(err)
 		}
 		log.Printf("SQLite3 version = %q", version)
 		log.Printf("SQLite3 source  = %q", source)
 
-		_, err = db.Exec("PRAGMA foreign_keys = ON")
-		if err != nil {
+		if _, err = db.Exec("PRAGMA foreign_keys = ON"); err != nil {
 			log.Fatal(err)
 		}
 
 	case mssql.Dialect:
 		var version string
 		var options uint16
-		err = db.QueryRow("SELECT @@VERSION, @@OPTIONS").Scan(&version, &options)
-		if err != nil {
+		if err = db.QueryRow("SELECT @@VERSION, @@OPTIONS").Scan(&version, &options); err != nil {
 			log.Fatal(err)
 		}
 		xact := "ON"

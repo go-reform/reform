@@ -20,35 +20,23 @@ func goType(sqlType string, dialect reform.Dialect) string {
 
 	// handle integer types
 	switch dialect {
-	case postgresql.Dialect:
+	case sqlite3.Dialect:
 		switch sqlType {
-		case "smallint":
-			return "int16"
 		case "integer":
-			return "int32"
-		case "bigint":
 			return "int64"
 		}
 
-	case mysql.Dialect:
+	default:
 		switch sqlType {
 		case "tinyint":
 			return "int8"
 		case "smallint":
 			return "int16"
-		case "mediumint", "int":
+		case "mediumint", "int", "integer":
 			return "int32"
 		case "bigint":
 			return "int64"
 		}
-
-	case sqlite3.Dialect:
-		switch sqlType {
-		case "integer":
-			return "int8"
-		}
-
-	case mssql.Dialect:
 	}
 
 	// order: PostgreSQL, MySQL, SQLite3, MS SQL
@@ -56,6 +44,8 @@ func goType(sqlType string, dialect reform.Dialect) string {
 	case "character", "character varying", "text":
 		fallthrough
 	case "char", "varchar", "tinytext", "mediumtext", "longtext":
+		fallthrough
+	case "nchar", "nvarchar":
 		return "string"
 
 	// TODO blobs to []byte
@@ -175,6 +165,36 @@ func initModelsSQLite3(db *reform.DB) (structs []parse.StructInfo) {
 	return
 }
 
+func initModelsMSSQL(db *reform.DB) (structs []parse.StructInfo) {
+	tables, err := db.SelectAllFrom(tableView, ``)
+	if err != nil {
+		logger.Fatal(err)
+	}
+
+	for _, t := range tables {
+		table := t.(*table)
+		str := parse.StructInfo{Type: toCamelCase(table.Name), SQLName: table.Name}
+
+		tail := `WHERE table_catalog = ? AND table_schema = ? AND table_name = ? ORDER BY ordinal_position`
+		columns, err := db.SelectAllFrom(columnView, tail, table.Catalog, table.Schema, table.Name)
+		if err != nil {
+			logger.Fatal(err)
+		}
+		for _, c := range columns {
+			column := c.(*column)
+			str.Fields = append(str.Fields, parse.FieldInfo{
+				Name:   toCamelCase(column.Name),
+				PKType: goType(column.Type, mysql.Dialect), // FIXME this is Type, not PKType (not only PK)
+				Column: column.Name,
+			})
+		}
+
+		structs = append(structs, str)
+	}
+
+	return
+}
+
 func cmdInit(db *reform.DB, dialect reform.Dialect) {
 	var structs []parse.StructInfo
 	switch dialect {
@@ -184,6 +204,8 @@ func cmdInit(db *reform.DB, dialect reform.Dialect) {
 		structs = initModelsMySQL(db)
 	case sqlite3.Dialect:
 		structs = initModelsSQLite3(db)
+	case mssql.Dialect:
+		structs = initModelsMSSQL(db)
 	default:
 		logger.Fatalf("unhandled dialect %s", dialect)
 	}

@@ -9,35 +9,28 @@ import (
 )
 
 func cmdExec(db *reform.DB, files []string) {
-	var b []byte
+	var query []byte
 	if len(files) == 0 {
-		var err error
-		b, err = ioutil.ReadAll(os.Stdin)
+		b, err := ioutil.ReadAll(os.Stdin)
 		if err != nil {
 			logger.Fatalf("failed to read stdin: %s", err)
 		}
+		query = append(query, b...)
 	}
 
 	for _, f := range files {
-		b1, err := ioutil.ReadFile(f)
+		b, err := ioutil.ReadFile(f)
 		if err != nil {
 			logger.Fatalf("failed to read %s: %s", f, err)
 		}
-		b = append(b, b1...)
+		query = append(query, b...)
 	}
 
-	b = bytes.TrimSpace(b)
-	if len(b) > 0 {
-		_, err := db.Exec(string(b))
+	query = bytes.TrimSpace(query)
+	if len(query) > 0 {
+		_, err := db.Exec(string(query))
 		if err != nil {
-			logger.Fatalf("failed to execute %s: %s", b, err)
+			logger.Fatalf("failed to execute %s: %s", query, err)
 		}
 	}
-}
-
-func readSQL(path string) ([]byte, error) {
-	if path == "" {
-		return ioutil.ReadAll(os.Stdin)
-	}
-	return ioutil.ReadFile(path)
 }

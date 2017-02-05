@@ -23,15 +23,15 @@ type (
 )
 
 // BeforeInsert sets CreatedAt if it's not set,
-// then converts to UTC and truncates to second both CreatedAt and UpdatedAt.
+// then converts to UTC, truncates to second and strips monotonic clock reading from both CreatedAt and UpdatedAt.
 func (p *Person) BeforeInsert() error {
 	if p.CreatedAt.IsZero() {
 		p.CreatedAt = time.Now()
 	}
 
-	p.CreatedAt = p.CreatedAt.UTC().Truncate(time.Second)
+	p.CreatedAt = p.CreatedAt.UTC().Truncate(time.Second).AddDate(0, 0, 0)
 	if p.UpdatedAt != nil {
-		p.UpdatedAt = pointer.ToTime(p.UpdatedAt.UTC().Truncate(time.Second))
+		p.UpdatedAt = pointer.ToTime(p.UpdatedAt.UTC().Truncate(time.Second).AddDate(0, 0, 0))
 	}
 
 	return nil
@@ -39,7 +39,7 @@ func (p *Person) BeforeInsert() error {
 
 // BeforeUpdate sets CreatedAt if it's not set,
 // sets UpdatedAt,
-// then converts to UTC and truncates to second both CreatedAt and UpdatedAt.
+// then converts to UTC, truncates to second and strips monotonic clock reading from both CreatedAt and UpdatedAt.
 func (p *Person) BeforeUpdate() error {
 	now := time.Now()
 
@@ -49,8 +49,8 @@ func (p *Person) BeforeUpdate() error {
 
 	p.UpdatedAt = &now
 
-	p.CreatedAt = p.CreatedAt.UTC().Truncate(time.Second)
-	p.UpdatedAt = pointer.ToTime(p.UpdatedAt.UTC().Truncate(time.Second))
+	p.CreatedAt = p.CreatedAt.UTC().Truncate(time.Second).AddDate(0, 0, 0)
+	p.UpdatedAt = pointer.ToTime(p.UpdatedAt.UTC().Truncate(time.Second).AddDate(0, 0, 0))
 
 	return nil
 }
@@ -73,20 +73,20 @@ type Project struct {
 	End   *time.Time `reform:"end"`
 }
 
-// BeforeInsert converts to UTC and truncates to day both Start and End.
+// BeforeInsert converts to UTC, truncates to day and strips monotonic clock reading from both Start and End.
 func (p *Project) BeforeInsert() error {
-	p.Start = p.Start.UTC().Truncate(24 * time.Hour)
+	p.Start = p.Start.UTC().Truncate(24*time.Hour).AddDate(0, 0, 0)
 	if p.End != nil {
-		p.End = pointer.ToTime(p.End.UTC().Truncate(24 * time.Hour))
+		p.End = pointer.ToTime(p.End.UTC().Truncate(24*time.Hour).AddDate(0, 0, 0))
 	}
 	return nil
 }
 
-// BeforeUpdate converts to UTC and truncates to day both Start and End.
+// BeforeUpdate converts to UTC, truncates to day and strips monotonic clock reading from both Start and End.
 func (p *Project) BeforeUpdate() error {
-	p.Start = p.Start.UTC().Truncate(24 * time.Hour)
+	p.Start = p.Start.UTC().Truncate(24*time.Hour).AddDate(0, 0, 0)
 	if p.End != nil {
-		p.End = pointer.ToTime(p.End.UTC().Truncate(24 * time.Hour))
+		p.End = pointer.ToTime(p.End.UTC().Truncate(24*time.Hour).AddDate(0, 0, 0))
 	}
 	return nil
 }

@@ -3,7 +3,6 @@ package main
 import (
 	"bytes"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"strings"
 	"text/tabwriter"
@@ -12,25 +11,9 @@ import (
 )
 
 func cmdQuery(db *reform.DB, files []string) {
-	var queries [][]byte
-	if len(files) == 0 {
-		b, err := ioutil.ReadAll(os.Stdin)
-		if err != nil {
-			logger.Fatalf("failed to read stdin: %s", err)
-		}
-		queries = append(queries, []byte(b))
-	}
-
-	for _, f := range files {
-		b, err := ioutil.ReadFile(f)
-		if err != nil {
-			logger.Fatalf("failed to read %s: %s", f, err)
-		}
-		queries = append(queries, []byte(b))
-	}
-
+	queries := readFiles(files)
 	for _, q := range queries {
-		rows, err := db.Query(string(q))
+		rows, err := db.Query(q)
 		if err != nil {
 			logger.Fatalf("failed to query %s: %s", q, err)
 		}
@@ -63,7 +46,11 @@ func cmdQuery(db *reform.DB, files []string) {
 			logger.Fatal(err)
 		}
 
-		w.Flush()
-		rows.Close()
+		if err = w.Flush(); err != nil {
+			logger.Fatal(err)
+		}
+		if err = rows.Close(); err != nil {
+			logger.Fatal(err)
+		}
 	}
 }

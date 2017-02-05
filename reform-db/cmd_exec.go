@@ -8,29 +8,40 @@ import (
 	"gopkg.in/reform.v1"
 )
 
-func cmdExec(db *reform.DB, files []string) {
-	var query []byte
+func readFiles(files []string) (queries []string) {
 	if len(files) == 0 {
+		logger.Debugf("no files are given, reading stdin")
 		b, err := ioutil.ReadAll(os.Stdin)
 		if err != nil {
 			logger.Fatalf("failed to read stdin: %s", err)
 		}
-		query = append(query, b...)
+		b = bytes.TrimSpace(b)
+		if len(b) > 0 {
+			queries = append(queries, string(b))
+		}
 	}
 
 	for _, f := range files {
+		logger.Debugf("reading file %s", f)
 		b, err := ioutil.ReadFile(f)
 		if err != nil {
-			logger.Fatalf("failed to read %s: %s", f, err)
+			logger.Fatalf("failed to read file %s: %s", f, err)
 		}
-		query = append(query, b...)
+		b = bytes.TrimSpace(b)
+		if len(b) > 0 {
+			queries = append(queries, string(b))
+		}
 	}
 
-	query = bytes.TrimSpace(query)
-	if len(query) > 0 {
-		_, err := db.Exec(string(query))
+	return
+}
+
+func cmdExec(db *reform.DB, files []string) {
+	queries := readFiles(files)
+	for _, q := range queries {
+		_, err := db.Exec(q)
 		if err != nil {
-			logger.Fatalf("failed to execute %s: %s", query, err)
+			logger.Fatalf("failed to execute %s: %s", q, err)
 		}
 	}
 }

@@ -144,8 +144,7 @@ func initModelsSQLite3(db *reform.DB) (structs []parse.StructInfo) {
 		}
 		for {
 			var column sqliteTableInfo
-			err = db.NextRow(&column, rows)
-			if err != nil {
+			if err = db.NextRow(&column, rows); err != nil {
 				break
 			}
 			str.Fields = append(str.Fields, parse.FieldInfo{
@@ -157,7 +156,9 @@ func initModelsSQLite3(db *reform.DB) (structs []parse.StructInfo) {
 		if err != reform.ErrNoRows {
 			logger.Fatal(err)
 		}
-		rows.Close()
+		if err = rows.Close(); err != nil {
+			logger.Fatal(err)
+		}
 
 		structs = append(structs, str)
 	}

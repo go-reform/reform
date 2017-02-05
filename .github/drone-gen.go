@@ -84,8 +84,8 @@ func main() {
 			[]Driver{
 				{
 					"sqlite3",
-					"/tmp/reform-test.sqlite3",
-					"/tmp/reform-test.sqlite3",
+					"/tmp/reform-database.sqlite3",
+					"/tmp/reform-database.sqlite3",
 				},
 			},
 		},

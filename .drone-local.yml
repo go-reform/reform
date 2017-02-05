@@ -96,8 +96,8 @@ matrix:
 
     - {
         GO: "golang:1.8", DATABASE: sqlite3, VERSION: dummy, REFORM_DRIVER: sqlite3,
-        REFORM_INIT_SOURCE: "/tmp/reform-test.sqlite3",
-        REFORM_TEST_SOURCE: "/tmp/reform-test.sqlite3"
+        REFORM_INIT_SOURCE: "/tmp/reform-database.sqlite3",
+        REFORM_TEST_SOURCE: "/tmp/reform-database.sqlite3"
       }
 
     - {

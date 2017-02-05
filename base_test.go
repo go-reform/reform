@@ -63,11 +63,12 @@ func TestMain(m *testing.M) {
 	case "mysql":
 		dialect = mysql.Dialect
 
-		var mode, autocommit, tz string
-		err = db.QueryRow("SELECT @@sql_mode, @@autocommit, @@time_zone").Scan(&mode, &autocommit, &tz)
+		var version, mode, autocommit, tz string
+		err = db.QueryRow("SELECT @@version, @@sql_mode, @@autocommit, @@time_zone").Scan(&version, &mode, &autocommit, &tz)
 		if err != nil {
 			log.Fatal(err)
 		}
+		log.Printf("MySQL version    = %q", version)
 		log.Printf("MySQL sql_mode   = %q", mode)
 		log.Printf("MySQL autocommit = %q", autocommit)
 		log.Printf("MySQL time_zone  = %q", tz)
@@ -75,15 +76,28 @@ func TestMain(m *testing.M) {
 	case "postgres":
 		dialect = postgresql.Dialect
 
-		var tz string
+		var version, tz string
+		err = db.QueryRow("SHOW server_version").Scan(&version)
+		if err != nil {
+			log.Fatal(err)
+		}
 		err = db.QueryRow("SHOW TimeZone").Scan(&tz)
 		if err != nil {
 			log.Fatal(err)
 		}
+		log.Printf("PostgreSQL version  = %q", version)
 		log.Printf("PostgreSQL TimeZone = %q", tz)
 
 	case "sqlite3":
 		dialect = sqlite3.Dialect
+
+		var version, source string
+		err = db.QueryRow("SELECT sqlite_version(), sqlite_source_id()").Scan(&version, &source)
+		if err != nil {
+			log.Fatal(err)
+		}
+		log.Printf("SQLite3 version = %q", version)
+		log.Printf("SQLite3 source  = %q", source)
 
 		_, err = db.Exec("PRAGMA foreign_keys = ON")
 		if err != nil {
@@ -93,8 +107,9 @@ func TestMain(m *testing.M) {
 	case "mssql":
 		dialect = mssql.Dialect
 
+		var version string
 		var options uint16
-		err = db.QueryRow("SELECT @@OPTIONS").Scan(&options)
+		err = db.QueryRow("SELECT @@VERSION, @@OPTIONS").Scan(&version, &options)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -102,6 +117,7 @@ func TestMain(m *testing.M) {
 		if options&0x4000 == 0 {
 			xact = "OFF"
 		}
+		log.Printf("MS SQL version = %s", version)
 		log.Printf("MS SQL OPTIONS = %#4x (XACT_ABORT %s)", options, xact)
 
 	default:

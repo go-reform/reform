@@ -30,6 +30,7 @@ func main() {
 		fmt.Fprintf(os.Stderr, "  %s [flags] [command] [arguments]\n\n", os.Args[0])
 		fmt.Fprintf(os.Stderr, "Commands:\n")
 		fmt.Fprintf(os.Stderr, "  exec\n")
+		fmt.Fprintf(os.Stderr, "  query\n")
 		fmt.Fprintf(os.Stderr, "  init\n\n")
 		fmt.Fprintf(os.Stderr, "Flags:\n")
 		flag.PrintDefaults()
@@ -67,6 +68,8 @@ func main() {
 	switch flag.Arg(0) {
 	case "exec":
 		cmdExec(db, flag.Args()[1:])
+	case "query":
+		cmdQuery(db, flag.Args()[1:])
 	case "init":
 		cmdInit(db, dialect)
 	default:

@@ -148,8 +148,7 @@ func main() {
 		log.Fatalf("failed to find %q in %s", start, filename)
 	}
 	b = append(b[:i], buf.Bytes()...)
-	err = ioutil.WriteFile(filename, b, 0644)
-	if err != nil {
+	if err = ioutil.WriteFile(filename, b, 0644); err != nil {
 		log.Fatal(err)
 	}
 	log.Printf("%s matrix updated with %d combinations.", filename, count)

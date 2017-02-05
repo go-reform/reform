@@ -55,7 +55,7 @@ func Example() {
 
 func ExampleNewDB() {
 	// Get *sql.DB as usual. PostgreSQL example:
-	conn, err := sql.Open("postgres", "postgres://localhost:5432/reform-test?sslmode=disable")
+	conn, err := sql.Open("postgres", "postgres://localhost:5432/database?sslmode=disable")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -91,8 +91,7 @@ func ExampleQuerier_SelectRows() {
 
 	for {
 		var person Person
-		err = DB.NextRow(&person, rows)
-		if err != nil {
+		if err = DB.NextRow(&person, rows); err != nil {
 			break
 		}
 		fmt.Println(person)
@@ -109,8 +108,7 @@ func ExampleQuerier_SelectOneTo() {
 	var person Person
 	tail := fmt.Sprintf("WHERE created_at < %s ORDER BY id", DB.Placeholder(1))
 	y2010 := time.Date(2010, 1, 1, 0, 0, 0, 0, time.UTC)
-	err := DB.SelectOneTo(&person, tail, y2010)
-	if err != nil {
+	if err := DB.SelectOneTo(&person, tail, y2010); err != nil {
 		log.Fatal(err)
 	}
 	fmt.Println(person)
@@ -152,8 +150,7 @@ func ExampleQuerier_InsertMulti() {
 		}
 		batch := persons[low:high]
 
-		err := DB.InsertMulti(batch...)
-		if err != nil {
+		if err := DB.InsertMulti(batch...); err != nil {
 			log.Fatal(err)
 		}
 		fmt.Printf("Inserted %d persons\n", len(batch))

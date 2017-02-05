@@ -90,8 +90,7 @@ func Object(obj interface{}, schema, table string) (res *StructInfo, err error) 
 		n++
 	}
 
-	err = checkFields(res)
-	if err != nil {
+	if err = checkFields(res); err != nil {
 		return nil, err
 	}
 

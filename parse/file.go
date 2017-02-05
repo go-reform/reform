@@ -89,8 +89,7 @@ func parseStructTypeSpec(ts *ast.TypeSpec, str *ast.StructType) (*StructInfo, er
 		return nil, fmt.Errorf(`reform: %s has no fields with "reform:" tag, it is not allowed`, res.Type)
 	}
 
-	err := checkFields(res)
-	if err != nil {
+	if err := checkFields(res); err != nil {
 		return nil, err
 	}
 

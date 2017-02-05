@@ -24,8 +24,7 @@ func (q *Querier) NextRow(str Struct, rows *sql.Rows) error {
 		return err
 	}
 
-	err = rows.Scan(str.Pointers()...)
-	if err != nil {
+	if err = rows.Scan(str.Pointers()...); err != nil {
 		return err
 	}
 
@@ -54,15 +53,14 @@ func (q *Querier) selectQuery(view View, tail string, limit1 bool) string {
 // and AfterFinder errors.
 func (q *Querier) SelectOneTo(str Struct, tail string, args ...interface{}) error {
 	query := q.selectQuery(str.View(), tail, true)
-	err := q.QueryRow(query, args...).Scan(str.Pointers()...)
-	if err != nil {
+	if err := q.QueryRow(query, args...).Scan(str.Pointers()...); err != nil {
 		return err
 	}
 
 	if af, ok := str.(AfterFinder); ok {
-		err = af.AfterFind()
+		return af.AfterFind()
 	}
-	return err
+	return nil
 }
 
 // SelectOneFrom queries view with tail and args and scans first result to new Struct str.
@@ -72,8 +70,7 @@ func (q *Querier) SelectOneTo(str Struct, tail string, args ...interface{}) erro
 // and AfterFinder errors.
 func (q *Querier) SelectOneFrom(view View, tail string, args ...interface{}) (Struct, error) {
 	str := view.NewStruct()
-	err := q.SelectOneTo(str, tail, args...)
-	if err != nil {
+	if err := q.SelectOneTo(str, tail, args...); err != nil {
 		return nil, err
 	}
 	return str, nil
@@ -110,16 +107,16 @@ func (q *Querier) SelectAllFrom(view View, tail string, args ...interface{}) (st
 
 	for {
 		str := view.NewStruct()
-		err = q.NextRow(str, rows)
-		if err != nil {
-			if err == ErrNoRows {
-				err = nil
-			}
-			return
+		if err = q.NextRow(str, rows); err != nil {
+			break
 		}
 
 		structs = append(structs, str)
 	}
+	if err == ErrNoRows {
+		err = nil
+	}
+	return
 }
 
 // findTail returns a tail of SELECT query for given view, column and arg.
@@ -208,8 +205,7 @@ func (q *Querier) FindByPrimaryKeyTo(record Record, pk interface{}) error {
 // and AfterFinder errors.
 func (q *Querier) FindByPrimaryKeyFrom(table Table, pk interface{}) (Record, error) {
 	record := table.NewRecord()
-	err := q.FindOneTo(record, table.Columns()[table.PKColumnIndex()], pk)
-	if err != nil {
+	if err := q.FindOneTo(record, table.Columns()[table.PKColumnIndex()], pk); err != nil {
 		return nil, err
 	}
 	return record, nil

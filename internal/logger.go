@@ -8,8 +8,8 @@ import (
 
 // Logger is our custom logger with Debugf method.
 type Logger struct {
-	*log.Logger
-	debug bool
+	logger *log.Logger
+	debug  bool
 }
 
 // NewLogger creates a new logger.
@@ -19,7 +19,7 @@ func NewLogger(prefix string, debug bool) *Logger {
 		flags = log.Lshortfile
 	}
 	return &Logger{
-		Logger: log.New(os.Stderr, prefix, flags),
+		logger: log.New(os.Stderr, prefix, flags),
 		debug:  debug,
 	}
 }
@@ -27,6 +27,18 @@ func NewLogger(prefix string, debug bool) *Logger {
 // Debugf prints message only when Logger debug flag is set to true.
 func (l *Logger) Debugf(format string, args ...interface{}) {
 	if l.debug {
-		l.Output(2, fmt.Sprintf(format, args...))
+		l.logger.Output(2, fmt.Sprintf(format, args...))
 	}
+}
+
+// Printf calls l.Output to print to the logger.
+// Arguments are handled in the manner of fmt.Printf.
+func (l *Logger) Printf(format string, args ...interface{}) {
+	l.logger.Output(2, fmt.Sprintf(format, args...))
+}
+
+// Fatalf is equivalent to l.Printf() followed by a call to os.Exit(1).
+func (l *Logger) Fatalf(format string, args ...interface{}) {
+	l.logger.Output(2, fmt.Sprintf(format, args...))
+	os.Exit(1)
 }

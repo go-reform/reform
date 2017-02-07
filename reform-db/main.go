@@ -38,7 +38,7 @@ func main() {
 	flag.Parse()
 
 	logger = internal.NewLogger("reform-db: ", *debugF)
-	logger.Print("Internal tool. Do not use it yet.")
+	logger.Printf("Internal tool. Do not use it yet.")
 
 	if flag.NArg() == 0 {
 		flag.Usage()

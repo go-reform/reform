@@ -112,7 +112,7 @@ func main() {
 
 	wd, err := os.Getwd()
 	if err != nil {
-		logger.Fatal(err)
+		logger.Fatalf("%s", err)
 	}
 	logger.Debugf("wd: %s", wd)
 	logger.Debugf("args: %v", flag.Args())
@@ -157,7 +157,7 @@ func main() {
 	if file != "" && pack != "" {
 		err := processFile(wd, file, pack)
 		if err != nil {
-			logger.Fatal(err)
+			logger.Fatalf("%s", err)
 		}
 		gofmt(wd)
 	}

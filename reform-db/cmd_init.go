@@ -68,7 +68,7 @@ func toCamelCase(sqlName string) string {
 func initModelsPostgreSQL(db *reform.DB) (structs []parse.StructInfo) {
 	tables, err := db.SelectAllFrom(tableView, `WHERE table_schema NOT IN ($1, $2)`, "pg_catalog", "information_schema")
 	if err != nil {
-		logger.Fatal(err)
+		logger.Fatalf("%s", err)
 	}
 
 	for _, t := range tables {
@@ -78,7 +78,7 @@ func initModelsPostgreSQL(db *reform.DB) (structs []parse.StructInfo) {
 		tail := `WHERE table_catalog = $1 AND table_schema = $2 AND table_name = $3 ORDER BY ordinal_position`
 		columns, err := db.SelectAllFrom(columnView, tail, table.Catalog, table.Schema, table.Name)
 		if err != nil {
-			logger.Fatal(err)
+			logger.Fatalf("%s", err)
 		}
 		for _, c := range columns {
 			column := c.(*column)
@@ -98,7 +98,7 @@ func initModelsPostgreSQL(db *reform.DB) (structs []parse.StructInfo) {
 func initModelsMySQL(db *reform.DB) (structs []parse.StructInfo) {
 	tables, err := db.SelectAllFrom(tableView, `WHERE table_schema = DATABASE()`)
 	if err != nil {
-		logger.Fatal(err)
+		logger.Fatalf("%s", err)
 	}
 
 	for _, t := range tables {
@@ -108,7 +108,7 @@ func initModelsMySQL(db *reform.DB) (structs []parse.StructInfo) {
 		tail := `WHERE table_catalog = ? AND table_schema = ? AND table_name = ? ORDER BY ordinal_position`
 		columns, err := db.SelectAllFrom(columnView, tail, table.Catalog, table.Schema, table.Name)
 		if err != nil {
-			logger.Fatal(err)
+			logger.Fatalf("%s", err)
 		}
 		for _, c := range columns {
 			column := c.(*column)
@@ -128,7 +128,7 @@ func initModelsMySQL(db *reform.DB) (structs []parse.StructInfo) {
 func initModelsSQLite3(db *reform.DB) (structs []parse.StructInfo) {
 	tables, err := db.SelectAllFrom(sqliteMasterView, "WHERE type = ?", "table")
 	if err != nil {
-		logger.Fatal(err)
+		logger.Fatalf("%s", err)
 	}
 
 	for _, table := range tables {
@@ -140,7 +140,7 @@ func initModelsSQLite3(db *reform.DB) (structs []parse.StructInfo) {
 		str := parse.StructInfo{Type: toCamelCase(tableName), SQLName: tableName}
 		rows, err := db.Query("PRAGMA table_info(" + tableName + ")") // no placeholders for PRAGMA
 		if err != nil {
-			logger.Fatal(err)
+			logger.Fatalf("%s", err)
 		}
 		for {
 			var column sqliteTableInfo
@@ -154,10 +154,10 @@ func initModelsSQLite3(db *reform.DB) (structs []parse.StructInfo) {
 			})
 		}
 		if err != reform.ErrNoRows {
-			logger.Fatal(err)
+			logger.Fatalf("%s", err)
 		}
 		if err = rows.Close(); err != nil {
-			logger.Fatal(err)
+			logger.Fatalf("%s", err)
 		}
 
 		structs = append(structs, str)
@@ -169,7 +169,7 @@ func initModelsSQLite3(db *reform.DB) (structs []parse.StructInfo) {
 func initModelsMSSQL(db *reform.DB) (structs []parse.StructInfo) {
 	tables, err := db.SelectAllFrom(tableView, ``)
 	if err != nil {
-		logger.Fatal(err)
+		logger.Fatalf("%s", err)
 	}
 
 	for _, t := range tables {
@@ -179,7 +179,7 @@ func initModelsMSSQL(db *reform.DB) (structs []parse.StructInfo) {
 		tail := `WHERE table_catalog = ? AND table_schema = ? AND table_name = ? ORDER BY ordinal_position`
 		columns, err := db.SelectAllFrom(columnView, tail, table.Catalog, table.Schema, table.Name)
 		if err != nil {
-			logger.Fatal(err)
+			logger.Fatalf("%s", err)
 		}
 		for _, c := range columns {
 			column := c.(*column)
@@ -213,7 +213,7 @@ func cmdInit(db *reform.DB, dialect reform.Dialect) {
 
 	for _, s := range structs {
 		if err := structTemplate.Execute(os.Stdout, s); err != nil {
-			logger.Fatal(err)
+			logger.Fatalf("%s", err)
 		}
 	}
 }

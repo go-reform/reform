@@ -38,19 +38,19 @@ func cmdQuery(db *reform.DB, files []string) {
 				dests[i] = &line[i]
 			}
 			if err = rows.Scan(dests...); err != nil {
-				logger.Fatal(err)
+				logger.Fatalf("%s", err)
 			}
 			fmt.Fprintf(w, "%s\n", bytes.Join(line, []byte("\t")))
 		}
 		if err = rows.Err(); err != nil {
-			logger.Fatal(err)
+			logger.Fatalf("%s", err)
 		}
 
 		if err = w.Flush(); err != nil {
-			logger.Fatal(err)
+			logger.Fatalf("%s", err)
 		}
 		if err = rows.Close(); err != nil {
-			logger.Fatal(err)
+			logger.Fatalf("%s", err)
 		}
 	}
 }

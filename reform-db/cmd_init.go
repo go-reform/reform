@@ -85,7 +85,7 @@ func initModelsPostgreSQL(db *reform.DB) (structs []parse.StructInfo) {
 			column := c.(*column)
 			str.Fields = append(str.Fields, parse.FieldInfo{
 				Name:   toCamelCase(column.Name),
-				PKType: goType(column.Type, db.Dialect), // FIXME this is Type, not PKType (not only PK)
+				Type:   goType(column.Type, db.Dialect),
 				Column: column.Name,
 			})
 		}
@@ -115,7 +115,7 @@ func initModelsMySQL(db *reform.DB) (structs []parse.StructInfo) {
 			column := c.(*column)
 			str.Fields = append(str.Fields, parse.FieldInfo{
 				Name:   toCamelCase(column.Name),
-				PKType: goType(column.Type, db.Dialect), // FIXME this is Type, not PKType (not only PK)
+				Type:   goType(column.Type, db.Dialect),
 				Column: column.Name,
 			})
 		}
@@ -150,7 +150,7 @@ func initModelsSQLite3(db *reform.DB) (structs []parse.StructInfo) {
 			}
 			str.Fields = append(str.Fields, parse.FieldInfo{
 				Name:   toCamelCase(column.Name),
-				PKType: goType(column.Type, db.Dialect), // FIXME this is Type, not PKType (not only PK)
+				Type:   goType(column.Type, db.Dialect),
 				Column: column.Name,
 			})
 		}
@@ -186,7 +186,7 @@ func initModelsMSSQL(db *reform.DB) (structs []parse.StructInfo) {
 			column := c.(*column)
 			str.Fields = append(str.Fields, parse.FieldInfo{
 				Name:   toCamelCase(column.Name),
-				PKType: goType(column.Type, db.Dialect), // FIXME this is Type, not PKType (not only PK)
+				Type:   goType(column.Type, db.Dialect),
 				Column: column.Name,
 			})
 		}
@@ -223,6 +223,9 @@ func cmdInit(db *reform.DB, dir string) {
 
 		logger.Debugf("Writing %s ...", f.Name())
 		if _, err = f.WriteString("package " + pack + "\n"); err != nil {
+			logger.Fatalf("%s", err)
+		}
+		if err = prologTemplate.Execute(f, s); err != nil {
 			logger.Fatalf("%s", err)
 		}
 		if err = structTemplate.Execute(f, s); err != nil {

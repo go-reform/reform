@@ -63,10 +63,10 @@ func parseStructTypeSpec(ts *ast.TypeSpec, str *ast.StructType) (*StructInfo, er
 		if column == "" {
 			return nil, fmt.Errorf(`reform: %s has field %s with invalid "reform:" tag value, it is not allowed`, res.Type, name.Name)
 		}
-		var pkType string
+		var typ string
 		if isPK {
-			pkType = fileGoType(f.Type)
-			if strings.HasPrefix(pkType, "*") {
+			typ = fileGoType(f.Type)
+			if strings.HasPrefix(typ, "*") {
 				return nil, fmt.Errorf(`reform: %s has pointer field %s with with "pk" label in "reform:" tag, it is not allowed`, res.Type, name.Name)
 			}
 			if res.PKFieldIndex >= 0 {
@@ -76,7 +76,7 @@ func parseStructTypeSpec(ts *ast.TypeSpec, str *ast.StructType) (*StructInfo, er
 
 		res.Fields = append(res.Fields, FieldInfo{
 			Name:   name.Name,
-			PKType: pkType,
+			Type:   typ,
 			Column: column,
 		})
 		if isPK {

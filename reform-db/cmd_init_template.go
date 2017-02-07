@@ -7,15 +7,9 @@ import (
 var (
 	prologTemplate = template.Must(template.New("prolog").Parse(`
 import (
-	"fmt"
-	"strings"
-
-	"gopkg.in/reform.v1"
-	"gopkg.in/reform.v1/parse"
+	"time"
 )
 `))
-
-	// FIXME we abuse PKType name here, it should be renamed to Type
 
 	structTemplate = template.Must(template.New("struct").Parse(`
 //go:generate reform
@@ -23,7 +17,7 @@ import (
 //reform:{{ .SQLName }}
 type {{ .Type }} struct {
 	{{- range $i, $f := .Fields }}
-    {{ $f.Name }} {{ $f.PKType }} ` + "`" + `reform:"{{ $f.Column }}"` + "`" + `
+    {{ $f.Name }} {{ $f.Type }} ` + "`" + `reform:"{{ $f.Column }}"` + "`" + `
 	{{- end }}
 }`))
 )

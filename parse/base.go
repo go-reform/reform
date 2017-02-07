@@ -14,7 +14,7 @@ import (
 // FieldInfo represents information about struct field.
 type FieldInfo struct {
 	Name   string // field name as defined in source file, e.g. Name
-	PKType string // primary key field type as defined in source file, e.g. string
+	Type   string // field type as defined in source file, e.g. string; always present for primary key, may be absent otherwise
 	Column string // SQL database column name from "reform:" struct field tag, e.g. name
 }
 

@@ -47,7 +47,7 @@ func (v *extraTableType) PKColumnIndex() uint {
 
 // ExtraTable represents extra view or table in SQL database.
 var ExtraTable = &extraTableType{
-	s: parse.StructInfo{Type: "Extra", SQLSchema: "", SQLName: "extra", Fields: []parse.FieldInfo{{Name: "ID", PKType: "Integer", Column: "id"}, {Name: "Name", PKType: "", Column: "name"}, {Name: "Bytes", PKType: "", Column: "bytes"}, {Name: "Bytes2", PKType: "", Column: "bytes2"}, {Name: "Byte", PKType: "", Column: "byte"}, {Name: "Array", PKType: "", Column: "array"}}, PKFieldIndex: 0},
+	s: parse.StructInfo{Type: "Extra", SQLSchema: "", SQLName: "extra", Fields: []parse.FieldInfo{{Name: "ID", Type: "Integer", Column: "id"}, {Name: "Name", Type: "", Column: "name"}, {Name: "Bytes", Type: "", Column: "bytes"}, {Name: "Bytes2", Type: "", Column: "bytes2"}, {Name: "Byte", Type: "", Column: "byte"}, {Name: "Array", Type: "", Column: "array"}}, PKFieldIndex: 0},
 	z: new(Extra).Values(),
 }
 
@@ -171,7 +171,7 @@ func (v *notExportedTableType) PKColumnIndex() uint {
 
 // notExportedTable represents not_exported view or table in SQL database.
 var notExportedTable = &notExportedTableType{
-	s: parse.StructInfo{Type: "notExported", SQLSchema: "", SQLName: "not_exported", Fields: []parse.FieldInfo{{Name: "ID", PKType: "string", Column: "id"}}, PKFieldIndex: 0},
+	s: parse.StructInfo{Type: "notExported", SQLSchema: "", SQLName: "not_exported", Fields: []parse.FieldInfo{{Name: "ID", Type: "string", Column: "id"}}, PKFieldIndex: 0},
 	z: new(notExported).Values(),
 }
 

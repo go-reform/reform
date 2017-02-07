@@ -43,12 +43,12 @@ func (q *Querier) startQuery(command string) string {
 
 // WithTag returns a copy of Querier with set tag. Returned Querier is tied to the same DB or TX.
 // See Tagging section in documentation for details.
-func (q *Querier) WithTag(format string, a ...interface{}) *Querier {
+func (q *Querier) WithTag(format string, args ...interface{}) *Querier {
 	newQ := newQuerier(q.dbtx, q.Dialect, q.Logger)
-	if len(a) == 0 {
+	if len(args) == 0 {
 		newQ.tag = format
 	} else {
-		newQ.tag = fmt.Sprintf(format, a...)
+		newQ.tag = fmt.Sprintf(format, args...)
 	}
 	return newQ
 }

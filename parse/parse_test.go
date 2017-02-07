@@ -18,11 +18,11 @@ var (
 		SQLName: "people",
 		Fields: []FieldInfo{
 			{Name: "ID", Type: "int32", Column: "id"},
-			{Name: "GroupID", Column: "group_id"},
-			{Name: "Name", Column: "name"},
-			{Name: "Email", Column: "email"},
-			{Name: "CreatedAt", Column: "created_at"},
-			{Name: "UpdatedAt", Column: "updated_at"},
+			{Name: "GroupID", Type: "*int32", Column: "group_id"},
+			{Name: "Name", Type: "string", Column: "name"},
+			{Name: "Email", Type: "*string", Column: "email"},
+			{Name: "CreatedAt", Type: "time.Time", Column: "created_at"},
+			{Name: "UpdatedAt", Type: "*time.Time", Column: "updated_at"},
 		},
 		PKFieldIndex: 0,
 	}
@@ -31,10 +31,10 @@ var (
 		Type:    "Project",
 		SQLName: "projects",
 		Fields: []FieldInfo{
-			{Name: "Name", Column: "name"},
+			{Name: "Name", Type: "string", Column: "name"},
 			{Name: "ID", Type: "string", Column: "id"},
-			{Name: "Start", Column: "start"},
-			{Name: "End", Column: "end"},
+			{Name: "Start", Type: "time.Time", Column: "start"},
+			{Name: "End", Type: "*time.Time", Column: "end"},
 		},
 		PKFieldIndex: 1,
 	}
@@ -43,8 +43,8 @@ var (
 		Type:    "PersonProject",
 		SQLName: "person_project",
 		Fields: []FieldInfo{
-			{Name: "PersonID", Column: "person_id"},
-			{Name: "ProjectID", Column: "project_id"},
+			{Name: "PersonID", Type: "int32", Column: "person_id"},
+			{Name: "ProjectID", Type: "string", Column: "project_id"},
 		},
 		PKFieldIndex: -1,
 	}
@@ -55,7 +55,7 @@ var (
 		SQLName:   "people",
 		Fields: []FieldInfo{
 			{Name: "ID", Type: "int32", Column: "id"},
-			{Name: "Name", Column: "name"},
+			{Name: "Name", Type: "*string", Column: "name"},
 		},
 		PKFieldIndex: 0,
 	}
@@ -74,11 +74,17 @@ var (
 		SQLName: "extra",
 		Fields: []FieldInfo{
 			{Name: "ID", Type: "Integer", Column: "id"},
-			{Name: "Name", Column: "name"},
-			{Name: "Bytes", Column: "bytes"},
-			{Name: "Bytes2", Column: "bytes2"},
-			{Name: "Byte", Column: "byte"},
-			{Name: "Array", Column: "array"},
+			{Name: "Name", Type: "*String", Column: "name"},
+			{Name: "Byte", Type: "uint8", Column: "byte"},
+			{Name: "Uint8", Type: "uint8", Column: "uint8"},
+			{Name: "ByteP", Type: "*uint8", Column: "bytep"},
+			{Name: "Uint8P", Type: "*uint8", Column: "uint8p"},
+			{Name: "Bytes", Type: "[]uint8", Column: "bytes"},
+			{Name: "Uint8s", Type: "[]uint8", Column: "uint8s"},
+			{Name: "BytesA", Type: "[512]uint8", Column: "bytesa"},
+			{Name: "Uint8sA", Type: "[512]uint8", Column: "uint8sa"},
+			{Name: "BytesT", Type: "Bytes", Column: "bytest"},
+			{Name: "Uint8sT", Type: "Uint8s", Column: "uint8st"},
 		},
 		PKFieldIndex: 0,
 	}
@@ -126,6 +132,7 @@ func TestFileBogus(t *testing.T) {
 		"bogus8.go":  errors.New(`reform: Bogus8 has field Bogus with invalid "reform:" tag value, it is not allowed`),
 		"bogus9.go":  errors.New(`reform: Bogus9 has field Bogus2 with "reform:" tag with duplicate column name bogus (used by Bogus1), it is not allowed`),
 		"bogus10.go": errors.New(`reform: Bogus10 has field Bogus2 with with duplicate "pk" label in "reform:" tag (first used by Bogus1), it is not allowed`),
+		"bogus11.go": errors.New(`reform: Bogus11 has slice field Bogus with with "pk" label in "reform:" tag, it is not allowed`),
 
 		"bogus_ignore.go": nil,
 	} {
@@ -180,6 +187,7 @@ func TestObjectBogus(t *testing.T) {
 		new(bogus.Bogus8):  errors.New(`reform: Bogus8 has field Bogus with invalid "reform:" tag value, it is not allowed`),
 		new(bogus.Bogus9):  errors.New(`reform: Bogus9 has field Bogus2 with "reform:" tag with duplicate column name bogus (used by Bogus1), it is not allowed`),
 		new(bogus.Bogus10): errors.New(`reform: Bogus10 has field Bogus2 with with duplicate "pk" label in "reform:" tag (first used by Bogus1), it is not allowed`),
+		new(bogus.Bogus11): errors.New(`reform: Bogus11 has slice field Bogus with with "pk" label in "reform:" tag, it is not allowed`),
 
 		// new(bogus.BogusIgnore): do not test,
 	} {
@@ -211,7 +219,11 @@ func TestHelpersGood(t *testing.T) {
 }
 
 func TestHelpersExtra(t *testing.T) {
-	assert.Equal(t, []string{"id", "name", "bytes", "bytes2", "byte", "array"}, extra.Columns())
+	columns := []string{
+		"id", "name",
+		"byte", "uint8", "bytep", "uint8p", "bytes", "uint8s", "bytesa", "uint8sa", "bytest", "uint8st",
+	}
+	assert.Equal(t, columns, extra.Columns())
 	assert.True(t, extra.IsTable())
 	assert.Equal(t, FieldInfo{Name: "ID", Type: "Integer", Column: "id"}, extra.PKField())
 

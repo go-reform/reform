@@ -5,6 +5,7 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"path/filepath"
 
 	_ "github.com/denisenkom/go-mssqldb"
 	_ "github.com/go-sql-driver/mysql"
@@ -68,10 +69,34 @@ func main() {
 	switch flag.Arg(0) {
 	case "exec":
 		cmdExec(db, flag.Args()[1:])
+
 	case "query":
 		cmdQuery(db, flag.Args()[1:])
+
 	case "init":
-		cmdInit(db, dialect)
+		if flag.NArg() > 1 {
+			logger.Fatalf("Expected zero or one argument for %q, got %d", "init", flag.NArg())
+		}
+
+		dir := flag.Arg(1)
+		if dir == "" {
+			if dir, err = os.Getwd(); err != nil {
+				logger.Fatalf("%s", err)
+			}
+		}
+		if dir, err = filepath.Abs(dir); err != nil {
+			logger.Fatalf("%s", err)
+		}
+		fi, err := os.Stat(dir)
+		if err != nil {
+			logger.Fatalf("%s", err)
+		}
+		if !fi.IsDir() {
+			logger.Fatalf("%q should be existing directory", dir)
+		}
+
+		cmdInit(db, dir)
+
 	default:
 		logger.Fatalf("Unexpected command %q", flag.Arg(0))
 	}

@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"path/filepath"
 	"strings"
 
 	"gopkg.in/reform.v1"
@@ -84,7 +85,7 @@ func initModelsPostgreSQL(db *reform.DB) (structs []parse.StructInfo) {
 			column := c.(*column)
 			str.Fields = append(str.Fields, parse.FieldInfo{
 				Name:   toCamelCase(column.Name),
-				PKType: goType(column.Type, postgresql.Dialect), // FIXME this is Type, not PKType (not only PK)
+				PKType: goType(column.Type, db.Dialect), // FIXME this is Type, not PKType (not only PK)
 				Column: column.Name,
 			})
 		}
@@ -114,7 +115,7 @@ func initModelsMySQL(db *reform.DB) (structs []parse.StructInfo) {
 			column := c.(*column)
 			str.Fields = append(str.Fields, parse.FieldInfo{
 				Name:   toCamelCase(column.Name),
-				PKType: goType(column.Type, mysql.Dialect), // FIXME this is Type, not PKType (not only PK)
+				PKType: goType(column.Type, db.Dialect), // FIXME this is Type, not PKType (not only PK)
 				Column: column.Name,
 			})
 		}
@@ -149,7 +150,7 @@ func initModelsSQLite3(db *reform.DB) (structs []parse.StructInfo) {
 			}
 			str.Fields = append(str.Fields, parse.FieldInfo{
 				Name:   toCamelCase(column.Name),
-				PKType: goType(column.Type, sqlite3.Dialect), // FIXME this is Type, not PKType (not only PK)
+				PKType: goType(column.Type, db.Dialect), // FIXME this is Type, not PKType (not only PK)
 				Column: column.Name,
 			})
 		}
@@ -185,7 +186,7 @@ func initModelsMSSQL(db *reform.DB) (structs []parse.StructInfo) {
 			column := c.(*column)
 			str.Fields = append(str.Fields, parse.FieldInfo{
 				Name:   toCamelCase(column.Name),
-				PKType: goType(column.Type, mysql.Dialect), // FIXME this is Type, not PKType (not only PK)
+				PKType: goType(column.Type, db.Dialect), // FIXME this is Type, not PKType (not only PK)
 				Column: column.Name,
 			})
 		}
@@ -196,9 +197,9 @@ func initModelsMSSQL(db *reform.DB) (structs []parse.StructInfo) {
 	return
 }
 
-func cmdInit(db *reform.DB, dialect reform.Dialect) {
+func cmdInit(db *reform.DB, dir string) {
 	var structs []parse.StructInfo
-	switch dialect {
+	switch db.Dialect {
 	case postgresql.Dialect:
 		structs = initModelsPostgreSQL(db)
 	case mysql.Dialect:
@@ -208,11 +209,27 @@ func cmdInit(db *reform.DB, dialect reform.Dialect) {
 	case mssql.Dialect:
 		structs = initModelsMSSQL(db)
 	default:
-		logger.Fatalf("unhandled dialect %s", dialect)
+		logger.Fatalf("unhandled dialect %s", db.Dialect)
 	}
 
+	pack := filepath.Base(dir)
 	for _, s := range structs {
-		if err := structTemplate.Execute(os.Stdout, s); err != nil {
+		logger.Debugf("%#v", s)
+
+		f, err := os.Create(filepath.Join(dir, strings.ToLower(s.SQLName)+".go"))
+		if err != nil {
+			logger.Fatalf("%s", err)
+		}
+
+		logger.Debugf("Writing %s ...", f.Name())
+		if _, err = f.WriteString("package " + pack + "\n"); err != nil {
+			logger.Fatalf("%s", err)
+		}
+		if err = structTemplate.Execute(f, s); err != nil {
+			logger.Fatalf("%s", err)
+		}
+
+		if err = f.Close(); err != nil {
 			logger.Fatalf("%s", err)
 		}
 	}

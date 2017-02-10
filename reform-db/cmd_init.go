@@ -83,9 +83,13 @@ func initModelsPostgreSQL(db *reform.DB) (structs []parse.StructInfo) {
 		}
 		for _, c := range columns {
 			column := c.(*column)
+			typ := goType(column.Type, db.Dialect)
+			if column.IsNullable {
+				typ = "*" + typ
+			}
 			str.Fields = append(str.Fields, parse.FieldInfo{
 				Name:   toCamelCase(column.Name),
-				Type:   goType(column.Type, db.Dialect),
+				Type:   typ,
 				Column: column.Name,
 			})
 		}
@@ -113,9 +117,13 @@ func initModelsMySQL(db *reform.DB) (structs []parse.StructInfo) {
 		}
 		for _, c := range columns {
 			column := c.(*column)
+			typ := goType(column.Type, db.Dialect)
+			if column.IsNullable {
+				typ = "*" + typ
+			}
 			str.Fields = append(str.Fields, parse.FieldInfo{
 				Name:   toCamelCase(column.Name),
-				Type:   goType(column.Type, db.Dialect),
+				Type:   typ,
 				Column: column.Name,
 			})
 		}
@@ -148,9 +156,13 @@ func initModelsSQLite3(db *reform.DB) (structs []parse.StructInfo) {
 			if err = db.NextRow(&column, rows); err != nil {
 				break
 			}
+			typ := goType(column.Type, db.Dialect)
+			if !column.NotNull {
+				typ = "*" + typ
+			}
 			str.Fields = append(str.Fields, parse.FieldInfo{
 				Name:   toCamelCase(column.Name),
-				Type:   goType(column.Type, db.Dialect),
+				Type:   typ,
 				Column: column.Name,
 			})
 		}
@@ -184,9 +196,13 @@ func initModelsMSSQL(db *reform.DB) (structs []parse.StructInfo) {
 		}
 		for _, c := range columns {
 			column := c.(*column)
+			typ := goType(column.Type, db.Dialect)
+			if column.IsNullable {
+				typ = "*" + typ
+			}
 			str.Fields = append(str.Fields, parse.FieldInfo{
 				Name:   toCamelCase(column.Name),
-				Type:   goType(column.Type, db.Dialect),
+				Type:   typ,
 				Column: column.Name,
 			})
 		}

@@ -60,12 +60,13 @@ services:
       matrix:
         DATABASE: mssql
 
-# generated with 'go run .github/drone-gen.go'
-# Go [golang:1.6 golang:1.7 golang:1.8 captncraig/go-tip]
-# postgres [9.2 9.3 9.4 9.5 9.6] [postgres]
-# mysql [5.5 5.6 5.7 8.0] [mysql mysql]
-# sqlite3 [dummy] [sqlite3]
-# mssql [latest] [mssql]
+# Generated with 'go run .github/drone-gen.go'.
+# 60 combinations:
+#   Go: golang:1.6, golang:1.7, golang:1.8, captncraig/go-tip
+#   postgres: 9.2, 9.3, 9.4, 9.5, 9.6 (drivers: postgres)
+#   mysql: 5.5, 5.6, 5.7, 8.0 (drivers: mysql, mysql)
+#   sqlite3: dummy (drivers: sqlite3)
+#   mssql: latest (drivers: mssql)
 matrix:
   include:
     - {

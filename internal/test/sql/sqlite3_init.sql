@@ -9,7 +9,7 @@ CREATE TABLE people (
 
 CREATE TABLE projects (
   name varchar NOT NULL,
-  id varchar PRIMARY KEY,
+  id varchar PRIMARY KEY NOT NULL,
   start date NOT NULL,
   end date
 );

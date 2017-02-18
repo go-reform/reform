@@ -17,7 +17,7 @@ import (
 //reform:{{ .SQLName }}
 type {{ .Type }} struct {
 	{{- range $i, $f := .Fields }}
-    {{ $f.Name }} {{ $f.Type }} ` + "`" + `reform:"{{ $f.Column }}"` + "`" + `
+    {{ $f.Name }} {{ $f.Type }} ` + "`" + `reform:"{{ $f.Column }}{{ if eq $i $.PKFieldIndex }},pk{{ end }}"` + "`" + `
 	{{- end }}
 }`))
 )

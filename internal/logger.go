@@ -43,8 +43,13 @@ func (l *Logger) Printf(format string, args ...interface{}) {
 	l.printf(format, args...)
 }
 
-// Fatalf is equivalent to l.Printf() followed by a call to os.Exit(1).
+// Fatalf is equivalent to l.Printf() followed by a call to os.Exit(1)
+// (panic for debug logger).
 func (l *Logger) Fatalf(format string, args ...interface{}) {
 	l.printf(format, args...)
+	if l.debug {
+		// panic instead of os.Exit(1) to see output (SQL queries, failed assertions, etc.) in tests
+		panic("fatal error")
+	}
 	os.Exit(1)
 }

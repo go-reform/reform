@@ -36,10 +36,10 @@ var _ sql.Scanner = (*yesNo)(nil)
 
 //reform:information_schema.tables
 type table struct {
-	Catalog string `reform:"table_catalog"`
-	Schema  string `reform:"table_schema"`
-	Name    string `reform:"table_name"`
-	Type    string `reform:"table_type"`
+	TableCatalog string `reform:"table_catalog"`
+	TableSchema  string `reform:"table_schema"`
+	TableName    string `reform:"table_name"`
+	TableType    string `reform:"table_type"`
 }
 
 //reform:information_schema.columns
@@ -52,12 +52,19 @@ type column struct {
 	Type         string `reform:"data_type"`
 }
 
+//reform:information_schema.key_column_usage
+type keyColumnUsage struct {
+	ColumnName      string `reform:"column_name"`
+	OrdinalPosition int    `reform:"ordinal_position"`
+}
+
 //reform:sqlite_master
 type sqliteMaster struct {
 	Name string `reform:"name"`
 }
 
 // TODO This "dummy" table name is ugly. We should do better.
+// See https://github.com/go-reform/reform/issues/107.
 //reform:dummy
 type sqliteTableInfo struct {
 	CID          int     `reform:"cid"`

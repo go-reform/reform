@@ -37,17 +37,17 @@ func (v *tableViewType) NewStruct() reform.Struct {
 
 // tableView represents tables view or table in SQL database.
 var tableView = &tableViewType{
-	s: parse.StructInfo{Type: "table", SQLSchema: "information_schema", SQLName: "tables", Fields: []parse.FieldInfo{{Name: "Catalog", Type: "string", Column: "table_catalog"}, {Name: "Schema", Type: "string", Column: "table_schema"}, {Name: "Name", Type: "string", Column: "table_name"}, {Name: "Type", Type: "string", Column: "table_type"}}, PKFieldIndex: -1},
+	s: parse.StructInfo{Type: "table", SQLSchema: "information_schema", SQLName: "tables", Fields: []parse.FieldInfo{{Name: "TableCatalog", Type: "string", Column: "table_catalog"}, {Name: "TableSchema", Type: "string", Column: "table_schema"}, {Name: "TableName", Type: "string", Column: "table_name"}, {Name: "TableType", Type: "string", Column: "table_type"}}, PKFieldIndex: -1},
 	z: new(table).Values(),
 }
 
 // String returns a string representation of this struct or record.
 func (s table) String() string {
 	res := make([]string, 4)
-	res[0] = "Catalog: " + reform.Inspect(s.Catalog, true)
-	res[1] = "Schema: " + reform.Inspect(s.Schema, true)
-	res[2] = "Name: " + reform.Inspect(s.Name, true)
-	res[3] = "Type: " + reform.Inspect(s.Type, true)
+	res[0] = "TableCatalog: " + reform.Inspect(s.TableCatalog, true)
+	res[1] = "TableSchema: " + reform.Inspect(s.TableSchema, true)
+	res[2] = "TableName: " + reform.Inspect(s.TableName, true)
+	res[3] = "TableType: " + reform.Inspect(s.TableType, true)
 	return strings.Join(res, ", ")
 }
 
@@ -55,10 +55,10 @@ func (s table) String() string {
 // Returned interface{} values are never untyped nils.
 func (s *table) Values() []interface{} {
 	return []interface{}{
-		s.Catalog,
-		s.Schema,
-		s.Name,
-		s.Type,
+		s.TableCatalog,
+		s.TableSchema,
+		s.TableName,
+		s.TableType,
 	}
 }
 
@@ -66,10 +66,10 @@ func (s *table) Values() []interface{} {
 // Returned interface{} values are never untyped nils.
 func (s *table) Pointers() []interface{} {
 	return []interface{}{
-		&s.Catalog,
-		&s.Schema,
-		&s.Name,
-		&s.Type,
+		&s.TableCatalog,
+		&s.TableSchema,
+		&s.TableName,
+		&s.TableType,
 	}
 }
 
@@ -164,6 +164,75 @@ var (
 	_ reform.View   = columnView
 	_ reform.Struct = (*column)(nil)
 	_ fmt.Stringer  = (*column)(nil)
+)
+
+type keyColumnUsageViewType struct {
+	s parse.StructInfo
+	z []interface{}
+}
+
+// Schema returns a schema name in SQL database ("information_schema").
+func (v *keyColumnUsageViewType) Schema() string {
+	return v.s.SQLSchema
+}
+
+// Name returns a view or table name in SQL database ("key_column_usage").
+func (v *keyColumnUsageViewType) Name() string {
+	return v.s.SQLName
+}
+
+// Columns returns a new slice of column names for that view or table in SQL database.
+func (v *keyColumnUsageViewType) Columns() []string {
+	return []string{"column_name", "ordinal_position"}
+}
+
+// NewStruct makes a new struct for that view or table.
+func (v *keyColumnUsageViewType) NewStruct() reform.Struct {
+	return new(keyColumnUsage)
+}
+
+// keyColumnUsageView represents key_column_usage view or table in SQL database.
+var keyColumnUsageView = &keyColumnUsageViewType{
+	s: parse.StructInfo{Type: "keyColumnUsage", SQLSchema: "information_schema", SQLName: "key_column_usage", Fields: []parse.FieldInfo{{Name: "ColumnName", Type: "string", Column: "column_name"}, {Name: "OrdinalPosition", Type: "int", Column: "ordinal_position"}}, PKFieldIndex: -1},
+	z: new(keyColumnUsage).Values(),
+}
+
+// String returns a string representation of this struct or record.
+func (s keyColumnUsage) String() string {
+	res := make([]string, 2)
+	res[0] = "ColumnName: " + reform.Inspect(s.ColumnName, true)
+	res[1] = "OrdinalPosition: " + reform.Inspect(s.OrdinalPosition, true)
+	return strings.Join(res, ", ")
+}
+
+// Values returns a slice of struct or record field values.
+// Returned interface{} values are never untyped nils.
+func (s *keyColumnUsage) Values() []interface{} {
+	return []interface{}{
+		s.ColumnName,
+		s.OrdinalPosition,
+	}
+}
+
+// Pointers returns a slice of pointers to struct or record fields.
+// Returned interface{} values are never untyped nils.
+func (s *keyColumnUsage) Pointers() []interface{} {
+	return []interface{}{
+		&s.ColumnName,
+		&s.OrdinalPosition,
+	}
+}
+
+// View returns View object for that struct.
+func (s *keyColumnUsage) View() reform.View {
+	return keyColumnUsageView
+}
+
+// check interfaces
+var (
+	_ reform.View   = keyColumnUsageView
+	_ reform.Struct = (*keyColumnUsage)(nil)
+	_ fmt.Stringer  = (*keyColumnUsage)(nil)
 )
 
 type sqliteMasterViewType struct {
@@ -316,6 +385,7 @@ var (
 func init() {
 	parse.AssertUpToDate(&tableView.s, new(table))
 	parse.AssertUpToDate(&columnView.s, new(column))
+	parse.AssertUpToDate(&keyColumnUsageView.s, new(keyColumnUsage))
 	parse.AssertUpToDate(&sqliteMasterView.s, new(sqliteMaster))
 	parse.AssertUpToDate(&sqliteTableInfoView.s, new(sqliteTableInfo))
 }

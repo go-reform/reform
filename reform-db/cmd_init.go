@@ -66,6 +66,33 @@ func toCamelCase(sqlName string) string {
 	return strings.Replace(t, " ", "", -1)
 }
 
+func getPrimaryKeyColumn(db *reform.DB, catalog, schema, name string) *keyColumnUsage {
+	using := []string{"table_catalog", "table_schema", "table_name"}
+	if db.Dialect == mysql.Dialect {
+		// MySQL doesn't have table_catalog in table_constraints
+		using = using[1:]
+	}
+	q := fmt.Sprintf(`
+		SELECT column_name, ordinal_position FROM information_schema.key_column_usage
+			INNER JOIN information_schema.table_constraints USING (%s)
+			WHERE table_catalog = %s AND table_schema = %s AND table_name = %s AND constraint_type = 'PRIMARY KEY'
+			ORDER BY ordinal_position DESC
+		`, strings.Join(using, ", "), db.Placeholder(1), db.Placeholder(2), db.Placeholder(3))
+	row := db.QueryRow(q, catalog, schema, name)
+	var key keyColumnUsage
+	err := row.Scan(key.Pointers()...)
+	if err == reform.ErrNoRows {
+		err = nil
+	}
+	if err != nil {
+		logger.Fatalf("%s", err)
+	}
+	if key.OrdinalPosition > 1 {
+		logger.Fatalf("Expected single column primary key, got %d", key.OrdinalPosition)
+	}
+	return &key
+}
+
 func initModelsPostgreSQL(db *reform.DB) (structs []parse.StructInfo) {
 	tables, err := db.SelectAllFrom(tableView, `WHERE table_schema NOT IN ($1, $2)`, "pg_catalog", "information_schema")
 	if err != nil {
@@ -74,14 +101,16 @@ func initModelsPostgreSQL(db *reform.DB) (structs []parse.StructInfo) {
 
 	for _, t := range tables {
 		table := t.(*table)
-		str := parse.StructInfo{Type: toCamelCase(table.Name), SQLName: table.Name}
+		str := parse.StructInfo{Type: toCamelCase(table.TableName), SQLName: table.TableName}
+
+		key := getPrimaryKeyColumn(db, table.TableCatalog, table.TableSchema, table.TableName)
 
 		tail := `WHERE table_catalog = $1 AND table_schema = $2 AND table_name = $3 ORDER BY ordinal_position`
-		columns, err := db.SelectAllFrom(columnView, tail, table.Catalog, table.Schema, table.Name)
+		columns, err := db.SelectAllFrom(columnView, tail, table.TableCatalog, table.TableSchema, table.TableName)
 		if err != nil {
 			logger.Fatalf("%s", err)
 		}
-		for _, c := range columns {
+		for i, c := range columns {
 			column := c.(*column)
 			typ := goType(column.Type, db.Dialect)
 			if column.IsNullable {
@@ -92,6 +121,10 @@ func initModelsPostgreSQL(db *reform.DB) (structs []parse.StructInfo) {
 				Type:   typ,
 				Column: column.Name,
 			})
+
+			if key.ColumnName == column.Name {
+				str.PKFieldIndex = i
+			}
 		}
 
 		structs = append(structs, str)
@@ -108,14 +141,16 @@ func initModelsMySQL(db *reform.DB) (structs []parse.StructInfo) {
 
 	for _, t := range tables {
 		table := t.(*table)
-		str := parse.StructInfo{Type: toCamelCase(table.Name), SQLName: table.Name}
+		str := parse.StructInfo{Type: toCamelCase(table.TableName), SQLName: table.TableName}
+
+		key := getPrimaryKeyColumn(db, table.TableCatalog, table.TableSchema, table.TableName)
 
 		tail := `WHERE table_catalog = ? AND table_schema = ? AND table_name = ? ORDER BY ordinal_position`
-		columns, err := db.SelectAllFrom(columnView, tail, table.Catalog, table.Schema, table.Name)
+		columns, err := db.SelectAllFrom(columnView, tail, table.TableCatalog, table.TableSchema, table.TableName)
 		if err != nil {
 			logger.Fatalf("%s", err)
 		}
-		for _, c := range columns {
+		for i, c := range columns {
 			column := c.(*column)
 			typ := goType(column.Type, db.Dialect)
 			if column.IsNullable {
@@ -126,6 +161,10 @@ func initModelsMySQL(db *reform.DB) (structs []parse.StructInfo) {
 				Type:   typ,
 				Column: column.Name,
 			})
+
+			if key.ColumnName == column.Name {
+				str.PKFieldIndex = i
+			}
 		}
 
 		structs = append(structs, str)
@@ -155,6 +194,9 @@ func initModelsSQLite3(db *reform.DB) (structs []parse.StructInfo) {
 			var column sqliteTableInfo
 			if err = db.NextRow(&column, rows); err != nil {
 				break
+			}
+			if column.PK {
+				str.PKFieldIndex = len(str.Fields)
 			}
 			typ := goType(column.Type, db.Dialect)
 			if !column.NotNull {
@@ -187,10 +229,10 @@ func initModelsMSSQL(db *reform.DB) (structs []parse.StructInfo) {
 
 	for _, t := range tables {
 		table := t.(*table)
-		str := parse.StructInfo{Type: toCamelCase(table.Name), SQLName: table.Name}
+		str := parse.StructInfo{Type: toCamelCase(table.TableName), SQLName: table.TableName}
 
 		tail := `WHERE table_catalog = ? AND table_schema = ? AND table_name = ? ORDER BY ordinal_position`
-		columns, err := db.SelectAllFrom(columnView, tail, table.Catalog, table.Schema, table.Name)
+		columns, err := db.SelectAllFrom(columnView, tail, table.TableCatalog, table.TableSchema, table.TableName)
 		if err != nil {
 			logger.Fatalf("%s", err)
 		}

@@ -81,12 +81,12 @@ func TestMain(m *testing.M) {
 		if err != nil {
 			log.Fatal(err)
 		}
-		err = db.QueryRow("SHOW TimeZone").Scan(&tz)
+		err = db.QueryRow("SHOW TIME ZONE").Scan(&tz)
 		if err != nil {
 			log.Fatal(err)
 		}
-		log.Printf("PostgreSQL version  = %q", version)
-		log.Printf("PostgreSQL TimeZone = %q", tz)
+		log.Printf("PostgreSQL version   = %q", version)
+		log.Printf("PostgreSQL TIME ZONE = %q", tz)
 
 	case "sqlite3":
 		dialect = sqlite3.Dialect

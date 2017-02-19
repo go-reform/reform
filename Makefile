@@ -39,7 +39,7 @@ test-db:
 		internal/test/sql/data.sql \
 		internal/test/sql/$(DATABASE)_data.sql \
 		internal/test/sql/$(DATABASE)_set.sql \
-		| reform-db -db-driver=$(REFORM_DRIVER) -db-source="$(REFORM_INIT_SOURCE)"
+		| reform-db -db-driver="$(REFORM_DRIVER)" -db-source="$(REFORM_INIT_SOURCE)"
 	go test $(REFORM_TEST_FLAGS) -coverprofile=$(REFORM_DRIVER).cover
 
 check:

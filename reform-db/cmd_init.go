@@ -72,12 +72,18 @@ func getPrimaryKeyColumn(db *reform.DB, catalog, schema, name string) *keyColumn
 		// MySQL doesn't have table_catalog in table_constraints
 		using = using[1:]
 	}
+	for i, u := range using {
+		using[i] = fmt.Sprintf("key_column_usage.%s = table_constraints.%s", u, u)
+	}
 	q := fmt.Sprintf(`
 		SELECT column_name, ordinal_position FROM information_schema.key_column_usage
-			INNER JOIN information_schema.table_constraints USING (%s)
-			WHERE table_catalog = %s AND table_schema = %s AND table_name = %s AND constraint_type = 'PRIMARY KEY'
+			INNER JOIN information_schema.table_constraints ON %s
+			WHERE key_column_usage.table_catalog = %s AND
+				key_column_usage.table_schema = %s AND
+				key_column_usage.table_name = %s AND
+				constraint_type = 'PRIMARY KEY'
 			ORDER BY ordinal_position DESC
-		`, strings.Join(using, ", "), db.Placeholder(1), db.Placeholder(2), db.Placeholder(3))
+		`, strings.Join(using, " AND "), db.Placeholder(1), db.Placeholder(2), db.Placeholder(3))
 	row := db.QueryRow(q, catalog, schema, name)
 	var key keyColumnUsage
 	err := row.Scan(key.Pointers()...)
@@ -231,12 +237,14 @@ func initModelsMSSQL(db *reform.DB) (structs []parse.StructInfo) {
 		table := t.(*table)
 		str := parse.StructInfo{Type: toCamelCase(table.TableName), SQLName: table.TableName}
 
+		key := getPrimaryKeyColumn(db, table.TableCatalog, table.TableSchema, table.TableName)
+
 		tail := `WHERE table_catalog = ? AND table_schema = ? AND table_name = ? ORDER BY ordinal_position`
 		columns, err := db.SelectAllFrom(columnView, tail, table.TableCatalog, table.TableSchema, table.TableName)
 		if err != nil {
 			logger.Fatalf("%s", err)
 		}
-		for _, c := range columns {
+		for i, c := range columns {
 			column := c.(*column)
 			typ := goType(column.Type, db.Dialect)
 			if column.IsNullable {
@@ -247,6 +255,10 @@ func initModelsMSSQL(db *reform.DB) (structs []parse.StructInfo) {
 				Type:   typ,
 				Column: column.Name,
 			})
+
+			if key.ColumnName == column.Name {
+				str.PKFieldIndex = i
+			}
 		}
 
 		structs = append(structs, str)

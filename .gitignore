@@ -1,3 +1,4 @@
 .vscode/
+.idea/
 *.sqlite3
 *.cover

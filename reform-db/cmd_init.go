@@ -14,29 +14,37 @@ import (
 	"gopkg.in/reform.v1/parse"
 )
 
-func goType(sqlType string, dialect reform.Dialect) string {
+func maybePointer(typ string, nullable bool) string {
+	if nullable {
+		return "*" + typ
+	}
+	return typ
+}
+
+func goType(sqlType string, nullable bool, dialect reform.Dialect) (string, string) {
 	// https://www.postgresql.org/docs/current/static/datatype.html
 	// https://dev.mysql.com/doc/refman/5.7/en/data-types.html
 	// https://www.sqlite.org/datatype3.html
+	// https://msdn.microsoft.com/en-us/library/ms187752.aspx
 
 	// handle integer types
 	switch dialect {
 	case sqlite3.Dialect:
 		switch sqlType {
 		case "integer":
-			return "int64"
+			return maybePointer("int64", nullable), ""
 		}
 
 	default:
 		switch sqlType {
 		case "tinyint":
-			return "int8"
+			return maybePointer("int8", nullable), ""
 		case "smallint":
-			return "int16"
+			return maybePointer("int16", nullable), ""
 		case "mediumint", "int", "integer":
-			return "int32"
+			return maybePointer("int32", nullable), ""
 		case "bigint":
-			return "int64"
+			return maybePointer("int64", nullable), ""
 		}
 	}
 
@@ -47,17 +55,18 @@ func goType(sqlType string, dialect reform.Dialect) string {
 	case "char", "varchar", "tinytext", "mediumtext", "longtext":
 		fallthrough
 	case "nchar", "nvarchar":
-		return "string"
+		return maybePointer("string", nullable), ""
 
 	// TODO blobs to []byte
 
 	case "date", "time", "time with time zone", "timestamp", "timestamp with time zone":
 		fallthrough
 	case "datetime":
-		return "time.Time"
+		return maybePointer("time.Time", nullable), ""
 
 	default:
-		return fmt.Sprintf("interface{} /* FIXME unhandled database type %q, please change it */", sqlType)
+		// never a pointer
+		return "[]byte", fmt.Sprintf("// FIXME unhandled database type %q", sqlType)
 	}
 }
 
@@ -99,7 +108,7 @@ func getPrimaryKeyColumn(db *reform.DB, catalog, schema, name string) *keyColumn
 	return &key
 }
 
-func initModelsPostgreSQL(db *reform.DB) (structs []parse.StructInfo) {
+func initModelsPostgreSQL(db *reform.DB) (structs []StructData) {
 	tables, err := db.SelectAllFrom(tableView, `WHERE table_schema NOT IN ($1, $2)`, "pg_catalog", "information_schema")
 	if err != nil {
 		logger.Fatalf("%s", err)
@@ -108,6 +117,7 @@ func initModelsPostgreSQL(db *reform.DB) (structs []parse.StructInfo) {
 	for _, t := range tables {
 		table := t.(*table)
 		str := parse.StructInfo{Type: toCamelCase(table.TableName), SQLName: table.TableName}
+		var comments []string
 
 		key := getPrimaryKeyColumn(db, table.TableCatalog, table.TableSchema, table.TableName)
 
@@ -118,10 +128,8 @@ func initModelsPostgreSQL(db *reform.DB) (structs []parse.StructInfo) {
 		}
 		for i, c := range columns {
 			column := c.(*column)
-			typ := goType(column.Type, db.Dialect)
-			if column.IsNullable {
-				typ = "*" + typ
-			}
+			typ, comment := goType(column.Type, bool(column.IsNullable), db.Dialect)
+			comments = append(comments, comment)
 			str.Fields = append(str.Fields, parse.FieldInfo{
 				Name:   toCamelCase(column.Name),
 				Type:   typ,
@@ -133,13 +141,16 @@ func initModelsPostgreSQL(db *reform.DB) (structs []parse.StructInfo) {
 			}
 		}
 
-		structs = append(structs, str)
+		structs = append(structs, StructData{
+			StructInfo:    str,
+			FieldComments: comments,
+		})
 	}
 
 	return
 }
 
-func initModelsMySQL(db *reform.DB) (structs []parse.StructInfo) {
+func initModelsMySQL(db *reform.DB) (structs []StructData) {
 	tables, err := db.SelectAllFrom(tableView, `WHERE table_schema = DATABASE()`)
 	if err != nil {
 		logger.Fatalf("%s", err)
@@ -148,6 +159,7 @@ func initModelsMySQL(db *reform.DB) (structs []parse.StructInfo) {
 	for _, t := range tables {
 		table := t.(*table)
 		str := parse.StructInfo{Type: toCamelCase(table.TableName), SQLName: table.TableName}
+		var comments []string
 
 		key := getPrimaryKeyColumn(db, table.TableCatalog, table.TableSchema, table.TableName)
 
@@ -158,10 +170,8 @@ func initModelsMySQL(db *reform.DB) (structs []parse.StructInfo) {
 		}
 		for i, c := range columns {
 			column := c.(*column)
-			typ := goType(column.Type, db.Dialect)
-			if column.IsNullable {
-				typ = "*" + typ
-			}
+			typ, comment := goType(column.Type, bool(column.IsNullable), db.Dialect)
+			comments = append(comments, comment)
 			str.Fields = append(str.Fields, parse.FieldInfo{
 				Name:   toCamelCase(column.Name),
 				Type:   typ,
@@ -173,13 +183,16 @@ func initModelsMySQL(db *reform.DB) (structs []parse.StructInfo) {
 			}
 		}
 
-		structs = append(structs, str)
+		structs = append(structs, StructData{
+			StructInfo:    str,
+			FieldComments: comments,
+		})
 	}
 
 	return
 }
 
-func initModelsSQLite3(db *reform.DB) (structs []parse.StructInfo) {
+func initModelsSQLite3(db *reform.DB) (structs []StructData) {
 	tables, err := db.SelectAllFrom(sqliteMasterView, "WHERE type = ?", "table")
 	if err != nil {
 		logger.Fatalf("%s", err)
@@ -192,6 +205,8 @@ func initModelsSQLite3(db *reform.DB) (structs []parse.StructInfo) {
 		}
 
 		str := parse.StructInfo{Type: toCamelCase(tableName), SQLName: tableName}
+		var comments []string
+
 		rows, err := db.Query("PRAGMA table_info(" + tableName + ")") // no placeholders for PRAGMA
 		if err != nil {
 			logger.Fatalf("%s", err)
@@ -204,10 +219,8 @@ func initModelsSQLite3(db *reform.DB) (structs []parse.StructInfo) {
 			if column.PK {
 				str.PKFieldIndex = len(str.Fields)
 			}
-			typ := goType(column.Type, db.Dialect)
-			if !column.NotNull {
-				typ = "*" + typ
-			}
+			typ, comment := goType(column.Type, !column.NotNull, db.Dialect)
+			comments = append(comments, comment)
 			str.Fields = append(str.Fields, parse.FieldInfo{
 				Name:   toCamelCase(column.Name),
 				Type:   typ,
@@ -221,13 +234,16 @@ func initModelsSQLite3(db *reform.DB) (structs []parse.StructInfo) {
 			logger.Fatalf("%s", err)
 		}
 
-		structs = append(structs, str)
+		structs = append(structs, StructData{
+			StructInfo:    str,
+			FieldComments: comments,
+		})
 	}
 
 	return
 }
 
-func initModelsMSSQL(db *reform.DB) (structs []parse.StructInfo) {
+func initModelsMSSQL(db *reform.DB) (structs []StructData) {
 	tables, err := db.SelectAllFrom(tableView, ``)
 	if err != nil {
 		logger.Fatalf("%s", err)
@@ -238,6 +254,7 @@ func initModelsMSSQL(db *reform.DB) (structs []parse.StructInfo) {
 		str := parse.StructInfo{Type: toCamelCase(table.TableName), SQLName: table.TableName}
 
 		key := getPrimaryKeyColumn(db, table.TableCatalog, table.TableSchema, table.TableName)
+		var comments []string
 
 		tail := `WHERE table_catalog = ? AND table_schema = ? AND table_name = ? ORDER BY ordinal_position`
 		columns, err := db.SelectAllFrom(columnView, tail, table.TableCatalog, table.TableSchema, table.TableName)
@@ -246,10 +263,8 @@ func initModelsMSSQL(db *reform.DB) (structs []parse.StructInfo) {
 		}
 		for i, c := range columns {
 			column := c.(*column)
-			typ := goType(column.Type, db.Dialect)
-			if column.IsNullable {
-				typ = "*" + typ
-			}
+			typ, comment := goType(column.Type, bool(column.IsNullable), db.Dialect)
+			comments = append(comments, comment)
 			str.Fields = append(str.Fields, parse.FieldInfo{
 				Name:   toCamelCase(column.Name),
 				Type:   typ,
@@ -261,14 +276,17 @@ func initModelsMSSQL(db *reform.DB) (structs []parse.StructInfo) {
 			}
 		}
 
-		structs = append(structs, str)
+		structs = append(structs, StructData{
+			StructInfo:    str,
+			FieldComments: comments,
+		})
 	}
 
 	return
 }
 
 func cmdInit(db *reform.DB, dir string) {
-	var structs []parse.StructInfo
+	var structs []StructData
 	switch db.Dialect {
 	case postgresql.Dialect:
 		structs = initModelsPostgreSQL(db)

@@ -27,7 +27,6 @@ func (s *ReformDBSuite) TestInit() {
 	ff := filepath.Join(dir, "projects.go")
 	actual, err := parse.File(ff)
 	s.Require().NoError(err)
-
 	s.Require().Equal(projects, actual[0])
 
 	err = os.RemoveAll(dir)

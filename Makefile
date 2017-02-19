@@ -3,6 +3,8 @@ all: test postgres mysql sqlite3 check
 # extra flags like -v
 REFORM_TEST_FLAGS ?=
 
+# SHELL = go run .github/shell.go
+
 download_deps:
 	# download drivers
 	go get -v -u -d github.com/lib/pq \
@@ -30,10 +32,13 @@ install_deps:
 test:
 	rm -f *.cover
 	rm -f internal/test/models/*_reform.go
+	rm -f reform-db/*_reform.go
+
 	go install -v gopkg.in/reform.v1/reform
 	go test $(REFORM_TEST_FLAGS) -coverprofile=parse.cover gopkg.in/reform.v1/parse
 	go generate -v -x gopkg.in/reform.v1/internal/test/models
 	go install -v gopkg.in/reform.v1/internal/test/models
+
 	go generate -v -x gopkg.in/reform.v1/reform-db
 	go install -v gopkg.in/reform.v1/reform-db
 
@@ -43,11 +48,11 @@ test-db:
 		internal/test/sql/data.sql \
 		internal/test/sql/$(DATABASE)_data.sql \
 		internal/test/sql/$(DATABASE)_set.sql
-	# FIXME go test $(REFORM_TEST_FLAGS) -coverprofile=$(REFORM_DRIVER)-reform-db.cover gopkg.in/reform.v1/reform-db
+	go test $(REFORM_TEST_FLAGS) -coverprofile=$(REFORM_DRIVER)-reform-db.cover gopkg.in/reform.v1/reform-db
 	go test $(REFORM_TEST_FLAGS) -coverprofile=$(REFORM_DRIVER).cover
 
 check:
-	-gometalinter ./... --deadline=60s --severity=vet:error
+	-gometalinter ./... --deadline=90s --severity=vet:error
 
 drone:
 	drone exec --repo.trusted .drone-local.yml
@@ -72,10 +77,10 @@ mysql: test
 
 sqlite3: export DATABASE = sqlite3
 sqlite3: export REFORM_DRIVER = sqlite3
-sqlite3: export REFORM_INIT_SOURCE = reform-database.sqlite3
-sqlite3: export REFORM_TEST_SOURCE = reform-database.sqlite3
+sqlite3: export REFORM_INIT_SOURCE = /tmp/reform-database.sqlite3
+sqlite3: export REFORM_TEST_SOURCE = /tmp/reform-database.sqlite3
 sqlite3: test
-	rm -f reform-database.sqlite3
+	rm -f /tmp/reform-database.sqlite3
 	make test-db
 
 # this target is configured for Windows

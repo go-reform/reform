@@ -1,5 +1,7 @@
 package main
 
+// Tool to update .drone-local.yml file with Drone configurations.
+
 import (
 	"bytes"
 	"flag"

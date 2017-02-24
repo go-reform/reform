@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -13,6 +14,23 @@ import (
 	"gopkg.in/reform.v1/dialects/sqlite3"
 	"gopkg.in/reform.v1/parse"
 )
+
+var (
+	initFlags = flag.NewFlagSet("init", flag.ExitOnError)
+)
+
+func init() {
+	initFlags.Usage = func() {
+		fmt.Fprintf(os.Stderr, "`init` generates Go model files for existing database schema.\n\n")
+		fmt.Fprintf(os.Stderr, "Usage:\n")
+		fmt.Fprintf(os.Stderr, "  %s [global flags] init [directory]\n\n", os.Args[0])
+		fmt.Fprintf(os.Stderr, "Global flags:\n")
+		flag.PrintDefaults()
+		fmt.Fprintf(os.Stderr, "\n")
+		fmt.Fprintf(os.Stderr, "TODO.\n")
+		initFlags.PrintDefaults()
+	}
+}
 
 func maybePointer(typ string, nullable bool) string {
 	if nullable {

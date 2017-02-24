@@ -82,11 +82,13 @@ func main() {
 		cmdQuery(getDB(), queryFlags.Args())
 
 	case "init":
-		if flag.NArg() > 1 {
-			logger.Fatalf("Expected zero or one argument for %q, got %d", "init", flag.NArg())
+		initFlags.Parse(flag.Args()[1:])
+
+		if initFlags.NArg() > 1 {
+			logger.Fatalf("Expected zero or one argument for %q, got %d", "init", initFlags.NArg())
 		}
 
-		dir := flag.Arg(1)
+		dir := initFlags.Arg(0)
 		var err error
 		if dir == "" {
 			if dir, err = os.Getwd(); err != nil {
@@ -97,6 +99,9 @@ func main() {
 			logger.Fatalf("%s", err)
 		}
 		fi, err := os.Stat(dir)
+		if os.IsNotExist(err) {
+			logger.Fatalf("%q should be existing directory", dir)
+		}
 		if err != nil {
 			logger.Fatalf("%s", err)
 		}

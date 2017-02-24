@@ -7,6 +7,7 @@ import (
 )
 
 type StructData struct {
+	Imports map[string]struct{}
 	parse.StructInfo
 	FieldComments []string
 }
@@ -14,7 +15,9 @@ type StructData struct {
 var (
 	prologTemplate = template.Must(template.New("prolog").Parse(`
 import (
-	"time"
+	{{- range $i, $_ := .Imports }}
+	"{{ $i }}"
+	{{- end }}
 )
 `))
 

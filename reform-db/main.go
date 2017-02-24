@@ -20,37 +20,32 @@ var (
 	logger *internal.Logger
 
 	debugF  = flag.Bool("debug", false, "Enable debug logging")
-	driverF = flag.String("db-driver", "", "database driver")
-	sourceF = flag.String("db-source", "", "database connection string")
+	driverF = flag.String("db-driver", "", "database driver (required)")
+	sourceF = flag.String("db-source", "", "database connection string (required)")
 )
 
-func main() {
+func init() {
 	flag.Usage = func() {
 		fmt.Fprintf(os.Stderr, "reform-db. %s.\n\n", reform.Version)
-		fmt.Fprintf(os.Stderr, "Usage:\n\n")
-		fmt.Fprintf(os.Stderr, "  %s [flags] [command] [arguments]\n\n", os.Args[0])
-		fmt.Fprintf(os.Stderr, "Commands:\n")
-		fmt.Fprintf(os.Stderr, "  exec\n")
-		fmt.Fprintf(os.Stderr, "  query\n")
-		fmt.Fprintf(os.Stderr, "  init\n\n")
-		fmt.Fprintf(os.Stderr, "Flags:\n")
+		fmt.Fprintf(os.Stderr, "Usage:\n")
+		fmt.Fprintf(os.Stderr, "  %s [global flags] [command] [command flags] [arguments]\n\n", os.Args[0])
+		fmt.Fprintf(os.Stderr, "Global flags:\n")
 		flag.PrintDefaults()
+		fmt.Fprintf(os.Stderr, "\nCommands:\n")
+		fmt.Fprintf(os.Stderr, "  exec  - executes SQL queries from given files or stdin\n")
+		fmt.Fprintf(os.Stderr, "  query - executes SQL queries from given files or stdin, and returns results\n")
+		fmt.Fprintf(os.Stderr, "  init  - generates Go model files for existing database schema\n")
 	}
-	flag.Parse()
+}
 
-	logger = internal.NewLogger("reform-db: ", *debugF)
-	logger.Printf("Internal tool. Do not use it yet.")
-
-	if flag.NArg() == 0 {
-		flag.Usage()
-		os.Exit(1)
+func getDB() *reform.DB {
+	if *driverF == "" || *sourceF == "" {
+		logger.Fatalf("please set both -db-driver and -db-source flags.")
 	}
-
 	sqlDB, err := sql.Open(*driverF, *sourceF)
 	if err != nil {
 		logger.Fatalf("failed to connect to %s %q: %s", *driverF, *sourceF, err)
 	}
-	defer sqlDB.Close()
 
 	// Use single connection so various session-related variables work.
 	// For example: "PRAGMA foreign_keys" for SQLite3, "SET IDENTITY_INSERT" for MS SQL, etc.
@@ -64,14 +59,27 @@ func main() {
 	}
 
 	dialect := internal.DialectForDriver(*driverF)
-	db := reform.NewDB(sqlDB, dialect, reform.NewPrintfLogger(logger.Debugf))
+	return reform.NewDB(sqlDB, dialect, reform.NewPrintfLogger(logger.Debugf))
+}
+
+func main() {
+	flag.Parse()
+
+	logger = internal.NewLogger("reform-db: ", *debugF)
+
+	if flag.NArg() == 0 {
+		flag.Usage()
+		os.Exit(1)
+	}
 
 	switch flag.Arg(0) {
 	case "exec":
-		cmdExec(db, flag.Args()[1:])
+		execFlags.Parse(flag.Args()[1:])
+		cmdExec(getDB(), execFlags.Args())
 
 	case "query":
-		cmdQuery(db, flag.Args()[1:])
+		queryFlags.Parse(flag.Args()[1:])
+		cmdQuery(getDB(), queryFlags.Args())
 
 	case "init":
 		if flag.NArg() > 1 {
@@ -79,6 +87,7 @@ func main() {
 		}
 
 		dir := flag.Arg(1)
+		var err error
 		if dir == "" {
 			if dir, err = os.Getwd(); err != nil {
 				logger.Fatalf("%s", err)
@@ -95,9 +104,10 @@ func main() {
 			logger.Fatalf("%q should be existing directory", dir)
 		}
 
-		cmdInit(db, dir)
+		cmdInit(getDB(), dir)
 
 	default:
+		flag.Usage()
 		logger.Fatalf("Unexpected command %q", flag.Arg(0))
 	}
 }

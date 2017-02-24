@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"flag"
 	"fmt"
 	"os"
 	"strings"
@@ -10,6 +11,26 @@ import (
 	"gopkg.in/reform.v1"
 )
 
+var (
+	queryFlags = flag.NewFlagSet("query", flag.ExitOnError)
+)
+
+func init() {
+	queryFlags.Usage = func() {
+		fmt.Fprintf(os.Stderr, "`query` command executes SQL queries from given files or stdin, and returns results.\n\n")
+		fmt.Fprintf(os.Stderr, "Usage:\n")
+		fmt.Fprintf(os.Stderr, "  %s [global flags] query [file names]\n\n", os.Args[0])
+		fmt.Fprintf(os.Stderr, "Global flags:\n")
+		flag.PrintDefaults()
+		fmt.Fprintf(os.Stderr, "\n")
+		fmt.Fprintf(os.Stderr, "Each file's content is executed as single query.\n")
+		fmt.Fprintf(os.Stderr, "If it contains multiple statements, make sure SQL driver supports them.\n")
+		fmt.Fprintf(os.Stderr, "If file names are not given, query is read from stdin until EOF, then executed.\n")
+		queryFlags.PrintDefaults()
+	}
+}
+
+// cmdQuery implements query command.
 func cmdQuery(db *reform.DB, files []string) {
 	queries := readFiles(files)
 	for _, q := range queries {
@@ -23,14 +44,19 @@ func cmdQuery(db *reform.DB, files []string) {
 		}
 		logger.Debugf("result columns: %v", columns)
 
+		// write table header
 		w := tabwriter.NewWriter(os.Stdout, 0, 0, 1, ' ', tabwriter.Debug)
-		fmt.Fprintln(w, strings.Join(columns, "\t"))
-
+		if _, err = fmt.Fprintln(w, strings.Join(columns, "\t")); err != nil {
+			logger.Fatalf("%s", err)
+		}
 		for i, c := range columns {
 			columns[i] = strings.Repeat("-", len(c))
 		}
-		fmt.Fprintln(w, strings.Join(columns, "\t"))
+		if _, err = fmt.Fprintln(w, strings.Join(columns, "\t")); err != nil {
+			logger.Fatalf("%s", err)
+		}
 
+		// read all rows, scan each field to []byte
 		for rows.Next() {
 			line := make([][]byte, len(columns))
 			dests := make([]interface{}, len(line))

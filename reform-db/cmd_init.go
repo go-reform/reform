@@ -80,10 +80,13 @@ func goType(sqlType string, nullable bool, dialect reform.Dialect) (string, stri
 	case "date", "time", "time with time zone", "timestamp", "timestamp with time zone":
 		fallthrough
 	case "datetime":
+		fallthrough
+	case "datetime2":
 		return maybePointer("time.Time", nullable), "time", ""
 
 	default:
 		// never a pointer
+		// logger.Fatalf("%s", sqlType)
 		return "[]byte", "", fmt.Sprintf("// FIXME unhandled database type %q", sqlType)
 	}
 }
@@ -127,7 +130,7 @@ func getPrimaryKeyColumn(db *reform.DB, catalog, schema, name string) *keyColumn
 }
 
 func initModelsPostgreSQL(db *reform.DB) (structs []StructData) {
-	tables, err := db.SelectAllFrom(tableView, `WHERE table_schema NOT IN ($1, $2)`, "pg_catalog", "information_schema")
+	tables, err := db.SelectAllFrom(tableView, `WHERE table_schema = current_schema()`)
 	if err != nil {
 		logger.Fatalf("%s", err)
 	}

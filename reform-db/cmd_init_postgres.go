@@ -17,13 +17,13 @@ func goTypePostgres(sqlType string, nullable bool) (typ string, pack string, com
 	case "bigint", "bigserial":
 		return maybePointer("int64", nullable), "", ""
 
+	case "decimal", "numeric":
+		return maybePointer("string", nullable), "", ""
+
 	case "real":
 		return maybePointer("float32", nullable), "", ""
 	case "double precision":
 		return maybePointer("float64", nullable), "", ""
-
-	case "decimal", "numeric", "money":
-		return maybePointer("string", nullable), "", ""
 
 	case "character varying", "varchar", "character", "char", "text":
 		return maybePointer("string", nullable), "", ""
@@ -31,7 +31,7 @@ func goTypePostgres(sqlType string, nullable bool) (typ string, pack string, com
 	case "bytea":
 		return "[]byte", "", "" // never a pointer
 
-	case "timestamp", "timestamp with time zone", "date", "time", "time with time zone":
+	case "date", "time", "time with time zone", "timestamp", "timestamp with time zone":
 		return maybePointer("time.Time", nullable), "time", ""
 		// interval can't be mapped to time.Duration: https://github.com/lib/pq/issues/78
 

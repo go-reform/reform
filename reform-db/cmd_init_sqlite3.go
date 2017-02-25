@@ -17,14 +17,16 @@ func goTypeSQLite3(sqlType string, nullable bool) (typ string, pack string, comm
 	}
 
 	switch sqlType {
+	case "numeric", "decimal":
+		return maybePointer("string", nullable), "", ""
+
+	case "real", "double", "double precision", "float":
+		return maybePointer("float64", nullable), "", ""
+
 	case "character", "varchar", "varying character", "nchar", "native character", "nvarchar", "text", "clob":
 		return maybePointer("string", nullable), "", ""
 	case "blob", "":
 		return "[]byte", "", "" // never a pointer
-	case "real", "double", "double precision", "float":
-		return maybePointer("float64", nullable), "", ""
-	case "numeric", "decimal":
-		return maybePointer("string", nullable), "", ""
 	case "boolean":
 		return maybePointer("bool", nullable), "", ""
 	case "date", "datetime":

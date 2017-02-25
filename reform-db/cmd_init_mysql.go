@@ -27,7 +27,7 @@ func goTypeMySQL(sqlType string, nullable bool) (typ string, pack string, commen
 	case "double":
 		return maybePointer("float64", nullable), "", ""
 
-	case "date", "datetime", "timestamp", "time", "year":
+	case "year", "date", "time", "datetime", "timestamp":
 		return maybePointer("time.Time", nullable), "time", ""
 
 	case "char", "varchar":

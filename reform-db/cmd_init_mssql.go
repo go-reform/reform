@@ -20,7 +20,27 @@ func goTypeMSSQL(sqlType string, nullable bool) (typ string, pack string, commen
 	case "bigint":
 		return maybePointer("int64", nullable), "", ""
 
-		// TODO
+	case "decimal", "numeric":
+		return maybePointer("string", nullable), "", ""
+
+	case "real":
+		return maybePointer("float32", nullable), "", ""
+	case "float":
+		return maybePointer("float64", nullable), "", ""
+
+	case "date", "time", "datetime", "datetime2", "smalldatetime":
+		return maybePointer("time.Time", nullable), "time", ""
+
+	case "char", "varchar", "text":
+		fallthrough
+	case "nchar", "nvarchar", "ntext":
+		return maybePointer("string", nullable), "", ""
+
+	case "binary", "varbinary":
+		return "[]byte", "", "" // never a pointer
+
+	case "bit":
+		return maybePointer("bool", nullable), "", ""
 
 	default:
 		// logger.Fatalf("unhandled MSSQL type %q", sqlType)

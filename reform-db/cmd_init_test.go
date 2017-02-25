@@ -29,7 +29,7 @@ func (s *ReformDBSuite) TestInit() {
 	projects.Type = strings.Replace(projects.Type, "Project", "Projects", -1)
 	projects.Fields[1].Name = strings.Replace(projects.Fields[1].Name, "ID", "Id", -1)
 
-	dir, err := ioutil.TempDir("", "TestInit")
+	dir, err := ioutil.TempDir("", "ReformDBTestInit")
 	s.Require().NoError(err)
 	s.T().Log(dir)
 

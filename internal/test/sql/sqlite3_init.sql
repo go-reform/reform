@@ -1,6 +1,6 @@
 CREATE TABLE people (
   id integer NOT NULL PRIMARY KEY AUTOINCREMENT,
-  group_id integer DEFAULT 65534,
+  group_id int DEFAULT 65534,
   name varchar NOT NULL,
   email varchar,
   created_at datetime NOT NULL,

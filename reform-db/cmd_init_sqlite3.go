@@ -30,7 +30,7 @@ func goTypeSQLite3(sqlType string, nullable bool) (typ string, pack string, comm
 	case "date", "datetime":
 		return maybePointer("time.Time", nullable), "time", ""
 	default:
-		logger.Fatalf("unhandled SQLite3 type %q", sqlType)
+		// logger.Fatalf("unhandled SQLite3 type %q", sqlType)
 		return "[]byte", "", fmt.Sprintf("// FIXME unhandled database type %q", sqlType) // never a pointer
 	}
 }

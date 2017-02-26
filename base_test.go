@@ -1,7 +1,6 @@
 package reform_test
 
 import (
-	"database/sql"
 	"fmt"
 	"log"
 	"os"
@@ -18,9 +17,9 @@ import (
 
 	"gopkg.in/reform.v1"
 	"gopkg.in/reform.v1/dialects/mssql"
-	"gopkg.in/reform.v1/dialects/mysql"
 	"gopkg.in/reform.v1/dialects/postgresql"
 	"gopkg.in/reform.v1/dialects/sqlite3"
+	"gopkg.in/reform.v1/internal"
 	. "gopkg.in/reform.v1/internal/test/models"
 )
 
@@ -29,103 +28,7 @@ var (
 )
 
 func TestMain(m *testing.M) {
-	driver := os.Getenv("REFORM_DRIVER")
-	source := os.Getenv("REFORM_TEST_SOURCE")
-	log.Printf("driver = %q, source = %q", driver, source)
-	if driver == "" || source == "" {
-		log.Fatal("no driver or source, set REFORM_DRIVER and REFORM_TEST_SOURCE")
-	}
-
-	db, err := sql.Open(driver, source)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	// Use single connection so various session-related variables work.
-	// For example: "PRAGMA foreign_keys" for SQLite3, "SET IDENTITY_INSERT" for MS SQL, etc.
-	db.SetMaxIdleConns(1)
-	db.SetMaxOpenConns(1)
-	db.SetConnMaxLifetime(-1)
-
-	err = db.Ping()
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	// print useful information for debugging
-	now := time.Now()
-	log.Printf("time.Now()       = %s", now)
-	log.Printf("time.Now().UTC() = %s", now.UTC())
-
-	// select dialect for driver
-	var dialect reform.Dialect
-	switch driver {
-	case "mysql":
-		dialect = mysql.Dialect
-
-		var version, mode, autocommit, tz string
-		err = db.QueryRow("SELECT @@version, @@sql_mode, @@autocommit, @@time_zone").Scan(&version, &mode, &autocommit, &tz)
-		if err != nil {
-			log.Fatal(err)
-		}
-		log.Printf("MySQL version    = %q", version)
-		log.Printf("MySQL sql_mode   = %q", mode)
-		log.Printf("MySQL autocommit = %q", autocommit)
-		log.Printf("MySQL time_zone  = %q", tz)
-
-	case "postgres":
-		dialect = postgresql.Dialect
-
-		var version, tz string
-		err = db.QueryRow("SHOW server_version").Scan(&version)
-		if err != nil {
-			log.Fatal(err)
-		}
-		err = db.QueryRow("SHOW TIME ZONE").Scan(&tz)
-		if err != nil {
-			log.Fatal(err)
-		}
-		log.Printf("PostgreSQL version   = %q", version)
-		log.Printf("PostgreSQL TIME ZONE = %q", tz)
-
-	case "sqlite3":
-		dialect = sqlite3.Dialect
-
-		var version, source string
-		err = db.QueryRow("SELECT sqlite_version(), sqlite_source_id()").Scan(&version, &source)
-		if err != nil {
-			log.Fatal(err)
-		}
-		log.Printf("SQLite3 version = %q", version)
-		log.Printf("SQLite3 source  = %q", source)
-
-		_, err = db.Exec("PRAGMA foreign_keys = ON")
-		if err != nil {
-			log.Fatal(err)
-		}
-
-	case "mssql":
-		dialect = mssql.Dialect
-
-		var version string
-		var options uint16
-		err = db.QueryRow("SELECT @@VERSION, @@OPTIONS").Scan(&version, &options)
-		if err != nil {
-			log.Fatal(err)
-		}
-		xact := "ON"
-		if options&0x4000 == 0 {
-			xact = "OFF"
-		}
-		log.Printf("MS SQL version = %s", version)
-		log.Printf("MS SQL OPTIONS = %#4x (XACT_ABORT %s)", options, xact)
-
-	default:
-		log.Fatal("reform: no dialect for driver " + driver)
-	}
-
-	DB = reform.NewDB(db, dialect, nil)
-
+	DB = internal.ConnectToTestDB()
 	os.Exit(m.Run())
 }
 

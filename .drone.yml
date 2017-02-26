@@ -136,8 +136,8 @@ matrix:
       }
     - {
         GO: "golang:1.6", DATABASE: sqlite3, VERSION: dummy, REFORM_DRIVER: sqlite3,
-        REFORM_INIT_SOURCE: "/tmp/reform-test.sqlite3",
-        REFORM_TEST_SOURCE: "/tmp/reform-test.sqlite3"
+        REFORM_INIT_SOURCE: "/tmp/reform-database.sqlite3",
+        REFORM_TEST_SOURCE: "/tmp/reform-database.sqlite3"
       }
     - {
         GO: "golang:1.6", DATABASE: mssql, VERSION: latest, REFORM_DRIVER: mssql,
@@ -211,8 +211,8 @@ matrix:
       }
     - {
         GO: "golang:1.7", DATABASE: sqlite3, VERSION: dummy, REFORM_DRIVER: sqlite3,
-        REFORM_INIT_SOURCE: "/tmp/reform-test.sqlite3",
-        REFORM_TEST_SOURCE: "/tmp/reform-test.sqlite3"
+        REFORM_INIT_SOURCE: "/tmp/reform-database.sqlite3",
+        REFORM_TEST_SOURCE: "/tmp/reform-database.sqlite3"
       }
     - {
         GO: "golang:1.7", DATABASE: mssql, VERSION: latest, REFORM_DRIVER: mssql,
@@ -286,8 +286,8 @@ matrix:
       }
     - {
         GO: "golang:1.8", DATABASE: sqlite3, VERSION: dummy, REFORM_DRIVER: sqlite3,
-        REFORM_INIT_SOURCE: "/tmp/reform-test.sqlite3",
-        REFORM_TEST_SOURCE: "/tmp/reform-test.sqlite3"
+        REFORM_INIT_SOURCE: "/tmp/reform-database.sqlite3",
+        REFORM_TEST_SOURCE: "/tmp/reform-database.sqlite3"
       }
     - {
         GO: "golang:1.8", DATABASE: mssql, VERSION: latest, REFORM_DRIVER: mssql,
@@ -361,8 +361,8 @@ matrix:
       }
     - {
         GO: "captncraig/go-tip", DATABASE: sqlite3, VERSION: dummy, REFORM_DRIVER: sqlite3,
-        REFORM_INIT_SOURCE: "/tmp/reform-test.sqlite3",
-        REFORM_TEST_SOURCE: "/tmp/reform-test.sqlite3"
+        REFORM_INIT_SOURCE: "/tmp/reform-database.sqlite3",
+        REFORM_TEST_SOURCE: "/tmp/reform-database.sqlite3"
       }
     - {
         GO: "captncraig/go-tip", DATABASE: mssql, VERSION: latest, REFORM_DRIVER: mssql,

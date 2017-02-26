@@ -52,28 +52,28 @@ drone:
 
 postgres: export DATABASE = postgres
 postgres: export REFORM_DRIVER = postgres
-postgres: export REFORM_INIT_SOURCE = postgres://localhost/reform-test?sslmode=disable&TimeZone=UTC
-postgres: export REFORM_TEST_SOURCE = postgres://localhost/reform-test?sslmode=disable&TimeZone=America/New_York
+postgres: export REFORM_INIT_SOURCE = postgres://localhost/reform-database?sslmode=disable&TimeZone=UTC
+postgres: export REFORM_TEST_SOURCE = postgres://localhost/reform-database?sslmode=disable&TimeZone=America/New_York
 postgres: test
-	-dropdb reform-test
-	createdb reform-test
+	-dropdb reform-database
+	createdb reform-database
 	make test-db
 
 mysql: export DATABASE = mysql
 mysql: export REFORM_DRIVER = mysql
-mysql: export REFORM_INIT_SOURCE = root@/reform-test?parseTime=true&time_zone='UTC'&sql_mode='ANSI'&multiStatements=true
-mysql: export REFORM_TEST_SOURCE = root@/reform-test?parseTime=true&time_zone='America%2FNew_York'
+mysql: export REFORM_INIT_SOURCE = root@/reform-database?parseTime=true&time_zone='UTC'&sql_mode='ANSI'&multiStatements=true
+mysql: export REFORM_TEST_SOURCE = root@/reform-database?parseTime=true&time_zone='America%2FNew_York'
 mysql: test
-	echo 'DROP DATABASE IF EXISTS `reform-test`;' | mysql -uroot
-	echo 'CREATE DATABASE `reform-test`;' | mysql -uroot
+	echo 'DROP DATABASE IF EXISTS `reform-database`;' | mysql -uroot
+	echo 'CREATE DATABASE `reform-database`;' | mysql -uroot
 	make test-db
 
 sqlite3: export DATABASE = sqlite3
 sqlite3: export REFORM_DRIVER = sqlite3
-sqlite3: export REFORM_INIT_SOURCE = reform-test.sqlite3
-sqlite3: export REFORM_TEST_SOURCE = reform-test.sqlite3
+sqlite3: export REFORM_INIT_SOURCE = /tmp/reform-database.sqlite3
+sqlite3: export REFORM_TEST_SOURCE =/tmp/reform-database.sqlite3
 sqlite3: test
-	rm -f reform-test.sqlite3
+	rm -f /tmp/reform-database.sqlite3
 	make test-db
 
 # this target is configured for Windows
@@ -82,11 +82,11 @@ mssql: REFORM_SQL_INSTANCE ?= SQLEXPRESS
 mssql: SQLCMD = sqlcmd -b -I -S "$(REFORM_SQL_HOST)\$(REFORM_SQL_INSTANCE)"
 mssql: export DATABASE = mssql
 mssql: export REFORM_DRIVER = mssql
-mssql: export REFORM_INIT_SOURCE = server=$(REFORM_SQL_HOST)\$(REFORM_SQL_INSTANCE);database=reform-test
-mssql: export REFORM_TEST_SOURCE = server=$(REFORM_SQL_HOST)\$(REFORM_SQL_INSTANCE);database=reform-test
+mssql: export REFORM_INIT_SOURCE = server=$(REFORM_SQL_HOST)\$(REFORM_SQL_INSTANCE);database=reform-database
+mssql: export REFORM_TEST_SOURCE = server=$(REFORM_SQL_HOST)\$(REFORM_SQL_INSTANCE);database=reform-database
 mssql: test
-	-$(SQLCMD) -Q "DROP DATABASE [reform-test];"
-	$(SQLCMD) -Q "CREATE DATABASE [reform-test];"
+	-$(SQLCMD) -Q "DROP DATABASE [reform-database];"
+	$(SQLCMD) -Q "CREATE DATABASE [reform-database];"
 	mingw32-make test-db
 
 .PHONY: parse reform

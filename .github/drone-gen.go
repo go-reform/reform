@@ -1,5 +1,7 @@
 package main
 
+// Tool to update .drone-local.yml file with Drone configurations.
+
 import (
 	"bytes"
 	"flag"
@@ -84,8 +86,8 @@ func main() {
 			[]Driver{
 				{
 					"sqlite3",
-					"/tmp/reform-test.sqlite3",
-					"/tmp/reform-test.sqlite3",
+					"/tmp/reform-database.sqlite3",
+					"/tmp/reform-database.sqlite3",
 				},
 			},
 		},

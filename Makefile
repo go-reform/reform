@@ -3,6 +3,8 @@ all: test postgres mysql sqlite3 check
 # extra flags like -v
 REFORM_TEST_FLAGS ?=
 
+# SHELL = go run .github/shell.go
+
 download_deps:
 	# download drivers
 	go get -v -u -d github.com/lib/pq \

@@ -27,7 +27,7 @@ func (v *extraTableType) Name() string {
 
 // Columns returns a new slice of column names for that view or table in SQL database.
 func (v *extraTableType) Columns() []string {
-	return []string{"id", "name", "bytes", "bytes2", "byte", "array"}
+	return []string{"id", "name", "byte", "uint8", "bytep", "uint8p", "bytes", "uint8s", "bytesa", "uint8sa", "bytest", "uint8st"}
 }
 
 // NewStruct makes a new struct for that view or table.
@@ -47,19 +47,25 @@ func (v *extraTableType) PKColumnIndex() uint {
 
 // ExtraTable represents extra view or table in SQL database.
 var ExtraTable = &extraTableType{
-	s: parse.StructInfo{Type: "Extra", SQLSchema: "", SQLName: "extra", Fields: []parse.FieldInfo{{Name: "ID", PKType: "Integer", Column: "id"}, {Name: "Name", PKType: "", Column: "name"}, {Name: "Bytes", PKType: "", Column: "bytes"}, {Name: "Bytes2", PKType: "", Column: "bytes2"}, {Name: "Byte", PKType: "", Column: "byte"}, {Name: "Array", PKType: "", Column: "array"}}, PKFieldIndex: 0},
+	s: parse.StructInfo{Type: "Extra", SQLSchema: "", SQLName: "extra", Fields: []parse.FieldInfo{{Name: "ID", Type: "Integer", Column: "id"}, {Name: "Name", Type: "*String", Column: "name"}, {Name: "Byte", Type: "uint8", Column: "byte"}, {Name: "Uint8", Type: "uint8", Column: "uint8"}, {Name: "ByteP", Type: "*uint8", Column: "bytep"}, {Name: "Uint8P", Type: "*uint8", Column: "uint8p"}, {Name: "Bytes", Type: "[]uint8", Column: "bytes"}, {Name: "Uint8s", Type: "[]uint8", Column: "uint8s"}, {Name: "BytesA", Type: "[512]uint8", Column: "bytesa"}, {Name: "Uint8sA", Type: "[512]uint8", Column: "uint8sa"}, {Name: "BytesT", Type: "Bytes", Column: "bytest"}, {Name: "Uint8sT", Type: "Uint8s", Column: "uint8st"}}, PKFieldIndex: 0},
 	z: new(Extra).Values(),
 }
 
 // String returns a string representation of this struct or record.
 func (s Extra) String() string {
-	res := make([]string, 6)
+	res := make([]string, 12)
 	res[0] = "ID: " + reform.Inspect(s.ID, true)
 	res[1] = "Name: " + reform.Inspect(s.Name, true)
-	res[2] = "Bytes: " + reform.Inspect(s.Bytes, true)
-	res[3] = "Bytes2: " + reform.Inspect(s.Bytes2, true)
-	res[4] = "Byte: " + reform.Inspect(s.Byte, true)
-	res[5] = "Array: " + reform.Inspect(s.Array, true)
+	res[2] = "Byte: " + reform.Inspect(s.Byte, true)
+	res[3] = "Uint8: " + reform.Inspect(s.Uint8, true)
+	res[4] = "ByteP: " + reform.Inspect(s.ByteP, true)
+	res[5] = "Uint8P: " + reform.Inspect(s.Uint8P, true)
+	res[6] = "Bytes: " + reform.Inspect(s.Bytes, true)
+	res[7] = "Uint8s: " + reform.Inspect(s.Uint8s, true)
+	res[8] = "BytesA: " + reform.Inspect(s.BytesA, true)
+	res[9] = "Uint8sA: " + reform.Inspect(s.Uint8sA, true)
+	res[10] = "BytesT: " + reform.Inspect(s.BytesT, true)
+	res[11] = "Uint8sT: " + reform.Inspect(s.Uint8sT, true)
 	return strings.Join(res, ", ")
 }
 
@@ -69,10 +75,16 @@ func (s *Extra) Values() []interface{} {
 	return []interface{}{
 		s.ID,
 		s.Name,
-		s.Bytes,
-		s.Bytes2,
 		s.Byte,
-		s.Array,
+		s.Uint8,
+		s.ByteP,
+		s.Uint8P,
+		s.Bytes,
+		s.Uint8s,
+		s.BytesA,
+		s.Uint8sA,
+		s.BytesT,
+		s.Uint8sT,
 	}
 }
 
@@ -82,10 +94,16 @@ func (s *Extra) Pointers() []interface{} {
 	return []interface{}{
 		&s.ID,
 		&s.Name,
-		&s.Bytes,
-		&s.Bytes2,
 		&s.Byte,
-		&s.Array,
+		&s.Uint8,
+		&s.ByteP,
+		&s.Uint8P,
+		&s.Bytes,
+		&s.Uint8s,
+		&s.BytesA,
+		&s.Uint8sA,
+		&s.BytesT,
+		&s.Uint8sT,
 	}
 }
 
@@ -171,7 +189,7 @@ func (v *notExportedTableType) PKColumnIndex() uint {
 
 // notExportedTable represents not_exported view or table in SQL database.
 var notExportedTable = &notExportedTableType{
-	s: parse.StructInfo{Type: "notExported", SQLSchema: "", SQLName: "not_exported", Fields: []parse.FieldInfo{{Name: "ID", PKType: "string", Column: "id"}}, PKFieldIndex: 0},
+	s: parse.StructInfo{Type: "notExported", SQLSchema: "", SQLName: "not_exported", Fields: []parse.FieldInfo{{Name: "ID", Type: "string", Column: "id"}}, PKFieldIndex: 0},
 	z: new(notExported).Values(),
 }
 

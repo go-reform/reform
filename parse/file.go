@@ -16,8 +16,20 @@ func fileGoType(x ast.Expr) string {
 	switch t := x.(type) {
 	case *ast.StarExpr:
 		return "*" + fileGoType(t.X)
+	case *ast.SelectorExpr:
+		return fileGoType(t.X) + "." + t.Sel.String()
 	case *ast.Ident:
-		return t.String()
+		s := t.String()
+		if s == "byte" {
+			return "uint8"
+		}
+		return s
+	case *ast.ArrayType:
+		return "[" + fileGoType(t.Len) + "]" + fileGoType(t.Elt)
+	case *ast.BasicLit:
+		return t.Value
+	case nil:
+		return ""
 	default:
 		panic(fmt.Sprintf("reform: fileGoType: unhandled '%s' (%#v). Please report this bug.", x, x))
 	}
@@ -63,11 +75,13 @@ func parseStructTypeSpec(ts *ast.TypeSpec, str *ast.StructType) (*StructInfo, er
 		if column == "" {
 			return nil, fmt.Errorf(`reform: %s has field %s with invalid "reform:" tag value, it is not allowed`, res.Type, name.Name)
 		}
-		var pkType string
+		typ := fileGoType(f.Type)
 		if isPK {
-			pkType = fileGoType(f.Type)
-			if strings.HasPrefix(pkType, "*") {
+			if strings.HasPrefix(typ, "*") {
 				return nil, fmt.Errorf(`reform: %s has pointer field %s with with "pk" label in "reform:" tag, it is not allowed`, res.Type, name.Name)
+			}
+			if strings.HasPrefix(typ, "[") {
+				return nil, fmt.Errorf(`reform: %s has slice field %s with with "pk" label in "reform:" tag, it is not allowed`, res.Type, name.Name)
 			}
 			if res.PKFieldIndex >= 0 {
 				return nil, fmt.Errorf(`reform: %s has field %s with with duplicate "pk" label in "reform:" tag (first used by %s), it is not allowed`, res.Type, name.Name, res.Fields[res.PKFieldIndex].Name)
@@ -76,7 +90,7 @@ func parseStructTypeSpec(ts *ast.TypeSpec, str *ast.StructType) (*StructInfo, er
 
 		res.Fields = append(res.Fields, FieldInfo{
 			Name:   name.Name,
-			PKType: pkType,
+			Type:   typ,
 			Column: column,
 		})
 		if isPK {

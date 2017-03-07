@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"go/build"
 	"os"
 	"path/filepath"
 	"strings"
@@ -26,8 +27,12 @@ func init() {
 		fmt.Fprintf(os.Stderr, "  %s [global flags] init [directory]\n\n", os.Args[0])
 		fmt.Fprintf(os.Stderr, "Global flags:\n")
 		flag.PrintDefaults()
-		fmt.Fprintf(os.Stderr, "\n")
-		fmt.Fprintf(os.Stderr, "TODO.\n")
+		fmt.Fprintf(os.Stderr, `
+It uses information_schema or similar RDMBS mechanism to inspect database
+structure. For each table, it generates a single file with single struct type
+definition with fields, types, and tags. Generated code then should be checked
+and edited manually.
+`)
 		initFlags.PrintDefaults()
 	}
 }
@@ -90,8 +95,8 @@ func initModelsInformationSchema(db *reform.DB, tablesTail string, typeFunc type
 		logger.Fatalf("%s", err)
 	}
 
-	imports := make(map[string]struct{})
 	for _, t := range tables {
+		imports := make(map[string]struct{})
 		table := t.(*table)
 		str := parse.StructInfo{Type: toCamelCase(table.TableName), SQLName: table.TableName}
 		var comments []string
@@ -145,12 +150,20 @@ func cmdInit(db *reform.DB, dir string) {
 	case sqlite3.Dialect:
 		structs = initModelsSQLite3(db)
 	case mssql.Dialect:
-		structs = initModelsInformationSchema(db, ``, goTypeMSSQL)
+		structs = initModelsInformationSchema(db, ``, goTypeMSSQL) // TODO what tail here?
 	default:
 		logger.Fatalf("unhandled dialect %s", db.Dialect)
 	}
 
-	pack := filepath.Base(dir)
+	// detect package name by importing package or from directory name
+	var packageName string
+	pack, err := build.ImportDir(dir, 0)
+	if err == nil {
+		packageName = pack.Name
+	} else {
+		packageName = strings.Replace(strings.Split(filepath.Base(dir), ".")[0], "-", "_", -1)
+	}
+
 	for _, s := range structs {
 		logger.Debugf("%#v", s)
 
@@ -160,7 +173,7 @@ func cmdInit(db *reform.DB, dir string) {
 		}
 
 		logger.Debugf("Writing %s ...", f.Name())
-		if _, err = f.WriteString("package " + pack + "\n"); err != nil {
+		if _, err = f.WriteString("package " + packageName + "\n"); err != nil {
 			logger.Fatalf("%s", err)
 		}
 		if err = prologTemplate.Execute(f, s); err != nil {

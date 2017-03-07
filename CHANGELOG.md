@@ -2,6 +2,7 @@
 
 ## Not released yet
 
+* `reform-db` command.
 * Field with `reform` tag with value `"-"` is ignored now (just like with value `""` and without tag at all).
 * `ErrTxDone`.
 

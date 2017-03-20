@@ -29,6 +29,7 @@ install_deps:
 	gometalinter --install
 	go test -i -v
 
+# run unit tests, generate models, install tools
 test:
 	rm -f *.cover
 	rm -f internal/test/models/*_reform.go
@@ -42,7 +43,12 @@ test:
 	go generate -v -x gopkg.in/reform.v1/reform-db
 	go install -v gopkg.in/reform.v1/reform-db
 
+# initialize database and run tests
 test-db:
+	-reform-db -db-driver="$(REFORM_DRIVER)" -db-source="$(REFORM_ROOT_SOURCE)" exec \
+		internal/test/sql/$(DATABASE)_drop.sql
+	reform-db -db-driver="$(REFORM_DRIVER)" -db-source="$(REFORM_ROOT_SOURCE)" exec \
+		internal/test/sql/$(DATABASE)_create.sql
 	reform-db -db-driver="$(REFORM_DRIVER)" -db-source="$(REFORM_INIT_SOURCE)" exec \
 		internal/test/sql/$(DATABASE)_init.sql \
 		internal/test/sql/data.sql \
@@ -57,43 +63,43 @@ check:
 drone:
 	drone exec --repo.trusted .drone-local.yml
 
+# create local PostgreSQL database and run tests
 postgres: export DATABASE = postgres
 postgres: export REFORM_DRIVER = postgres
+postgres: export REFORM_ROOT_SOURCE = postgres://localhost/template1?sslmode=disable
 postgres: export REFORM_INIT_SOURCE = postgres://localhost/reform-database?sslmode=disable&TimeZone=UTC
 postgres: export REFORM_TEST_SOURCE = postgres://localhost/reform-database?sslmode=disable&TimeZone=America/New_York
 postgres: test
-	-dropdb reform-database
-	createdb reform-database
 	make test-db
 
+# create local MySQL database and run tests
 mysql: export DATABASE = mysql
 mysql: export REFORM_DRIVER = mysql
+mysql: export REFORM_ROOT_SOURCE = root@/mysql
 mysql: export REFORM_INIT_SOURCE = root@/reform-database?parseTime=true&time_zone='UTC'&sql_mode='ANSI'&multiStatements=true
 mysql: export REFORM_TEST_SOURCE = root@/reform-database?parseTime=true&time_zone='America%2FNew_York'
 mysql: test
-	echo 'DROP DATABASE IF EXISTS `reform-database`;' | mysql -uroot
-	echo 'CREATE DATABASE `reform-database`;' | mysql -uroot
 	make test-db
 
+# create local SQLite3 database and run tests
 sqlite3: export DATABASE = sqlite3
 sqlite3: export REFORM_DRIVER = sqlite3
+sqlite3: export REFORM_ROOT_SOURCE = /tmp/reform-database.sqlite3
 sqlite3: export REFORM_INIT_SOURCE = /tmp/reform-database.sqlite3
 sqlite3: export REFORM_TEST_SOURCE = /tmp/reform-database.sqlite3
 sqlite3: test
 	rm -f /tmp/reform-database.sqlite3
 	make test-db
 
-# this target is configured for Windows
+# create SQL Server database and run tests (Windows only)
 mssql: REFORM_SQL_HOST ?= 127.0.0.1
 mssql: REFORM_SQL_INSTANCE ?= SQLEXPRESS
-mssql: SQLCMD = sqlcmd -b -I -S "$(REFORM_SQL_HOST)\$(REFORM_SQL_INSTANCE)"
 mssql: export DATABASE = mssql
 mssql: export REFORM_DRIVER = mssql
+mssql: export REFORM_ROOT_SOURCE = server=$(REFORM_SQL_HOST)\$(REFORM_SQL_INSTANCE)
 mssql: export REFORM_INIT_SOURCE = server=$(REFORM_SQL_HOST)\$(REFORM_SQL_INSTANCE);database=reform-database
 mssql: export REFORM_TEST_SOURCE = server=$(REFORM_SQL_HOST)\$(REFORM_SQL_INSTANCE);database=reform-database
 mssql: test
-	-$(SQLCMD) -Q "DROP DATABASE [reform-database];"
-	$(SQLCMD) -Q "CREATE DATABASE [reform-database];"
 	mingw32-make test-db
 
-.PHONY: parse reform
+.PHONY: parse reform reform-db

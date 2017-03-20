@@ -13,6 +13,7 @@ import (
 
 type Driver struct {
 	Name       string
+	RootSource string
 	InitSource string
 	TestSource string
 }
@@ -47,8 +48,9 @@ func main() {
 			}, []Driver{
 				{
 					"postgres",
-					"postgres://reform-user:reform-password123@127.0.0.1/reform-database?sslmode=disable&TimeZone=UTC",
-					"postgres://reform-user:reform-password123@127.0.0.1/reform-database?sslmode=disable&TimeZone=America/New_York",
+					"postgres://postgres@127.0.0.1/template1?sslmode=disable",
+					"postgres://postgres@127.0.0.1/reform-database?sslmode=disable&TimeZone=UTC",
+					"postgres://postgres@127.0.0.1/reform-database?sslmode=disable&TimeZone=America/New_York",
 				},
 			},
 		},
@@ -65,15 +67,17 @@ func main() {
 				// ANSI mode
 				{
 					"mysql",
+					"root@/mysql",
 					"root@/reform-database?parseTime=true&time_zone='UTC'&sql_mode='ANSI'&multiStatements=true",
-					"reform-user:reform-password123@/reform-database?parseTime=true&time_zone='America%2FNew_York'&sql_mode='ANSI'",
+					"root@/reform-database?parseTime=true&time_zone='America%2FNew_York'&sql_mode='ANSI'",
 				},
 
 				// TRADITIONAL mode + interpolateParams=true
 				{
 					"mysql",
+					"root@/mysql",
 					"root@/reform-database?parseTime=true&time_zone='UTC'&sql_mode='ANSI'&multiStatements=true",
-					"reform-user:reform-password123@/reform-database?parseTime=true&time_zone='America%2FNew_York'&sql_mode='TRADITIONAL'&interpolateParams=true",
+					"root@/reform-database?parseTime=true&time_zone='America%2FNew_York'&sql_mode='TRADITIONAL'&interpolateParams=true",
 				},
 			},
 		},
@@ -88,6 +92,7 @@ func main() {
 					"sqlite3",
 					"/tmp/reform-database.sqlite3",
 					"/tmp/reform-database.sqlite3",
+					"/tmp/reform-database.sqlite3",
 				},
 			},
 		},
@@ -100,6 +105,7 @@ func main() {
 			[]Driver{
 				{
 					"mssql",
+					"server=localhost;user id=sa;password=reform-password123",
 					"server=localhost;user id=sa;password=reform-password123;database=reform-database",
 					"server=localhost;user id=sa;password=reform-password123;database=reform-database",
 				},
@@ -128,6 +134,7 @@ func main() {
 					fmt.Fprintf(&buf, "    - {\n")
 					fmt.Fprintf(&buf, "        GO: %q, DATABASE: %s, VERSION: %s, REFORM_DRIVER: %s,\n",
 						g, db.ImageName, v, d.Name)
+					fmt.Fprintf(&buf, "        REFORM_ROOT_SOURCE: %q,\n", d.RootSource)
 					fmt.Fprintf(&buf, "        REFORM_INIT_SOURCE: %q,\n", d.InitSource)
 					fmt.Fprintf(&buf, "        REFORM_TEST_SOURCE: %q", d.TestSource)
 					fmt.Fprintf(&buf, "\n      }\n")

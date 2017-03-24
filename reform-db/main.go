@@ -14,6 +14,7 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 
 	"gopkg.in/reform.v1"
+	"gopkg.in/reform.v1/dialects"
 	"gopkg.in/reform.v1/internal"
 )
 
@@ -60,7 +61,7 @@ func getDB() *reform.DB {
 		logger.Fatalf("failed to ping database: %s", err)
 	}
 
-	dialect := internal.DialectForDriver(*driverF)
+	dialect := dialects.ForDriver(*driverF)
 	return reform.NewDB(sqlDB, dialect, reform.NewPrintfLogger(logger.Debugf))
 }
 

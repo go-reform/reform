@@ -24,6 +24,7 @@ import (
 	structTemplate = template.Must(template.New("struct").Parse(`
 //go:generate reform
 
+// {{ .Type }} represents a row in {{ .SQLName }} table.
 //reform:{{ .SQLName }}
 type {{ .Type }} struct {
 	{{- range $i, $f := .Fields }}

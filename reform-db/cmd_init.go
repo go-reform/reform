@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"go/build"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"strings"
 
@@ -18,22 +19,36 @@ import (
 
 var (
 	initFlags = flag.NewFlagSet("init", flag.ExitOnError)
+	gofmtF    = initFlags.Bool("gofmt", true, "Format with gofmt")
 )
 
 func init() {
 	initFlags.Usage = func() {
 		fmt.Fprintf(os.Stderr, "`init` generates Go model files for existing database schema.\n\n")
 		fmt.Fprintf(os.Stderr, "Usage:\n")
-		fmt.Fprintf(os.Stderr, "  %s [global flags] init [directory]\n\n", os.Args[0])
+		fmt.Fprintf(os.Stderr, "  %s [global flags] init [init flags] [directory]\n\n", os.Args[0])
 		fmt.Fprintf(os.Stderr, "Global flags:\n")
 		flag.PrintDefaults()
+		fmt.Fprintf(os.Stderr, "\nInit flags:\n")
+		initFlags.PrintDefaults()
 		fmt.Fprintf(os.Stderr, `
 It uses information_schema or similar RDMBS mechanism to inspect database
 structure. For each table, it generates a single file with single struct type
 definition with fields, types, and tags. Generated code then should be checked
 and edited manually.
 `)
-		initFlags.PrintDefaults()
+	}
+}
+
+func gofmt(path string) {
+	if *gofmtF {
+		cmd := exec.Command("gofmt", "-s", "-w", path)
+		logger.Debugf(strings.Join(cmd.Args, " "))
+		b, err := cmd.CombinedOutput()
+		if err != nil {
+			logger.Fatalf("gofmt error: %s", err)
+		}
+		logger.Debugf("gofmt output: %s", b)
 	}
 }
 
@@ -161,7 +176,8 @@ func cmdInit(db *reform.DB, dir string) {
 	if err == nil {
 		packageName = pack.Name
 	} else {
-		packageName = strings.Replace(strings.Split(filepath.Base(dir), ".")[0], "-", "_", -1)
+		s := strings.Split(filepath.Base(dir), ".")[0]
+		packageName = strings.Replace(s, "-", "_", -1)
 	}
 
 	for _, s := range structs {
@@ -187,4 +203,6 @@ func cmdInit(db *reform.DB, dir string) {
 			logger.Fatalf("%s", err)
 		}
 	}
+
+	gofmt(dir)
 }

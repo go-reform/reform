@@ -22,12 +22,12 @@ func init() {
 		fmt.Fprintf(os.Stderr, "  %s [global flags] query [file names]\n\n", os.Args[0])
 		fmt.Fprintf(os.Stderr, "Global flags:\n")
 		flag.PrintDefaults()
+		queryFlags.PrintDefaults()
 		fmt.Fprintf(os.Stderr, `
 Each file's content is executed as a single query. If it contains multiple
 statements, make sure SQL driver supports them. If file names are not given,
 a query is read from stdin until EOF, then executed.
 `)
-		queryFlags.PrintDefaults()
 	}
 }
 

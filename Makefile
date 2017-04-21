@@ -45,7 +45,7 @@ test-db:
 	go test $(REFORM_TEST_FLAGS) -coverprofile=$(REFORM_DRIVER).cover
 
 check:
-	-gometalinter ./... --deadline=60s --severity=vet:error
+	-gometalinter ./... --deadline=180s --severity=vet:error
 
 drone:
 	drone exec --repo.trusted .drone-local.yml

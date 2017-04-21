@@ -21,5 +21,5 @@ CREATE TABLE person_project (
 );
 
 CREATE TABLE id_only (
-  id integer PRIMARY KEY AUTOINCREMENT
+  id integer NOT NULL PRIMARY KEY AUTOINCREMENT
 );

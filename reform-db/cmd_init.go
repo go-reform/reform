@@ -62,11 +62,19 @@ func maybePointer(typ string, nullable bool) string {
 	return typ
 }
 
-// toCamelCase converts snake_case string (for example, table or column name)
-// to CamelCase (for example, type or field name).
-func toCamelCase(sqlName string) string {
-	t := strings.Title(strings.Replace(sqlName, "_", " ", -1))
-	return strings.Replace(t, " ", "", -1)
+// convertName converts snake_case name of table or column to CamelCase name of type or field.
+// It also handles "_id" to "ID" conversion as a typical special case.
+func convertName(sqlName string) string {
+	fields := strings.Fields(strings.Replace(sqlName, "_", " ", -1))
+	res := make([]string, len(fields))
+	for i, f := range fields {
+		if f == "id" {
+			res[i] = "ID"
+		} else {
+			res[i] = strings.Title(f)
+		}
+	}
+	return strings.Join(res, "")
 }
 
 // getPrimaryKeyColumn returns single primary key column for given table, or nil.
@@ -113,7 +121,11 @@ func initModelsInformationSchema(db *reform.DB, tablesTail string, typeFunc type
 	for _, t := range tables {
 		imports := make(map[string]struct{})
 		table := t.(*table)
-		str := parse.StructInfo{Type: toCamelCase(table.TableName), SQLName: table.TableName}
+		str := parse.StructInfo{
+			Type:         convertName(table.TableName),
+			SQLName:      table.TableName,
+			PKFieldIndex: -1,
+		}
 		var comments []string
 
 		key := getPrimaryKeyColumn(db, table.TableCatalog, table.TableSchema, table.TableName)
@@ -134,7 +146,7 @@ func initModelsInformationSchema(db *reform.DB, tablesTail string, typeFunc type
 			}
 			comments = append(comments, comment)
 			str.Fields = append(str.Fields, parse.FieldInfo{
-				Name:   toCamelCase(column.Name),
+				Name:   convertName(column.Name),
 				Type:   typ,
 				Column: column.Name,
 			})

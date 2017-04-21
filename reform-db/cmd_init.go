@@ -171,13 +171,20 @@ func cmdInit(db *reform.DB, dir string) {
 	var structs []StructData
 	switch db.Dialect {
 	case postgresql.Dialect:
+		// catalog is a currently selected database (reform-database, postgres, template0, etc.)
+		// schema is a PostgreSQL schema (public, pg_catalog, information_schema, etc.)
 		structs = initModelsInformationSchema(db, `WHERE table_schema = current_schema()`, goTypePostgres)
 	case mysql.Dialect:
+		// catalog is always "def"
+		// schema is a database name (reform-database, information_schema, performance_schema, mysql, sys, etc.)
 		structs = initModelsInformationSchema(db, `WHERE table_schema = DATABASE()`, goTypeMySQL)
 	case sqlite3.Dialect:
+		// SQLite is special
 		structs = initModelsSQLite3(db)
 	case mssql.Dialect:
-		structs = initModelsInformationSchema(db, ``, goTypeMSSQL) // TODO what tail here?
+		// catalog is a currently selected database (reform-database, master, etc.)
+		// schema is MS SQL schema (dbo, guest, sys, information_schema, etc.)
+		structs = initModelsInformationSchema(db, `WHERE table_schema = SCHEMA_NAME()`, goTypeMSSQL)
 	default:
 		logger.Fatalf("unhandled dialect %s", db.Dialect)
 	}

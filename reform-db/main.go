@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 
 	_ "github.com/denisenkom/go-mssqldb"
 	_ "github.com/go-sql-driver/mysql"
@@ -34,7 +35,8 @@ func init() {
 		fmt.Fprintf(os.Stderr, "\nCommands:\n")
 		fmt.Fprintf(os.Stderr, "  exec  - executes SQL queries from given files or stdin\n")
 		fmt.Fprintf(os.Stderr, "  query - executes SQL queries from given files or stdin, and returns results\n")
-		fmt.Fprintf(os.Stderr, "  init  - generates Go model files for existing database schema\n")
+		fmt.Fprintf(os.Stderr, "  init  - generates Go model files for existing database schema\n\n")
+		fmt.Fprintf(os.Stderr, "Registered database drivers: %s.", strings.Join(sql.Drivers(), ", "))
 	}
 }
 

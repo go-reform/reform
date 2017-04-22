@@ -14,6 +14,7 @@ import (
 	"gopkg.in/reform.v1/dialects/mysql"
 	"gopkg.in/reform.v1/dialects/postgresql"
 	"gopkg.in/reform.v1/dialects/sqlite3"
+	"gopkg.in/reform.v1/dialects/sqlserver"
 	"gopkg.in/reform.v1/parse"
 )
 
@@ -181,7 +182,7 @@ func cmdInit(db *reform.DB, dir string) {
 	case sqlite3.Dialect:
 		// SQLite is special
 		structs = initModelsSQLite3(db)
-	case mssql.Dialect:
+	case mssql.Dialect, sqlserver.Dialect:
 		// catalog is a currently selected database (reform-database, master, etc.)
 		// schema is MS SQL schema (dbo, guest, sys, information_schema, etc.)
 		structs = initModelsInformationSchema(db, `WHERE table_schema = SCHEMA_NAME()`, goTypeMSSQL)

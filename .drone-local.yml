@@ -104,3 +104,10 @@ matrix:
         REFORM_INIT_SOURCE: "server=localhost;user id=sa;password=reform-password123;database=reform-database",
         REFORM_TEST_SOURCE: "server=localhost;user id=sa;password=reform-password123;database=reform-database"
       }
+
+    - {
+        GO: "golang:1.8", DATABASE: mssql, VERSION: latest, REFORM_DRIVER: sqlserver,
+        REFORM_ROOT_SOURCE: "sqlserver://sa:reform-password123@localhost",
+        REFORM_INIT_SOURCE: "sqlserver://sa:reform-password123@localhost?database=reform-database",
+        REFORM_TEST_SOURCE: "sqlserver://sa:reform-password123@localhost?database=reform-database"
+      }

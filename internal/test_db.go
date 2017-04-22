@@ -12,6 +12,7 @@ import (
 	"gopkg.in/reform.v1/dialects/mysql"
 	"gopkg.in/reform.v1/dialects/postgresql"
 	"gopkg.in/reform.v1/dialects/sqlite3"
+	"gopkg.in/reform.v1/dialects/sqlserver"
 )
 
 // ConnectToTestDB returns open and prepared connection to test DB.
@@ -80,7 +81,7 @@ func ConnectToTestDB() *reform.DB {
 			log.Fatal(err)
 		}
 
-	case mssql.Dialect:
+	case mssql.Dialect, sqlserver.Dialect:
 		var version string
 		var options uint16
 		if err = db.QueryRow("SELECT @@VERSION, @@OPTIONS").Scan(&version, &options); err != nil {

@@ -19,6 +19,7 @@ import (
 	"gopkg.in/reform.v1/dialects/mssql"
 	"gopkg.in/reform.v1/dialects/postgresql"
 	"gopkg.in/reform.v1/dialects/sqlite3"
+	"gopkg.in/reform.v1/dialects/sqlserver"
 	"gopkg.in/reform.v1/internal"
 	. "gopkg.in/reform.v1/internal/test/models"
 )
@@ -46,7 +47,7 @@ func checkForeignKeys(t *testing.T, q *reform.Querier) {
 
 // setIdentityInsert allows or disallows insertions of rows with set primary keys for MS SQL.
 func setIdentityInsert(t *testing.T, q *reform.Querier, table string, allow bool) {
-	if q.Dialect != mssql.Dialect {
+	if q.Dialect != mssql.Dialect && q.Dialect != sqlserver.Dialect {
 		return
 	}
 

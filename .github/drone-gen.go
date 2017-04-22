@@ -103,11 +103,20 @@ func main() {
 				"latest",
 			},
 			[]Driver{
+				// mssql driver
 				{
 					"mssql",
 					"server=localhost;user id=sa;password=reform-password123",
 					"server=localhost;user id=sa;password=reform-password123;database=reform-database",
 					"server=localhost;user id=sa;password=reform-password123;database=reform-database",
+				},
+
+				// sqlserver driver
+				{
+					"sqlserver",
+					"sqlserver://sa:reform-password123@localhost",
+					"sqlserver://sa:reform-password123@localhost?database=reform-database",
+					"sqlserver://sa:reform-password123@localhost?database=reform-database",
 				},
 			},
 		},

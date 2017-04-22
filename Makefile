@@ -91,7 +91,7 @@ sqlite3: test
 	rm -f /tmp/reform-database.sqlite3
 	make test-db
 
-# create SQL Server database and run tests (Windows only)
+# create SQL Server database and run tests with mssql driver (Windows only)
 mssql: REFORM_SQL_HOST ?= 127.0.0.1
 mssql: REFORM_SQL_INSTANCE ?= SQLEXPRESS
 mssql: export DATABASE = mssql
@@ -100,6 +100,17 @@ mssql: export REFORM_ROOT_SOURCE = server=$(REFORM_SQL_HOST)\$(REFORM_SQL_INSTAN
 mssql: export REFORM_INIT_SOURCE = server=$(REFORM_SQL_HOST)\$(REFORM_SQL_INSTANCE);database=reform-database
 mssql: export REFORM_TEST_SOURCE = server=$(REFORM_SQL_HOST)\$(REFORM_SQL_INSTANCE);database=reform-database
 mssql: test
+	mingw32-make test-db
+
+# create SQL Server database and run tests with sqlserver driver (Windows only)
+sqlserver: REFORM_SQL_HOST ?= 127.0.0.1
+sqlserver: REFORM_SQL_INSTANCE ?= SQLEXPRESS
+sqlserver: export DATABASE = mssql
+sqlserver: export REFORM_DRIVER = sqlserver
+sqlserver: export REFORM_ROOT_SOURCE = sqlserver://$(REFORM_SQL_HOST)/$(REFORM_SQL_INSTANCE)
+sqlserver: export REFORM_INIT_SOURCE = sqlserver://$(REFORM_SQL_HOST)/$(REFORM_SQL_INSTANCE)?database=reform-database
+sqlserver: export REFORM_TEST_SOURCE = sqlserver://$(REFORM_SQL_HOST)/$(REFORM_SQL_INSTANCE)?database=reform-database
+sqlserver: test
 	mingw32-make test-db
 
 .PHONY: parse reform reform-db

@@ -7,10 +7,7 @@ import (
 	"github.com/enodata/faker"
 
 	"gopkg.in/reform.v1"
-	"gopkg.in/reform.v1/dialects/mssql"
-	"gopkg.in/reform.v1/dialects/mysql"
 	"gopkg.in/reform.v1/dialects/postgresql"
-	"gopkg.in/reform.v1/dialects/sqlite3"
 	. "gopkg.in/reform.v1/internal/test/models"
 )
 
@@ -93,7 +90,7 @@ func (s *ReformSuite) TestErrorInTransaction() {
 // This behavior is checked for documentation purposes only. reform does not rely on it.
 // http://postgresql.nabble.com/Current-transaction-is-aborted-commands-ignored-until-end-of-transaction-block-td5109252.html
 func (s *ReformSuite) TestAbortedTransaction() {
-	if s.q.Dialect == mysql.Dialect || s.q.Dialect == sqlite3.Dialect || s.q.Dialect == mssql.Dialect {
+	if s.q.Dialect != postgresql.Dialect {
 		s.T().Skip(s.q.Dialect.String() + " works differently, see TestErrorInTransaction")
 	}
 

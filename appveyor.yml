@@ -4,7 +4,6 @@ clone_folder: c:\gopath\src\gopkg.in\reform.v1
 
 environment:
   GOPATH: c:\gopath
-  TARGET: mssql
   COVERALLS_TOKEN:
     secure: +o9WB0T57udDJzTTSmKMg0O5hrP2e0rAuBL36/foBRYTg8VKccp2G8ovxJi4hsmD
   matrix:
@@ -28,8 +27,9 @@ build_script:
   - mingw32-make install_deps
 
 test_script:
-  - mingw32-make test %TARGET%
+  - mingw32-make test mssql sqlserver
   - mingw32-make check
 
 on_success:
-  - if defined COVERALLS_TOKEN goveralls -coverprofile=%TARGET%.cover -service=
+  - if defined COVERALLS_TOKEN goveralls -coverprofile=mssql.cover -service=
+  - if defined COVERALLS_TOKEN goveralls -coverprofile=sqlserver.cover -service=

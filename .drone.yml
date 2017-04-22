@@ -55,12 +55,12 @@ services:
         DATABASE: mssql
 
 # Generated with 'go run .github/drone-gen.go'.
-# 60 combinations:
+# 64 combinations:
 #   Go: golang:1.6, golang:1.7, golang:1.8, captncraig/go-tip
 #   postgres: 9.2, 9.3, 9.4, 9.5, 9.6 (drivers: postgres)
 #   mysql: 5.5, 5.6, 5.7, 8.0 (drivers: mysql, mysql)
 #   sqlite3: dummy (drivers: sqlite3)
-#   mssql: latest (drivers: mssql)
+#   mssql: latest (drivers: mssql, sqlserver)
 matrix:
   include:
     - {
@@ -154,6 +154,12 @@ matrix:
         REFORM_TEST_SOURCE: "server=localhost;user id=sa;password=reform-password123;database=reform-database"
       }
     - {
+        GO: "golang:1.6", DATABASE: mssql, VERSION: latest, REFORM_DRIVER: sqlserver,
+        REFORM_ROOT_SOURCE: "sqlserver://sa:reform-password123@localhost",
+        REFORM_INIT_SOURCE: "sqlserver://sa:reform-password123@localhost?database=reform-database",
+        REFORM_TEST_SOURCE: "sqlserver://sa:reform-password123@localhost?database=reform-database"
+      }
+    - {
         GO: "golang:1.7", DATABASE: postgres, VERSION: 9.2, REFORM_DRIVER: postgres,
         REFORM_ROOT_SOURCE: "postgres://postgres@127.0.0.1/template1?sslmode=disable",
         REFORM_INIT_SOURCE: "postgres://postgres@127.0.0.1/reform-database?sslmode=disable&TimeZone=UTC",
@@ -242,6 +248,12 @@ matrix:
         REFORM_ROOT_SOURCE: "server=localhost;user id=sa;password=reform-password123",
         REFORM_INIT_SOURCE: "server=localhost;user id=sa;password=reform-password123;database=reform-database",
         REFORM_TEST_SOURCE: "server=localhost;user id=sa;password=reform-password123;database=reform-database"
+      }
+    - {
+        GO: "golang:1.7", DATABASE: mssql, VERSION: latest, REFORM_DRIVER: sqlserver,
+        REFORM_ROOT_SOURCE: "sqlserver://sa:reform-password123@localhost",
+        REFORM_INIT_SOURCE: "sqlserver://sa:reform-password123@localhost?database=reform-database",
+        REFORM_TEST_SOURCE: "sqlserver://sa:reform-password123@localhost?database=reform-database"
       }
     - {
         GO: "golang:1.8", DATABASE: postgres, VERSION: 9.2, REFORM_DRIVER: postgres,
@@ -334,6 +346,12 @@ matrix:
         REFORM_TEST_SOURCE: "server=localhost;user id=sa;password=reform-password123;database=reform-database"
       }
     - {
+        GO: "golang:1.8", DATABASE: mssql, VERSION: latest, REFORM_DRIVER: sqlserver,
+        REFORM_ROOT_SOURCE: "sqlserver://sa:reform-password123@localhost",
+        REFORM_INIT_SOURCE: "sqlserver://sa:reform-password123@localhost?database=reform-database",
+        REFORM_TEST_SOURCE: "sqlserver://sa:reform-password123@localhost?database=reform-database"
+      }
+    - {
         GO: "captncraig/go-tip", DATABASE: postgres, VERSION: 9.2, REFORM_DRIVER: postgres,
         REFORM_ROOT_SOURCE: "postgres://postgres@127.0.0.1/template1?sslmode=disable",
         REFORM_INIT_SOURCE: "postgres://postgres@127.0.0.1/reform-database?sslmode=disable&TimeZone=UTC",
@@ -422,4 +440,10 @@ matrix:
         REFORM_ROOT_SOURCE: "server=localhost;user id=sa;password=reform-password123",
         REFORM_INIT_SOURCE: "server=localhost;user id=sa;password=reform-password123;database=reform-database",
         REFORM_TEST_SOURCE: "server=localhost;user id=sa;password=reform-password123;database=reform-database"
+      }
+    - {
+        GO: "captncraig/go-tip", DATABASE: mssql, VERSION: latest, REFORM_DRIVER: sqlserver,
+        REFORM_ROOT_SOURCE: "sqlserver://sa:reform-password123@localhost",
+        REFORM_INIT_SOURCE: "sqlserver://sa:reform-password123@localhost?database=reform-database",
+        REFORM_TEST_SOURCE: "sqlserver://sa:reform-password123@localhost?database=reform-database"
       }

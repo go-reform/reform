@@ -14,17 +14,31 @@ It uses non-empty interfaces, code generation (`go generate`), and initializatio
 as opposed to `interface{}`, type system sidestepping, and runtime reflection. It will be kept simple.
 
 Supported SQL dialects:
-* PostgreSQL (tested with [`github.com/lib/pq`](https://github.com/lib/pq)).
-* MySQL (tested with [`github.com/go-sql-driver/mysql`](https://github.com/go-sql-driver/mysql)).
-* SQLite3 (tested with [`github.com/mattn/go-sqlite3`](https://github.com/mattn/go-sqlite3)).
-* Microsoft SQL Server (tested with [`github.com/denisenkom/go-mssqldb`](https://github.com/denisenkom/go-mssqldb)).
+
+| RDBMS                | Library and drivers                                                                                 | Tested with
+| -----                | -------------------                                                                                 | -----------
+| PostgreSQL           | [github.com/lib/pq](https://github.com/lib/pq) (`postgres`)                                         | All [supported](https://www.postgresql.org/support/versioning/) versions.
+| MySQL                | [github.com/go-sql-driver/mysql](https://github.com/go-sql-driver/mysql) (`mysql`)                  | All [supported](https://www.mysql.com/support/supportedplatforms/database.html) versions.
+| SQLite3              | [github.com/mattn/go-sqlite3](https://github.com/mattn/go-sqlite3) (`sqlite3`)                      |
+| Microsoft SQL Server | [github.com/denisenkom/go-mssqldb](https://github.com/denisenkom/go-mssqldb) (`mssql`, `sqlserver`) | Windows: SQL2008R2SP2, SQL2012SP1, SQL2014, SQL2016. Linux: [`microsoft/mssql-server-linux:latest` Docker image](https://hub.docker.com/r/microsoft/mssql-server-linux/)
 
 
 ## Quickstart
 
-1. Make sure you are using Go 1.6+.
-2. Install or update `reform` package and command: `go get -u gopkg.in/reform.v1/reform` (see about versioning below).
-3. Define a model – `struct` representing a table or view row. For example, store this in file `person.go`:
+1. Make sure you are using Go 1.6+. Install or update `reform` package, `reform` and `reform-db` commands
+   (see about versioning below):
+
+    ```
+    go get -u gopkg.in/reform.v1/...
+    ```
+
+2. Use `reform-db` command to generate models for your existing database schema. For example:
+    ```
+    reform-db -db-driver=sqlite3 -db-source=example.sqlite3 init
+    ```
+
+3. Update generated models or write your own – `struct` representing a table or view row. For example,
+   store this in file `person.go`:
 
     ```go
     //go:generate reform

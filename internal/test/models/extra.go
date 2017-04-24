@@ -32,6 +32,16 @@ type Extra struct {
 	Uint8sT Uint8s     `reform:"uint8st"`
 }
 
+//reform:extra2
+type Extra2 struct {
+	ID []byte `reform:"id,pk"` // https://github.com/go-reform/reform/issues/56
+}
+
+//reform:extra3
+type Extra3 struct {
+	ID [16]byte `reform:"id,pk"` // https://github.com/go-reform/reform/issues/56
+}
+
 //reform:not_exported
 type notExported struct {
 	ID string `reform:"id,pk"`

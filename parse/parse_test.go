@@ -90,6 +90,24 @@ var (
 		PKFieldIndex: 0,
 	}
 
+	extra2 = StructInfo{
+		Type:    "Extra2",
+		SQLName: "extra2",
+		Fields: []FieldInfo{
+			{Name: "ID", Type: "[]uint8", Column: "id"},
+		},
+		PKFieldIndex: 0,
+	}
+
+	extra3 = StructInfo{
+		Type:    "Extra3",
+		SQLName: "extra3",
+		Fields: []FieldInfo{
+			{Name: "ID", Type: "[16]uint8", Column: "id"},
+		},
+		PKFieldIndex: 0,
+	}
+
 	notExported = StructInfo{
 		Type:    "notExported",
 		SQLName: "not_exported",
@@ -114,9 +132,11 @@ func TestFileGood(t *testing.T) {
 func TestFileExtra(t *testing.T) {
 	s, err := File(filepath.FromSlash("../internal/test/models/extra.go"))
 	assert.NoError(t, err)
-	require.Len(t, s, 2)
+	require.Len(t, s, 4)
 	assert.Equal(t, extra, s[0])
-	assert.Equal(t, notExported, s[1])
+	assert.Equal(t, extra2, s[1])
+	assert.Equal(t, extra3, s[2])
+	assert.Equal(t, notExported, s[3])
 }
 
 func TestFileBogus(t *testing.T) {

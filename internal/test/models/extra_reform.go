@@ -152,6 +152,224 @@ var (
 	_ fmt.Stringer  = (*Extra)(nil)
 )
 
+type extra2TableType struct {
+	s parse.StructInfo
+	z []interface{}
+}
+
+// Schema returns a schema name in SQL database ("").
+func (v *extra2TableType) Schema() string {
+	return v.s.SQLSchema
+}
+
+// Name returns a view or table name in SQL database ("extra2").
+func (v *extra2TableType) Name() string {
+	return v.s.SQLName
+}
+
+// Columns returns a new slice of column names for that view or table in SQL database.
+func (v *extra2TableType) Columns() []string {
+	return []string{"id"}
+}
+
+// NewStruct makes a new struct for that view or table.
+func (v *extra2TableType) NewStruct() reform.Struct {
+	return new(Extra2)
+}
+
+// NewRecord makes a new record for that table.
+func (v *extra2TableType) NewRecord() reform.Record {
+	return new(Extra2)
+}
+
+// PKColumnIndex returns an index of primary key column for that table in SQL database.
+func (v *extra2TableType) PKColumnIndex() uint {
+	return uint(v.s.PKFieldIndex)
+}
+
+// Extra2Table represents extra2 view or table in SQL database.
+var Extra2Table = &extra2TableType{
+	s: parse.StructInfo{Type: "Extra2", SQLSchema: "", SQLName: "extra2", Fields: []parse.FieldInfo{{Name: "ID", Type: "[]uint8", Column: "id"}}, PKFieldIndex: 0},
+	z: new(Extra2).Values(),
+}
+
+// String returns a string representation of this struct or record.
+func (s Extra2) String() string {
+	res := make([]string, 1)
+	res[0] = "ID: " + reform.Inspect(s.ID, true)
+	return strings.Join(res, ", ")
+}
+
+// Values returns a slice of struct or record field values.
+// Returned interface{} values are never untyped nils.
+func (s *Extra2) Values() []interface{} {
+	return []interface{}{
+		s.ID,
+	}
+}
+
+// Pointers returns a slice of pointers to struct or record fields.
+// Returned interface{} values are never untyped nils.
+func (s *Extra2) Pointers() []interface{} {
+	return []interface{}{
+		&s.ID,
+	}
+}
+
+// View returns View object for that struct.
+func (s *Extra2) View() reform.View {
+	return Extra2Table
+}
+
+// Table returns Table object for that record.
+func (s *Extra2) Table() reform.Table {
+	return Extra2Table
+}
+
+// PKValue returns a value of primary key for that record.
+// Returned interface{} value is never untyped nil.
+func (s *Extra2) PKValue() interface{} {
+	return s.ID
+}
+
+// PKPointer returns a pointer to primary key field for that record.
+// Returned interface{} value is never untyped nil.
+func (s *Extra2) PKPointer() interface{} {
+	return &s.ID
+}
+
+// HasPK returns true if record has non-zero primary key set, false otherwise.
+func (s *Extra2) HasPK() bool {
+	return s.ID != Extra2Table.z[Extra2Table.s.PKFieldIndex]
+}
+
+// SetPK sets record primary key.
+func (s *Extra2) SetPK(pk interface{}) {
+	if i64, ok := pk.(int64); ok {
+		s.ID = []uint8(i64)
+	} else {
+		s.ID = pk.([]uint8)
+	}
+}
+
+// check interfaces
+var (
+	_ reform.View   = Extra2Table
+	_ reform.Struct = (*Extra2)(nil)
+	_ reform.Table  = Extra2Table
+	_ reform.Record = (*Extra2)(nil)
+	_ fmt.Stringer  = (*Extra2)(nil)
+)
+
+type extra3TableType struct {
+	s parse.StructInfo
+	z []interface{}
+}
+
+// Schema returns a schema name in SQL database ("").
+func (v *extra3TableType) Schema() string {
+	return v.s.SQLSchema
+}
+
+// Name returns a view or table name in SQL database ("extra3").
+func (v *extra3TableType) Name() string {
+	return v.s.SQLName
+}
+
+// Columns returns a new slice of column names for that view or table in SQL database.
+func (v *extra3TableType) Columns() []string {
+	return []string{"id"}
+}
+
+// NewStruct makes a new struct for that view or table.
+func (v *extra3TableType) NewStruct() reform.Struct {
+	return new(Extra3)
+}
+
+// NewRecord makes a new record for that table.
+func (v *extra3TableType) NewRecord() reform.Record {
+	return new(Extra3)
+}
+
+// PKColumnIndex returns an index of primary key column for that table in SQL database.
+func (v *extra3TableType) PKColumnIndex() uint {
+	return uint(v.s.PKFieldIndex)
+}
+
+// Extra3Table represents extra3 view or table in SQL database.
+var Extra3Table = &extra3TableType{
+	s: parse.StructInfo{Type: "Extra3", SQLSchema: "", SQLName: "extra3", Fields: []parse.FieldInfo{{Name: "ID", Type: "[16]uint8", Column: "id"}}, PKFieldIndex: 0},
+	z: new(Extra3).Values(),
+}
+
+// String returns a string representation of this struct or record.
+func (s Extra3) String() string {
+	res := make([]string, 1)
+	res[0] = "ID: " + reform.Inspect(s.ID, true)
+	return strings.Join(res, ", ")
+}
+
+// Values returns a slice of struct or record field values.
+// Returned interface{} values are never untyped nils.
+func (s *Extra3) Values() []interface{} {
+	return []interface{}{
+		s.ID,
+	}
+}
+
+// Pointers returns a slice of pointers to struct or record fields.
+// Returned interface{} values are never untyped nils.
+func (s *Extra3) Pointers() []interface{} {
+	return []interface{}{
+		&s.ID,
+	}
+}
+
+// View returns View object for that struct.
+func (s *Extra3) View() reform.View {
+	return Extra3Table
+}
+
+// Table returns Table object for that record.
+func (s *Extra3) Table() reform.Table {
+	return Extra3Table
+}
+
+// PKValue returns a value of primary key for that record.
+// Returned interface{} value is never untyped nil.
+func (s *Extra3) PKValue() interface{} {
+	return s.ID
+}
+
+// PKPointer returns a pointer to primary key field for that record.
+// Returned interface{} value is never untyped nil.
+func (s *Extra3) PKPointer() interface{} {
+	return &s.ID
+}
+
+// HasPK returns true if record has non-zero primary key set, false otherwise.
+func (s *Extra3) HasPK() bool {
+	return s.ID != Extra3Table.z[Extra3Table.s.PKFieldIndex]
+}
+
+// SetPK sets record primary key.
+func (s *Extra3) SetPK(pk interface{}) {
+	if i64, ok := pk.(int64); ok {
+		s.ID = [16]uint8(i64)
+	} else {
+		s.ID = pk.([16]uint8)
+	}
+}
+
+// check interfaces
+var (
+	_ reform.View   = Extra3Table
+	_ reform.Struct = (*Extra3)(nil)
+	_ reform.Table  = Extra3Table
+	_ reform.Record = (*Extra3)(nil)
+	_ fmt.Stringer  = (*Extra3)(nil)
+)
+
 type notExportedTableType struct {
 	s parse.StructInfo
 	z []interface{}
@@ -263,5 +481,7 @@ var (
 
 func init() {
 	parse.AssertUpToDate(&ExtraTable.s, new(Extra))
+	parse.AssertUpToDate(&Extra2Table.s, new(Extra2))
+	parse.AssertUpToDate(&Extra3Table.s, new(Extra3))
 	parse.AssertUpToDate(&notExportedTable.s, new(notExported))
 }

@@ -10,7 +10,10 @@ import (
 	"strings"
 )
 
-var magicReformComment = regexp.MustCompile(`reform:([0-9A-Za-z_\.]+)`)
+var (
+	magicReformComment = regexp.MustCompile(`reform:([0-9A-Za-z_\.]+)`)
+	sbUint8            = regexp.MustCompile(`^\[\d*\]uint8$`)
+)
 
 func fileGoType(x ast.Expr) string {
 	switch t := x.(type) {
@@ -80,7 +83,7 @@ func parseStructTypeSpec(ts *ast.TypeSpec, str *ast.StructType) (*StructInfo, er
 			if strings.HasPrefix(typ, "*") {
 				return nil, fmt.Errorf(`reform: %s has pointer field %s with with "pk" label in "reform:" tag, it is not allowed`, res.Type, name.Name)
 			}
-			if strings.HasPrefix(typ, "[") {
+			if strings.HasPrefix(typ, "[") && !sbUint8.MatchString(typ) {
 				return nil, fmt.Errorf(`reform: %s has slice field %s with with "pk" label in "reform:" tag, it is not allowed`, res.Type, name.Name)
 			}
 			if res.PKFieldIndex >= 0 {

@@ -33,7 +33,7 @@ func init() {
 		fmt.Fprintf(os.Stderr, "\nInit flags:\n")
 		initFlags.PrintDefaults()
 		fmt.Fprintf(os.Stderr, `
-It uses information_schema or similar RDMBS mechanism to inspect database
+It uses information_schema or similar RDBMS mechanism to inspect database
 structure. For each table, it generates a single file with single struct type
 definition with fields, types, and tags. Generated code then should be checked
 and edited manually.

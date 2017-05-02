@@ -398,6 +398,16 @@ func (q *Querier) Save(record Record) error {
 	return q.Insert(record)
 }
 
+func (q *Querier) Upsert(record Record) error {
+	if bu, ok := record.(BeforeUpserter); ok {
+		if err := bu.BeforeUpsert(); err != nil {
+			return err
+		}
+	}
+
+	return ErrNoUpsert
+}
+
 // Delete deletes record from SQL database table by primary key.
 //
 // Method returns ErrNoRows if no rows were deleted.

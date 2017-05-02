@@ -364,6 +364,30 @@ func (s *ReformSuite) TestSave() {
 	s.Equal(person, person2)
 }
 
+func (s *ReformSuite) TestUpsert() {
+	newName := faker.Name().Name()
+	person := &Person{Name: newName}
+	err := s.q.Upsert(person)
+	s.NoError(err)
+
+	person2, err := s.q.FindByPrimaryKeyFrom(PersonTable, person.ID)
+	s.Require().NoError(err)
+	s.Equal(newName, person2.(*Person).Name)
+	s.Nil(person2.(*Person).Email)
+	s.Equal(person, person2)
+
+	newEmail := faker.Internet().Email()
+	person.Email = &newEmail
+	err = s.q.Upsert(person)
+	s.NoError(err)
+
+	person2, err = s.q.FindByPrimaryKeyFrom(PersonTable, person.ID)
+	s.Require().NoError(err)
+	s.Equal(newName, person2.(*Person).Name)
+	s.Equal(&newEmail, person2.(*Person).Email)
+	s.Equal(person, person2)
+}
+
 func (s *ReformSuite) TestDelete() {
 	person := &Person{ID: 1}
 	err := s.q.Delete(person)

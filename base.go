@@ -15,6 +15,9 @@ var (
 
 	// ErrNoPK is returned from various methods when primary key is required and not set.
 	ErrNoPK = errors.New("reform: no primary key")
+
+	// ErrNoUpsert is returned from Upsert() Querier method when RDBMS does not implement it.
+	ErrNoUpsert = errors.New("reform: no upsert")
 )
 
 // View represents SQL database view or table.
@@ -95,6 +98,10 @@ type BeforeInserter interface {
 // Returning error aborts operation.
 type BeforeUpdater interface {
 	BeforeUpdate() error
+}
+
+type BeforeUpserter interface {
+	BeforeUpsert() error
 }
 
 // AfterFinder is an optional interface for Record which is used by Querier's finders and selectors.

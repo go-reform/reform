@@ -247,7 +247,7 @@ func (q *Querier) InsertMulti(structs ...Struct) error {
 	return err
 }
 
-func (q *Querier) update(record Record, columns []string, values []interface{}, tail string, args ...interface{}) error {
+func (q *Querier) update(str Struct, columns []string, values []interface{}, tail string, args ...interface{}) (uint, error) {
 	for i, c := range columns {
 		columns[i] = q.QuoteIdentifier(c)
 	}
@@ -257,7 +257,7 @@ func (q *Querier) update(record Record, columns []string, values []interface{}, 
 	for i, c := range columns {
 		p[i] = c + " = " + placeholders[i]
 	}
-	table := record.Table()
+	table := str.View()
 	query := fmt.Sprintf("%s %s SET %s %s",
 		q.startQuery("UPDATE"),
 		q.QualifiedView(table),
@@ -268,19 +268,13 @@ func (q *Querier) update(record Record, columns []string, values []interface{}, 
 	args = append(values, args...)
 	res, err := q.Exec(query, args...)
 	if err != nil {
-		return err
+		return 0, err
 	}
 	ra, err := res.RowsAffected()
 	if err != nil {
-		return err
+		return 0, err
 	}
-	if ra == 0 {
-		return ErrNoRows
-	}
-	if ra > 1 {
-		panic(fmt.Sprintf("reform: %d rows by UPDATE by primary key. Please report this bug.", ra))
-	}
-	return nil
+	return uint(ra), nil
 }
 
 func (q *Querier) beforeUpdate(str Struct) error {
@@ -317,7 +311,14 @@ func (q *Querier) Update(record Record) error {
 	columns = append(columns[:pk], columns[pk+1:]...)
 	tail := fmt.Sprintf("WHERE %s = %s", q.QuoteIdentifier(pkColumn), q.Placeholder(len(columns)+1))
 
-	return q.update(record, columns, values, tail, record.PKValue())
+	ra, err := q.update(record, columns, values, tail, record.PKValue())
+	if ra > 1 {
+		panic(fmt.Sprintf("reform: %d rows by UPDATE by primary key. Please report this bug.", ra))
+	}
+	if err == nil && ra == 0 {
+		err = ErrNoRows
+	}
+	return err
 }
 
 // UpdateColumns updates specified columns of row specified by primary key in SQL database table with given record.
@@ -349,7 +350,38 @@ func (q *Querier) UpdateColumns(record Record, columns ...string) error {
 	pkColumn := table.Columns()[table.PKColumnIndex()]
 	tail := fmt.Sprintf("WHERE %s = %s", q.QuoteIdentifier(pkColumn), q.Placeholder(len(columns)+1))
 
-	return q.update(record, columns, values, tail, record.PKValue())
+	ra, err := q.update(record, columns, values, tail, record.PKValue())
+	if ra > 1 {
+		panic(fmt.Sprintf("reform: %d rows by UPDATE by primary key. Please report this bug.", ra))
+	}
+	if err == nil && ra == 0 {
+		err = ErrNoRows
+	}
+	return err
+}
+
+// UpdateView updates specified columns of rows specified by tail and args in SQL database table with given struct,
+// and returns a number of updated rows.
+// Other columns are omitted from generated UPDATE statement.
+// If struct implements BeforeUpdater, it calls BeforeUpdate() before doing so.
+//
+// Method never returns ErrNoRows.
+func (q *Querier) UpdateView(str Struct, columns []string, tail string, args ...interface{}) (uint, error) {
+	if err := q.beforeUpdate(str); err != nil {
+		return 0, err
+	}
+
+	columns, values, err := filteredColumnsAndValues(str, columns, true)
+	if err != nil {
+		return 0, err
+	}
+
+	if len(values) == 0 {
+		// TODO make exported type for that error
+		return 0, fmt.Errorf("reform: nothing to update")
+	}
+
+	return q.update(str, columns, values, tail, args...)
 }
 
 // Save saves record in SQL database table.

@@ -247,7 +247,7 @@ func (q *Querier) InsertMulti(structs ...Struct) error {
 	return err
 }
 
-func (q *Querier) update(record Record, columns []string, values []interface{}) error {
+func (q *Querier) update(record Record, columns []string, values []interface{}, tail string, args ...interface{}) error {
 	for i, c := range columns {
 		columns[i] = q.QuoteIdentifier(c)
 	}
@@ -258,15 +258,14 @@ func (q *Querier) update(record Record, columns []string, values []interface{}) 
 		p[i] = c + " = " + placeholders[i]
 	}
 	table := record.Table()
-	query := fmt.Sprintf("%s %s SET %s WHERE %s = %s",
+	query := fmt.Sprintf("%s %s SET %s %s",
 		q.startQuery("UPDATE"),
 		q.QualifiedView(table),
 		strings.Join(p, ", "),
-		q.QuoteIdentifier(table.Columns()[table.PKColumnIndex()]),
-		q.Placeholder(len(columns)+1),
+		tail,
 	)
 
-	args := append(values, record.PKValue())
+	args = append(values, args...)
 	res, err := q.Exec(query, args...)
 	if err != nil {
 		return err
@@ -284,12 +283,8 @@ func (q *Querier) update(record Record, columns []string, values []interface{}) 
 	return nil
 }
 
-func (q *Querier) beforeUpdate(record Record) error {
-	if !record.HasPK() {
-		return ErrNoPK
-	}
-
-	if bu, ok := record.(BeforeUpdater); ok {
+func (q *Querier) beforeUpdate(str Struct) error {
+	if bu, ok := str.(BeforeUpdater); ok {
 		if err := bu.BeforeUpdate(); err != nil {
 			return err
 		}
@@ -307,17 +302,22 @@ func (q *Querier) Update(record Record) error {
 	if err := q.beforeUpdate(record); err != nil {
 		return err
 	}
+	if !record.HasPK() {
+		return ErrNoPK
+	}
 
 	table := record.Table()
 	values := record.Values()
 	columns := table.Columns()
 
-	// cut primary key
+	// cut primary key, make tail
 	pk := table.PKColumnIndex()
+	pkColumn := columns[pk]
 	values = append(values[:pk], values[pk+1:]...)
 	columns = append(columns[:pk], columns[pk+1:]...)
+	tail := fmt.Sprintf("WHERE %s = %s", q.QuoteIdentifier(pkColumn), q.Placeholder(len(columns)+1))
 
-	return q.update(record, columns, values)
+	return q.update(record, columns, values, tail, record.PKValue())
 }
 
 // UpdateColumns updates specified columns of row specified by primary key in SQL database table with given record.
@@ -330,6 +330,9 @@ func (q *Querier) UpdateColumns(record Record, columns ...string) error {
 	if err := q.beforeUpdate(record); err != nil {
 		return err
 	}
+	if !record.HasPK() {
+		return ErrNoPK
+	}
 
 	columns, values, err := filteredColumnsAndValues(record, columns, true)
 	if err != nil {
@@ -341,7 +344,12 @@ func (q *Querier) UpdateColumns(record Record, columns ...string) error {
 		return fmt.Errorf("reform: nothing to update")
 	}
 
-	return q.update(record, columns, values)
+	// make tail
+	table := record.Table()
+	pkColumn := table.Columns()[table.PKColumnIndex()]
+	tail := fmt.Sprintf("WHERE %s = %s", q.QuoteIdentifier(pkColumn), q.Placeholder(len(columns)+1))
+
+	return q.update(record, columns, values, tail, record.PKValue())
 }
 
 // Save saves record in SQL database table.

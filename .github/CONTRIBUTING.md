@@ -33,3 +33,17 @@ Then run tests with `make`. See [`Makefile`](../Makefile) for connection paramet
 If you have Docker, you can use [Drone CI](http://readme.drone.io/0.5/) CLI to run tests without installing database
 systems. First, you should install [Drone 0.5 CLI](http://readme.drone.io/0.5/install/cli/). Then, run tests with
 `make drone`.
+
+
+## Some notes
+
+### Order and spelling of RDBMS
+
+Different RDBMS should be handled in code in the same order they were added to reform:
+
+* PostgreSQL / postgresql (not postgres)
+* MySQL / mysql
+* SQLite3 / sqlite3 (not sqlite)
+* MSSQL / mssql FIXME
+
+The only exception is `import`s, they are sorted alphabetically.

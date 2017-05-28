@@ -99,6 +99,7 @@ matrix:
         REFORM_TEST_SOURCE: "/tmp/reform-database.sqlite3"
       }
 
+    # mssql driver
     - {
         GO: "golang:1.8", DATABASE: mssql, VERSION: latest, REFORM_DRIVER: mssql,
         REFORM_ROOT_SOURCE: "server=localhost;user id=sa;password=reform-password123",
@@ -106,6 +107,7 @@ matrix:
         REFORM_TEST_SOURCE: "server=localhost;user id=sa;password=reform-password123;database=reform-database"
       }
 
+    # sqlserver driver
     - {
         GO: "golang:1.8", DATABASE: mssql, VERSION: latest, REFORM_DRIVER: sqlserver,
         REFORM_ROOT_SOURCE: "sqlserver://sa:reform-password123@localhost",

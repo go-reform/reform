@@ -17,11 +17,10 @@ go:
   - 1.8.x
   - tip
 
+go_import_path: gopkg.in/reform.v1
+
 before_install:
   - if [[ $TARGET == *mysql* ]] ; then mysql_tzinfo_to_sql /usr/share/zoneinfo | mysql -u root mysql; fi
-
-  - mkdir $GOPATH/src/gopkg.in && mv $GOPATH/src/github.com/go-reform/reform $GOPATH/src/gopkg.in/reform.v1
-  - cd $GOPATH/src/gopkg.in/reform.v1
 
 install:
   - make download_deps

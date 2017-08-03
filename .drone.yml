@@ -40,6 +40,7 @@ services:
     environment:
       - TZ=Europe/Moscow
       - MYSQL_ALLOW_EMPTY_PASSWORD=1
+      - MYSQL_ROOT_HOST=%
     when:
       matrix:
         DATABASE: mysql

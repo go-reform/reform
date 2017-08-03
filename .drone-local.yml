@@ -46,7 +46,7 @@ services:
         DATABASE: postgres
 
   mysql:
-    image: mysql:${VERSION}
+    image: mysql/mysql-server:${VERSION}
     pull: true
     environment:
       - TZ=Europe/Moscow

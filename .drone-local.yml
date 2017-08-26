@@ -46,11 +46,12 @@ services:
         DATABASE: postgres
 
   mysql:
-    image: mysql:${VERSION}
+    image: mysql/mysql-server:${VERSION}
     pull: true
     environment:
       - TZ=Europe/Moscow
       - MYSQL_ALLOW_EMPTY_PASSWORD=1
+      - MYSQL_ROOT_HOST=%
     when:
       matrix:
         DATABASE: mysql

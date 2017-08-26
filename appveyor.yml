@@ -31,5 +31,6 @@ test_script:
   - mingw32-make check
 
 on_success:
-  - if defined COVERALLS_TOKEN goveralls -coverprofile=mssql.cover -service=
-  - if defined COVERALLS_TOKEN goveralls -coverprofile=sqlserver.cover -service=
+  - goveralls -debug -coverprofile=coverage.txt -service=appveyor
+  - curl -s -o codecov https://codecov.io/bash
+  - bash codecov -X fix

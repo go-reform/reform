@@ -18,7 +18,8 @@ pipeline:
       - make test
       - make test-db
       - make check
-      - bash <(curl -s https://codecov.io/bash) -X fix
+      - curl -s -o codecov https://codecov.io/bash
+      - bash codecov -X fix
 
   gitter:
     image: plugins/gitter

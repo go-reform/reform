@@ -32,7 +32,6 @@ script:
   - make check
 
 after_success:
-  - goveralls -debug -coverprofile=coverage.txt
   - bash <(curl -s https://codecov.io/bash) -X fix
 
 notifications:

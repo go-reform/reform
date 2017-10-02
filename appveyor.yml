@@ -4,8 +4,6 @@ clone_folder: c:\gopath\src\gopkg.in\reform.v1
 
 environment:
   GOPATH: c:\gopath
-  COVERALLS_TOKEN:
-    secure: +o9WB0T57udDJzTTSmKMg0O5hrP2e0rAuBL36/foBRYTg8VKccp2G8ovxJi4hsmD
   matrix:
     - REFORM_SQL_INSTANCE: SQL2008R2SP2
     - REFORM_SQL_INSTANCE: SQL2012SP1
@@ -31,6 +29,5 @@ test_script:
   - mingw32-make check
 
 on_success:
-  - goveralls -debug -coverprofile=coverage.txt -service=appveyor
   - curl -s -o codecov https://codecov.io/bash
   - bash codecov -X fix

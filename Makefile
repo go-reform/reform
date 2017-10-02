@@ -17,7 +17,6 @@ download_deps:
 		github.com/stretchr/testify/... \
 		github.com/enodata/faker \
 		github.com/alecthomas/gometalinter \
-		github.com/AlekSi/goveralls \
 		github.com/AlekSi/gocoverutil
 
 	# download linters
@@ -26,7 +25,6 @@ download_deps:
 
 install_deps:
 	go install -v github.com/alecthomas/gometalinter \
-		github.com/AlekSi/goveralls \
 		github.com/AlekSi/gocoverutil
 	gometalinter --install
 	go test -i -v

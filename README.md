@@ -8,6 +8,8 @@
 [![Coverage Status](https://coveralls.io/repos/github/go-reform/reform/badge.svg?branch=v1-stable)](https://coveralls.io/github/go-reform/reform?branch=v1-stable)
 [![Go Report Card](https://goreportcard.com/badge/gopkg.in/reform.v1)](https://goreportcard.com/report/gopkg.in/reform.v1)
 
+<img align="right" alt="Reform gopher logo" title="We need reforms!" src=".github/reform.png">
+
 A better ORM for Go and `database/sql`.
 
 It uses non-empty interfaces, code generation (`go generate`), and initialization-time reflection
@@ -153,6 +155,15 @@ Canonical import path is `gopkg.in/reform.v2-unstable`.
   Composite primary keys are not supported.
 * `pk` field can't be a pointer (`== nil` [doesn't work](https://golang.org/doc/faq#nil_error)).
 * Database row can't have a Go's zero value (0, empty string, etc.) in primary key column.
+
+
+## License
+
+Code is covered by standard MIT-style license. Copyright (c) 2016-2017 Alexey Palazhchenko.
+See [LICENSE](LICENSE) for details. Note that generated code is covered by the terms of your choice.
+
+The reform gopher was drawn by Natalya Glebova. Please use it only as reform logo.
+It is based on the original design by Renée French, released under [Creative Commons Attribution 3.0 USA license](https://creativecommons.org/licenses/by/3.0/).
 
 
 ## Contributing

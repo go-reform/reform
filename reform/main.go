@@ -5,9 +5,12 @@ import (
 	"flag"
 	"fmt"
 	"go/build"
+	"go/format"
+	"io/ioutil"
 	"os"
 	"os/exec"
 	"path/filepath"
+	"reflect"
 	"strings"
 
 	"gopkg.in/reform.v1"
@@ -90,6 +93,24 @@ func gofmt(path string) {
 	}
 }
 
+func goformat(filePath string) {
+	if !*gofmtF {
+		in, err := ioutil.ReadFile(filePath)
+		if err != nil {
+			logger.Fatalf("go/format read error: %s", err)
+		}
+		out, err := format.Source(in)
+		if err != nil {
+			logger.Fatalf("go/format formatting error: %s", err)
+		}
+		if !reflect.DeepEqual(in, out) {
+			if err := ioutil.WriteFile(filePath, out, 0644); err != nil {
+				logger.Fatalf("go/format write error: %s", err)
+			}
+		}
+	}
+}
+
 func main() {
 	flag.Usage = func() {
 		fmt.Fprintf(os.Stderr, "reform - a better ORM generator. %s.\n\n", reform.Version)
@@ -143,6 +164,7 @@ func main() {
 			if err != nil {
 				logger.Fatalf("%s %s: %s", arg, f, err)
 			}
+			goformat(filepath.Join(pack.Dir, f))
 			changed = true
 		}
 
@@ -159,6 +181,7 @@ func main() {
 		if err != nil {
 			logger.Fatalf("%s", err)
 		}
+		goformat(file)
 		gofmt(wd)
 	}
 }

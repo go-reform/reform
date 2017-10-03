@@ -17,7 +17,7 @@ pipeline:
       - make install_deps
       - make test
       - make test-db
-      - make check
+      # - make check
       - curl -s -o codecov https://codecov.io/bash
       - bash codecov -X fix
 

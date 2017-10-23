@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/AlekSi/pointer"
@@ -162,4 +163,51 @@ func ExampleQuerier_InsertMulti() {
 	// Inserted 3 persons
 	// Inserted 2 persons
 	// 0 Alexey Palazhchenko
+}
+
+func ExampleQuerier_Query() {
+	columns := DB.QualifiedColumns(PersonTable)
+	columns = append(columns, DB.QualifiedColumns(PersonProjectView)...)
+	columns = append(columns, DB.QualifiedColumns(ProjectTable)...)
+	query := fmt.Sprintf(`
+		SELECT %s
+			FROM people
+			INNER JOIN person_project ON people.id = person_project.person_id
+			INNER JOIN projects ON person_project.project_id = projects.id
+			ORDER BY person_id, project_id;
+	`, strings.Join(columns, ", "))
+	rows, err := DB.Query(query)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var person Person
+		var personProject PersonProject
+		var project Project
+		pointers := person.Pointers()
+		pointers = append(pointers, personProject.Pointers()...)
+		pointers = append(pointers, project.Pointers()...)
+		if err = rows.Scan(pointers...); err != nil {
+			log.Print(err)
+		}
+		if err = person.AfterFind(); err != nil {
+			log.Fatal(err)
+		}
+		if err = project.AfterFind(); err != nil {
+			log.Fatal(err)
+		}
+		fmt.Printf("%s - %s\n", person.Name, project.Name)
+	}
+	if err = rows.Err(); err != nil {
+		log.Fatal(err)
+	}
+	// Output:
+	// Noble Schumm - Vicious Baron
+	// Elfrieda Abbott - Vicious Baron
+	// Elfrieda Abbott - Thirsty Queen
+	// Elfrieda Abbott - Vicious Baron
+	// Elfrieda Abbott - Thirsty Queen
+	// Elfrieda Abbott - Kosher Traveler
 }

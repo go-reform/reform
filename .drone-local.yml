@@ -68,7 +68,7 @@ services:
 matrix:
   include:
     - {
-        GO: "golang:1.8", DATABASE: postgres, VERSION: 9.6, REFORM_DRIVER: postgres,
+        GO: "golang:1.9", DATABASE: postgres, VERSION: 9.6, REFORM_DRIVER: postgres,
         REFORM_ROOT_SOURCE: "postgres://postgres@127.0.0.1/template1?sslmode=disable",
         REFORM_INIT_SOURCE: "postgres://postgres@127.0.0.1/reform-database?sslmode=disable&TimeZone=UTC",
         REFORM_TEST_SOURCE: "postgres://postgres@127.0.0.1/reform-database?sslmode=disable&TimeZone=America/New_York",
@@ -77,7 +77,7 @@ matrix:
 
     # ANSI mode
     - {
-        GO: "golang:1.8", DATABASE: mysql, VERSION: 5.7, REFORM_DRIVER: mysql,
+        GO: "golang:1.9", DATABASE: mysql, VERSION: 5.7, REFORM_DRIVER: mysql,
         REFORM_ROOT_SOURCE: "root@/mysql",
         REFORM_INIT_SOURCE: "root@/reform-database?parseTime=true&time_zone='UTC'&sql_mode='ANSI'&multiStatements=true",
         REFORM_TEST_SOURCE: "root@/reform-database?parseTime=true&time_zone='America%2FNew_York'&sql_mode='ANSI'"
@@ -85,28 +85,28 @@ matrix:
 
     # TRADITIONAL mode + interpolateParams=true
     - {
-        GO: "golang:1.8", DATABASE: mysql, VERSION: 5.7, REFORM_DRIVER: mysql,
+        GO: "golang:1.9", DATABASE: mysql, VERSION: 5.7, REFORM_DRIVER: mysql,
         REFORM_ROOT_SOURCE: "root@/mysql",
         REFORM_INIT_SOURCE: "root@/reform-database?parseTime=true&time_zone='UTC'&sql_mode='ANSI'&multiStatements=true",
         REFORM_TEST_SOURCE: "root@/reform-database?parseTime=true&time_zone='America%2FNew_York'&sql_mode='TRADITIONAL'&interpolateParams=true"
       }
 
     - {
-        GO: "golang:1.8", DATABASE: sqlite3, VERSION: dummy, REFORM_DRIVER: sqlite3,
+        GO: "golang:1.9", DATABASE: sqlite3, VERSION: dummy, REFORM_DRIVER: sqlite3,
         REFORM_ROOT_SOURCE: "/tmp/reform-database.sqlite3",
         REFORM_INIT_SOURCE: "/tmp/reform-database.sqlite3",
         REFORM_TEST_SOURCE: "/tmp/reform-database.sqlite3"
       }
 
     - {
-        GO: "golang:1.8", DATABASE: mssql, VERSION: latest, REFORM_DRIVER: mssql,
+        GO: "golang:1.9", DATABASE: mssql, VERSION: latest, REFORM_DRIVER: mssql,
         REFORM_ROOT_SOURCE: "server=localhost;user id=sa;password=reform-password123",
         REFORM_INIT_SOURCE: "server=localhost;user id=sa;password=reform-password123;database=reform-database",
         REFORM_TEST_SOURCE: "server=localhost;user id=sa;password=reform-password123;database=reform-database"
       }
 
     - {
-        GO: "golang:1.8", DATABASE: mssql, VERSION: latest, REFORM_DRIVER: sqlserver,
+        GO: "golang:1.9", DATABASE: mssql, VERSION: latest, REFORM_DRIVER: sqlserver,
         REFORM_ROOT_SOURCE: "sqlserver://sa:reform-password123@localhost",
         REFORM_INIT_SOURCE: "sqlserver://sa:reform-password123@localhost?database=reform-database",
         REFORM_TEST_SOURCE: "sqlserver://sa:reform-password123@localhost?database=reform-database"

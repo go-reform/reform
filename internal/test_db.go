@@ -10,7 +10,7 @@ import (
 	"gopkg.in/reform.v1/dialects/mssql"
 	"gopkg.in/reform.v1/dialects/mysql"
 	"gopkg.in/reform.v1/dialects/postgresql"
-	"gopkg.in/reform.v1/dialects/sqlite3"
+	
 	"gopkg.in/reform.v1/dialects/sqlite4"
 	"gopkg.in/reform.v1/dialects/sqlserver"
 )

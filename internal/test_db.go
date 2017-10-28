@@ -5,13 +5,12 @@ import (
 	"log"
 	"os"
 	"time"
-
 	"gopkg.in/reform.v1"
 	"gopkg.in/reform.v1/dialects"
 	"gopkg.in/reform.v1/dialects/mssql"
 	"gopkg.in/reform.v1/dialects/mysql"
 	"gopkg.in/reform.v1/dialects/postgresql"
-	"gopkg.in/reform.v1/dialects/sqlite3"
+	"gopkg.in/reform.v1/dialects/sqlite4"
 	"gopkg.in/reform.v1/dialects/sqlserver"
 )
 
@@ -21,7 +20,7 @@ func ConnectToTestDB() *reform.DB {
 	source := os.Getenv("REFORM_TEST_SOURCE")
 	log.Printf("driver = %q, source = %q", driver, source)
 	if driver == "" || source == "" {
-		log.Fatal("no driver or source, set REFORM_DRIVER and REFORM_TEST_SOURCE")
+		log.Fatal("No driver or source, set REFORM_DRIVER and REFORM_TEST_SOURCE")
 	}
 
 	db, err := sql.Open(driver, source)

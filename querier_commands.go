@@ -385,8 +385,9 @@ func (q *Querier) UpdateView(str Struct, columns []string, tail string, args ...
 }
 
 // Save saves record in SQL database table.
-// If primary key is set, it first calls Update and checks if row was updated.
-// If primary key is absent or no row was updated, it calls Insert.
+// If primary key is set, it first calls Update and checks if row was affected (matched).
+// If primary key is absent or no row was affected, it calls Insert. This allows to call Save with Record
+// with primary key set.
 func (q *Querier) Save(record Record) error {
 	if record.HasPK() {
 		err := q.Update(record)

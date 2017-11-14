@@ -364,6 +364,19 @@ func (s *ReformSuite) TestSave() {
 	s.Equal(person, person2)
 }
 
+func (s *ReformSuite) TestSaveWithPrimaryKey() {
+	setIdentityInsert(s.T(), s.q, "people", true)
+
+	newName := faker.Name().Name()
+	person := &Person{ID: 99, Name: newName}
+	err := s.q.Save(person)
+	s.NoError(err)
+
+	// that should cause no-op UPDATE, see https://github.com/go-reform/reform/issues/131
+	err = s.q.Save(person)
+	s.NoError(err)
+}
+
 func (s *ReformSuite) TestDelete() {
 	person := &Person{ID: 1}
 	err := s.q.Delete(person)

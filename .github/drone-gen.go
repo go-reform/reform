@@ -69,16 +69,16 @@ func main() {
 				{
 					"mysql",
 					"root@/mysql",
-					"root@/reform-database?parseTime=true&time_zone='UTC'&sql_mode='ANSI'&multiStatements=true",
-					"root@/reform-database?parseTime=true&time_zone='America%2FNew_York'&sql_mode='ANSI'",
+					"root@/reform-database?parseTime=true&clientFoundRows=true&time_zone='UTC'&sql_mode='ANSI'&multiStatements=true",
+					"root@/reform-database?parseTime=true&clientFoundRows=true&time_zone='America%2FNew_York'&sql_mode='ANSI'",
 				},
 
 				// TRADITIONAL mode + interpolateParams=true
 				{
 					"mysql",
 					"root@/mysql",
-					"root@/reform-database?parseTime=true&time_zone='UTC'&sql_mode='ANSI'&multiStatements=true",
-					"root@/reform-database?parseTime=true&time_zone='America%2FNew_York'&sql_mode='TRADITIONAL'&interpolateParams=true",
+					"root@/reform-database?parseTime=true&clientFoundRows=true&time_zone='UTC'&sql_mode='ANSI'&multiStatements=true",
+					"root@/reform-database?parseTime=true&clientFoundRows=true&time_zone='America%2FNew_York'&sql_mode='TRADITIONAL'&interpolateParams=true",
 				},
 			},
 		},

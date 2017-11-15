@@ -29,7 +29,6 @@ func main() {
 	flag.Parse()
 
 	goImages := []string{
-		"golang:1.6",
 		"golang:1.7",
 		"golang:1.8",
 		"golang:1.9",

@@ -28,7 +28,7 @@ Note that for MySQL [`clientFoundRows=true`](https://github.com/go-sql-driver/my
 
 ## Quickstart
 
-1. Make sure you are using Go 1.6+. Install or update `reform` package, `reform` and `reform-db` commands
+1. Make sure you are using Go 1.7+. Install or update `reform` package, `reform` and `reform-db` commands
    (see about versioning below):
 
     ```

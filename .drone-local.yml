@@ -80,16 +80,16 @@ matrix:
     - {
         GO: "golang:1.9", DATABASE: mysql, VERSION: 5.7, REFORM_DRIVER: mysql,
         REFORM_ROOT_SOURCE: "root@/mysql",
-        REFORM_INIT_SOURCE: "root@/reform-database?parseTime=true&time_zone='UTC'&sql_mode='ANSI'&multiStatements=true",
-        REFORM_TEST_SOURCE: "root@/reform-database?parseTime=true&time_zone='America%2FNew_York'&sql_mode='ANSI'"
+        REFORM_INIT_SOURCE: "root@/reform-database?parseTime=true&clientFoundRows=true&time_zone='UTC'&sql_mode='ANSI'&multiStatements=true",
+        REFORM_TEST_SOURCE: "root@/reform-database?parseTime=true&clientFoundRows=true&time_zone='America%2FNew_York'&sql_mode='ANSI'"
       }
 
     # TRADITIONAL mode + interpolateParams=true
     - {
         GO: "golang:1.9", DATABASE: mysql, VERSION: 5.7, REFORM_DRIVER: mysql,
         REFORM_ROOT_SOURCE: "root@/mysql",
-        REFORM_INIT_SOURCE: "root@/reform-database?parseTime=true&time_zone='UTC'&sql_mode='ANSI'&multiStatements=true",
-        REFORM_TEST_SOURCE: "root@/reform-database?parseTime=true&time_zone='America%2FNew_York'&sql_mode='TRADITIONAL'&interpolateParams=true"
+        REFORM_INIT_SOURCE: "root@/reform-database?parseTime=true&clientFoundRows=true&time_zone='UTC'&sql_mode='ANSI'&multiStatements=true",
+        REFORM_TEST_SOURCE: "root@/reform-database?parseTime=true&clientFoundRows=true&time_zone='America%2FNew_York'&sql_mode='TRADITIONAL'&interpolateParams=true"
       }
 
     - {

@@ -29,7 +29,6 @@ func main() {
 	flag.Parse()
 
 	goImages := []string{
-		"golang:1.6",
 		"golang:1.7",
 		"golang:1.8",
 		"golang:1.9",
@@ -69,16 +68,16 @@ func main() {
 				{
 					"mysql",
 					"root@/mysql",
-					"root@/reform-database?parseTime=true&time_zone='UTC'&sql_mode='ANSI'&multiStatements=true",
-					"root@/reform-database?parseTime=true&time_zone='America%2FNew_York'&sql_mode='ANSI'",
+					"root@/reform-database?parseTime=true&clientFoundRows=true&time_zone='UTC'&sql_mode='ANSI'&multiStatements=true",
+					"root@/reform-database?parseTime=true&clientFoundRows=true&time_zone='America%2FNew_York'&sql_mode='ANSI'",
 				},
 
 				// TRADITIONAL mode + interpolateParams=true
 				{
 					"mysql",
 					"root@/mysql",
-					"root@/reform-database?parseTime=true&time_zone='UTC'&sql_mode='ANSI'&multiStatements=true",
-					"root@/reform-database?parseTime=true&time_zone='America%2FNew_York'&sql_mode='TRADITIONAL'&interpolateParams=true",
+					"root@/reform-database?parseTime=true&clientFoundRows=true&time_zone='UTC'&sql_mode='ANSI'&multiStatements=true",
+					"root@/reform-database?parseTime=true&clientFoundRows=true&time_zone='America%2FNew_York'&sql_mode='TRADITIONAL'&interpolateParams=true",
 				},
 			},
 		},

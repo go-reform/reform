@@ -80,8 +80,8 @@ postgres: test
 mysql: export DATABASE = mysql
 mysql: export REFORM_DRIVER = mysql
 mysql: export REFORM_ROOT_SOURCE = root@/mysql
-mysql: export REFORM_INIT_SOURCE = root@/reform-database?parseTime=true&time_zone='UTC'&sql_mode='ANSI'&multiStatements=true
-mysql: export REFORM_TEST_SOURCE = root@/reform-database?parseTime=true&time_zone='America%2FNew_York'
+mysql: export REFORM_INIT_SOURCE = root@/reform-database?parseTime=true&clientFoundRows=true&time_zone='UTC'&sql_mode='ANSI'&multiStatements=true
+mysql: export REFORM_TEST_SOURCE = root@/reform-database?parseTime=true&clientFoundRows=true&time_zone='America%2FNew_York'
 mysql: test
 	make test-db
 

@@ -1,5 +1,5 @@
 CREATE TABLE people (
-  id integer NOT NULL PRIMARY KEY AUTOINCREMENT,
+  id integer NOT NULL PRIMARY KEY AUTOINCREMENT, -- https://sqlite.org/lang_createtable.html#rowid
   group_id int DEFAULT 65534,
   name varchar NOT NULL,
   email varchar,
@@ -9,7 +9,7 @@ CREATE TABLE people (
 
 CREATE TABLE projects (
   name varchar NOT NULL,
-  id varchar PRIMARY KEY NOT NULL,
+  id varchar NOT NULL PRIMARY KEY,
   start date NOT NULL,
   end date
 );

@@ -19,9 +19,9 @@ type Driver struct {
 }
 
 type Database struct {
-	ImageName     string
-	ImageVersions []string
-	Drivers       []Driver
+	Name     string
+	Versions []string
+	Drivers  []Driver
 }
 
 func main() {
@@ -29,9 +29,9 @@ func main() {
 	flag.Parse()
 
 	goImages := []string{
-		"golang:1.6",
 		"golang:1.7",
 		"golang:1.8",
+		"golang:1.9",
 		"captncraig/go-tip",
 	}
 
@@ -68,16 +68,16 @@ func main() {
 				{
 					"mysql",
 					"root@/mysql",
-					"root@/reform-database?parseTime=true&time_zone='UTC'&sql_mode='ANSI'&multiStatements=true",
-					"root@/reform-database?parseTime=true&time_zone='America%2FNew_York'&sql_mode='ANSI'",
+					"root@/reform-database?parseTime=true&clientFoundRows=true&time_zone='UTC'&sql_mode='ANSI'&multiStatements=true",
+					"root@/reform-database?parseTime=true&clientFoundRows=true&time_zone='America%2FNew_York'&sql_mode='ANSI'",
 				},
 
 				// TRADITIONAL mode + interpolateParams=true
 				{
 					"mysql",
 					"root@/mysql",
-					"root@/reform-database?parseTime=true&time_zone='UTC'&sql_mode='ANSI'&multiStatements=true",
-					"root@/reform-database?parseTime=true&time_zone='America%2FNew_York'&sql_mode='TRADITIONAL'&interpolateParams=true",
+					"root@/reform-database?parseTime=true&clientFoundRows=true&time_zone='UTC'&sql_mode='ANSI'&multiStatements=true",
+					"root@/reform-database?parseTime=true&clientFoundRows=true&time_zone='America%2FNew_York'&sql_mode='TRADITIONAL'&interpolateParams=true",
 				},
 			},
 		},
@@ -129,7 +129,7 @@ func main() {
 		for _, d := range db.Drivers {
 			drivers = append(drivers, d.Name)
 		}
-		buf.WriteString(fmt.Sprintf("#   %s: %s (drivers: %s)\n", db.ImageName, strings.Join(db.ImageVersions, ", "), strings.Join(drivers, ", ")))
+		buf.WriteString(fmt.Sprintf("#   %s: %s (drivers: %s)\n", db.Name, strings.Join(db.Versions, ", "), strings.Join(drivers, ", ")))
 	}
 
 	buf.WriteString("matrix:\n")
@@ -138,11 +138,11 @@ func main() {
 	var count int
 	for _, g := range goImages {
 		for _, db := range databases {
-			for _, v := range db.ImageVersions {
+			for _, v := range db.Versions {
 				for _, d := range db.Drivers {
 					fmt.Fprintf(&buf, "    - {\n")
 					fmt.Fprintf(&buf, "        GO: %q, DATABASE: %s, VERSION: %s, REFORM_DRIVER: %s,\n",
-						g, db.ImageName, v, d.Name)
+						g, db.Name, v, d.Name)
 					fmt.Fprintf(&buf, "        REFORM_ROOT_SOURCE: %q,\n", d.RootSource)
 					fmt.Fprintf(&buf, "        REFORM_INIT_SOURCE: %q,\n", d.InitSource)
 					fmt.Fprintf(&buf, "        REFORM_TEST_SOURCE: %q", d.TestSource)

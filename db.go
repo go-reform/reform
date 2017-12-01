@@ -22,12 +22,14 @@ type DB struct {
 }
 
 // NewDB creates new DB object for given SQL database connection.
+// Logger can be nil.
 func NewDB(db *sql.DB, dialect Dialect, logger Logger) *DB {
 	return NewDBFromInterface(db, dialect, logger)
 }
 
 // NewDBFromInterface creates new DB object for given DBInterface.
 // Can be used for easier integration with existing code or for passing test doubles.
+// Logger can be nil.
 func NewDBFromInterface(db DBInterface, dialect Dialect, logger Logger) *DB {
 	return &DB{
 		Querier: newQuerier(db, dialect, logger),

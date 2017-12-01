@@ -1,3 +1,4 @@
+// Package dialects implements reform.Dialect selector.
 package dialects
 
 import (

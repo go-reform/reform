@@ -17,7 +17,7 @@ download_deps:
 		github.com/stretchr/testify/... \
 		github.com/enodata/faker \
 		github.com/alecthomas/gometalinter \
-		github.com/AlekSi/goveralls
+		github.com/AlekSi/gocoverutil
 
 	# download linters
 	go install -v github.com/alecthomas/gometalinter
@@ -25,18 +25,18 @@ download_deps:
 
 install_deps:
 	go install -v github.com/alecthomas/gometalinter \
-		github.com/AlekSi/goveralls
+		github.com/AlekSi/gocoverutil
 	gometalinter --install
 	go test -i -v
 
 # run unit tests, generate models, install tools
 test:
-	rm -f *.cover
+	rm -f *.cover coverage.txt
 	rm -f internal/test/models/*_reform.go
 	rm -f reform-db/*_reform.go
 
 	go install -v gopkg.in/reform.v1/reform
-	go test $(REFORM_TEST_FLAGS) -coverprofile=parse.cover gopkg.in/reform.v1/parse
+	go test $(REFORM_TEST_FLAGS) -covermode=count -coverprofile=parse.cover gopkg.in/reform.v1/parse
 	go generate -v -x gopkg.in/reform.v1/internal/test/models
 	go install -v gopkg.in/reform.v1/internal/test/models
 
@@ -54,8 +54,10 @@ test-db:
 		internal/test/sql/data.sql \
 		internal/test/sql/$(DATABASE)_data.sql \
 		internal/test/sql/$(DATABASE)_set.sql
-	go test $(REFORM_TEST_FLAGS) -coverprofile=$(REFORM_DRIVER)-reform-db.cover gopkg.in/reform.v1/reform-db
-	go test $(REFORM_TEST_FLAGS) -coverprofile=$(REFORM_DRIVER).cover
+	go test $(REFORM_TEST_FLAGS) -covermode=count -coverprofile=$(REFORM_DRIVER)-reform-db.cover gopkg.in/reform.v1/reform-db
+	go test $(REFORM_TEST_FLAGS) -covermode=count -coverprofile=$(REFORM_DRIVER).cover
+	gocoverutil -coverprofile=coverage.txt merge *.cover
+	rm -f *.cover
 
 check:
 	-gometalinter ./... --deadline=180s --severity=vet:error
@@ -76,8 +78,8 @@ postgres: test
 mysql: export DATABASE = mysql
 mysql: export REFORM_DRIVER = mysql
 mysql: export REFORM_ROOT_SOURCE = root@/mysql
-mysql: export REFORM_INIT_SOURCE = root@/reform-database?parseTime=true&time_zone='UTC'&sql_mode='ANSI'&multiStatements=true
-mysql: export REFORM_TEST_SOURCE = root@/reform-database?parseTime=true&time_zone='America%2FNew_York'
+mysql: export REFORM_INIT_SOURCE = root@/reform-database?parseTime=true&clientFoundRows=true&time_zone='UTC'&sql_mode='ANSI'&multiStatements=true
+mysql: export REFORM_TEST_SOURCE = root@/reform-database?parseTime=true&clientFoundRows=true&time_zone='America%2FNew_York'
 mysql: test
 	make test-db
 

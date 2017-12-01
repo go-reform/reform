@@ -247,7 +247,7 @@ func (q *Querier) InsertMulti(structs ...Struct) error {
 	return err
 }
 
-func (q *Querier) update(record Record, columns []string, values []interface{}) error {
+func (q *Querier) update(str Struct, columns []string, values []interface{}, tail string, args ...interface{}) (uint, error) {
 	for i, c := range columns {
 		columns[i] = q.QuoteIdentifier(c)
 	}
@@ -257,39 +257,28 @@ func (q *Querier) update(record Record, columns []string, values []interface{}) 
 	for i, c := range columns {
 		p[i] = c + " = " + placeholders[i]
 	}
-	table := record.Table()
-	query := fmt.Sprintf("%s %s SET %s WHERE %s = %s",
+	table := str.View()
+	query := fmt.Sprintf("%s %s SET %s %s",
 		q.startQuery("UPDATE"),
 		q.QualifiedView(table),
 		strings.Join(p, ", "),
-		q.QuoteIdentifier(table.Columns()[table.PKColumnIndex()]),
-		q.Placeholder(len(columns)+1),
+		tail,
 	)
 
-	args := append(values, record.PKValue())
+	args = append(values, args...)
 	res, err := q.Exec(query, args...)
 	if err != nil {
-		return err
+		return 0, err
 	}
 	ra, err := res.RowsAffected()
 	if err != nil {
-		return err
+		return 0, err
 	}
-	if ra == 0 {
-		return ErrNoRows
-	}
-	if ra > 1 {
-		panic(fmt.Sprintf("reform: %d rows by UPDATE by primary key. Please report this bug.", ra))
-	}
-	return nil
+	return uint(ra), nil
 }
 
-func (q *Querier) beforeUpdate(record Record) error {
-	if !record.HasPK() {
-		return ErrNoPK
-	}
-
-	if bu, ok := record.(BeforeUpdater); ok {
+func (q *Querier) beforeUpdate(str Struct) error {
+	if bu, ok := str.(BeforeUpdater); ok {
 		if err := bu.BeforeUpdate(); err != nil {
 			return err
 		}
@@ -307,17 +296,29 @@ func (q *Querier) Update(record Record) error {
 	if err := q.beforeUpdate(record); err != nil {
 		return err
 	}
+	if !record.HasPK() {
+		return ErrNoPK
+	}
 
 	table := record.Table()
 	values := record.Values()
 	columns := table.Columns()
 
-	// cut primary key
+	// cut primary key, make tail
 	pk := table.PKColumnIndex()
+	pkColumn := columns[pk]
 	values = append(values[:pk], values[pk+1:]...)
 	columns = append(columns[:pk], columns[pk+1:]...)
+	tail := fmt.Sprintf("WHERE %s = %s", q.QuoteIdentifier(pkColumn), q.Placeholder(len(columns)+1))
 
-	return q.update(record, columns, values)
+	ra, err := q.update(record, columns, values, tail, record.PKValue())
+	if ra > 1 {
+		panic(fmt.Sprintf("reform: %d rows by UPDATE by primary key. Please report this bug.", ra))
+	}
+	if err == nil && ra == 0 {
+		err = ErrNoRows
+	}
+	return err
 }
 
 // UpdateColumns updates specified columns of row specified by primary key in SQL database table with given record.
@@ -330,6 +331,9 @@ func (q *Querier) UpdateColumns(record Record, columns ...string) error {
 	if err := q.beforeUpdate(record); err != nil {
 		return err
 	}
+	if !record.HasPK() {
+		return ErrNoPK
+	}
 
 	columns, values, err := filteredColumnsAndValues(record, columns, true)
 	if err != nil {
@@ -341,12 +345,49 @@ func (q *Querier) UpdateColumns(record Record, columns ...string) error {
 		return fmt.Errorf("reform: nothing to update")
 	}
 
-	return q.update(record, columns, values)
+	// make tail
+	table := record.Table()
+	pkColumn := table.Columns()[table.PKColumnIndex()]
+	tail := fmt.Sprintf("WHERE %s = %s", q.QuoteIdentifier(pkColumn), q.Placeholder(len(columns)+1))
+
+	ra, err := q.update(record, columns, values, tail, record.PKValue())
+	if ra > 1 {
+		panic(fmt.Sprintf("reform: %d rows by UPDATE by primary key. Please report this bug.", ra))
+	}
+	if err == nil && ra == 0 {
+		err = ErrNoRows
+	}
+	return err
+}
+
+// UpdateView updates specified columns of rows specified by tail and args in SQL database table with given struct,
+// and returns a number of updated rows.
+// Other columns are omitted from generated UPDATE statement.
+// If struct implements BeforeUpdater, it calls BeforeUpdate() before doing so.
+//
+// Method never returns ErrNoRows.
+func (q *Querier) UpdateView(str Struct, columns []string, tail string, args ...interface{}) (uint, error) {
+	if err := q.beforeUpdate(str); err != nil {
+		return 0, err
+	}
+
+	columns, values, err := filteredColumnsAndValues(str, columns, true)
+	if err != nil {
+		return 0, err
+	}
+
+	if len(values) == 0 {
+		// TODO make exported type for that error
+		return 0, fmt.Errorf("reform: nothing to update")
+	}
+
+	return q.update(str, columns, values, tail, args...)
 }
 
 // Save saves record in SQL database table.
-// If primary key is set, it first calls Update and checks if row was updated.
-// If primary key is absent or no row was updated, it calls Insert.
+// If primary key is set, it first calls Update and checks if row was affected (matched).
+// If primary key is absent or no row was affected, it calls Insert. This allows to call Save with Record
+// with primary key set.
 func (q *Querier) Save(record Record) error {
 	if record.HasPK() {
 		err := q.Update(record)

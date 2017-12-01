@@ -12,10 +12,10 @@ env:
     - TARGET=sqlite3
 
 go:
-  - 1.6.x
   - 1.7.x
   - 1.8.x
-  - tip
+  - 1.9.x
+  - master
 
 go_import_path: gopkg.in/reform.v1
 
@@ -27,11 +27,12 @@ install:
   - make install_deps
 
 script:
-  - make test $TARGET
+  - make test
+  - make $TARGET
   - make check
 
 after_success:
-  - goveralls -coverprofile=$TARGET.cover
+  - bash <(curl -s https://codecov.io/bash) -X fix
 
 notifications:
   webhooks:

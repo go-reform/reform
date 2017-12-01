@@ -5,8 +5,10 @@
 [![Travis CI Build Status](https://travis-ci.org/go-reform/reform.svg?branch=v1-stable)](https://travis-ci.org/go-reform/reform)
 [![Drone CI Build Status](https://drone.aleksi.io/api/badges/go-reform/reform/status.svg)](https://drone.aleksi.io/go-reform/reform)
 [![AppVeyor Build status](https://ci.appveyor.com/api/projects/status/kbkyjmic461xa7b3/branch/v1-stable?svg=true)](https://ci.appveyor.com/project/AlekSi/reform/branch/v1-stable)
-[![Coverage Status](https://coveralls.io/repos/github/go-reform/reform/badge.svg?branch=v1-stable)](https://coveralls.io/github/go-reform/reform?branch=v1-stable)
+[![Coverage Report](https://codecov.io/gh/go-reform/reform/branch/v1-stable/graph/badge.svg)](https://codecov.io/gh/go-reform/reform)
 [![Go Report Card](https://goreportcard.com/badge/gopkg.in/reform.v1)](https://goreportcard.com/report/gopkg.in/reform.v1)
+
+<a href="https://en.wikipedia.org/wiki/Peter_the_Great"><img align="right" alt="Reform gopher logo" title="Peter the Reformer" src=".github/reform.png"></a>
 
 A better ORM for Go and `database/sql`.
 
@@ -14,17 +16,32 @@ It uses non-empty interfaces, code generation (`go generate`), and initializatio
 as opposed to `interface{}`, type system sidestepping, and runtime reflection. It will be kept simple.
 
 Supported SQL dialects:
-* PostgreSQL (tested with [`github.com/lib/pq`](https://github.com/lib/pq)).
-* MySQL (tested with [`github.com/go-sql-driver/mysql`](https://github.com/go-sql-driver/mysql)).
-* SQLite3 (tested with [`github.com/mattn/go-sqlite3`](https://github.com/mattn/go-sqlite3)).
-* Microsoft SQL Server (tested with [`github.com/denisenkom/go-mssqldb`](https://github.com/denisenkom/go-mssqldb)).
 
+| RDBMS                | Library and drivers                                                                                 | Tested with
+| -----                | -------------------                                                                                 | -----------
+| PostgreSQL           | [github.com/lib/pq](https://github.com/lib/pq) (`postgres`)                                         | All [supported](https://www.postgresql.org/support/versioning/) versions.
+| MySQL                | [github.com/go-sql-driver/mysql](https://github.com/go-sql-driver/mysql) (`mysql`)                  | All [supported](https://www.mysql.com/support/supportedplatforms/database.html) versions.
+| SQLite3              | [github.com/mattn/go-sqlite3](https://github.com/mattn/go-sqlite3) (`sqlite3`)                      |
+| Microsoft SQL Server | [github.com/denisenkom/go-mssqldb](https://github.com/denisenkom/go-mssqldb) (`mssql`, `sqlserver`) | Windows: SQL2008R2SP2, SQL2012SP1, SQL2014, SQL2016. Linux: [`microsoft/mssql-server-linux:latest` Docker image](https://hub.docker.com/r/microsoft/mssql-server-linux/)
+
+Note that for MySQL [`clientFoundRows=true`](https://github.com/go-sql-driver/mysql#clientfoundrows) flag is required.
 
 ## Quickstart
 
-1. Make sure you are using Go 1.6+.
-2. Install or update `reform` package and command: `go get -u gopkg.in/reform.v1/reform` (see about versioning below).
-3. Define a model – `struct` representing a table or view row. For example, store this in file `person.go`:
+1. Make sure you are using Go 1.7+. Install or update `reform` package, `reform` and `reform-db` commands
+   (see about versioning below):
+
+    ```
+    go get -u gopkg.in/reform.v1/...
+    ```
+
+2. Use `reform-db` command to generate models for your existing database schema. For example:
+    ```
+    reform-db -db-driver=sqlite3 -db-source=example.sqlite3 init
+    ```
+
+3. Update generated models or write your own – `struct` representing a table or view row. For example,
+   store this in file `person.go`:
 
     ```go
     //go:generate reform
@@ -136,9 +153,18 @@ Canonical import path is `gopkg.in/reform.v2-unstable`.
 ## Caveats and limitations
 
 * There should be zero `pk` fields for Struct and exactly one `pk` field for Record.
-  Composite primary keys are not supported.
+  Composite primary keys are not supported ([#114](https://github.com/go-reform/reform/issues/114)).
 * `pk` field can't be a pointer (`== nil` [doesn't work](https://golang.org/doc/faq#nil_error)).
 * Database row can't have a Go's zero value (0, empty string, etc.) in primary key column.
+
+
+## License
+
+Code is covered by standard MIT-style license. Copyright (c) 2016-2017 Alexey Palazhchenko.
+See [LICENSE](LICENSE) for details. Note that generated code is covered by the terms of your choice.
+
+The reform gopher was drawn by Natalya Glebova. Please use it only as reform logo.
+It is based on the original design by Renée French, released under [Creative Commons Attribution 3.0 USA license](https://creativecommons.org/licenses/by/3.0/).
 
 
 ## Contributing

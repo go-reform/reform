@@ -1,3 +1,4 @@
+// Package reform-db implements reform-db command.
 package main
 
 import (
@@ -28,16 +29,16 @@ var (
 
 func init() {
 	flag.Usage = func() {
-		fmt.Fprintf(os.Stderr, "reform-db. %s.\n\n", reform.Version)
+		fmt.Fprintf(os.Stderr, "reform-db - a better ORM tool. %s.\n\n", reform.Version)
 		fmt.Fprintf(os.Stderr, "Usage:\n")
 		fmt.Fprintf(os.Stderr, "  %s [global flags] [command] [command flags] [arguments]\n\n", os.Args[0])
 		fmt.Fprintf(os.Stderr, "Global flags:\n")
 		flag.PrintDefaults()
-		fmt.Fprintf(os.Stderr, "\nCommands:\n")
+		fmt.Fprintf(os.Stderr, "\nCommands (run reform-db [command] -h for more information):\n")
 		fmt.Fprintf(os.Stderr, "  exec  - executes SQL queries from given files or stdin\n")
 		fmt.Fprintf(os.Stderr, "  query - executes SQL queries from given files or stdin, and returns results\n")
 		fmt.Fprintf(os.Stderr, "  init  - generates Go model files for existing database schema\n\n")
-		fmt.Fprintf(os.Stderr, "Registered database drivers: %s.", strings.Join(sql.Drivers(), ", "))
+		fmt.Fprintf(os.Stderr, "Registered database drivers: %s.\n", strings.Join(sql.Drivers(), ", "))
 	}
 }
 

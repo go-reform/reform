@@ -23,12 +23,14 @@ type TX struct {
 }
 
 // NewTX creates new TX object for given SQL database transaction.
+// Logger can be nil.
 func NewTX(tx *sql.Tx, dialect Dialect, logger Logger) *TX {
 	return NewTXFromInterface(tx, dialect, logger)
 }
 
 // NewTXFromInterface creates new TX object for given TXInterface.
 // Can be used for easier integration with existing code or for passing test doubles.
+// Logger can be nil.
 func NewTXFromInterface(tx TXInterface, dialect Dialect, logger Logger) *TX {
 	return &TX{
 		Querier: newQuerier(tx, dialect, logger),

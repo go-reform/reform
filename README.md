@@ -5,10 +5,10 @@
 [![Travis CI Build Status](https://travis-ci.org/go-reform/reform.svg?branch=v1-stable)](https://travis-ci.org/go-reform/reform)
 [![Drone CI Build Status](https://drone.aleksi.io/api/badges/go-reform/reform/status.svg)](https://drone.aleksi.io/go-reform/reform)
 [![AppVeyor Build status](https://ci.appveyor.com/api/projects/status/kbkyjmic461xa7b3/branch/v1-stable?svg=true)](https://ci.appveyor.com/project/AlekSi/reform/branch/v1-stable)
-[![Coverage Status](https://codecov.io/gh/go-reform/reform/branch/v1-stable/graph/badge.svg)](https://codecov.io/gh/go-reform/reform)
+[![Coverage Report](https://codecov.io/gh/go-reform/reform/branch/v1-stable/graph/badge.svg)](https://codecov.io/gh/go-reform/reform)
 [![Go Report Card](https://goreportcard.com/badge/gopkg.in/reform.v1)](https://goreportcard.com/report/gopkg.in/reform.v1)
 
-<img align="right" alt="Reform gopher logo" title="We need reforms!" src=".github/reform.png">
+<a href="https://en.wikipedia.org/wiki/Peter_the_Great"><img align="right" alt="Reform gopher logo" title="Peter the Reformer" src=".github/reform.png"></a>
 
 A better ORM for Go and `database/sql`.
 
@@ -153,7 +153,7 @@ Canonical import path is `gopkg.in/reform.v2-unstable`.
 ## Caveats and limitations
 
 * There should be zero `pk` fields for Struct and exactly one `pk` field for Record.
-  Composite primary keys are not supported.
+  Composite primary keys are not supported ([#114](https://github.com/go-reform/reform/issues/114)).
 * `pk` field can't be a pointer (`== nil` [doesn't work](https://golang.org/doc/faq#nil_error)).
 * Database row can't have a Go's zero value (0, empty string, etc.) in primary key column.
 

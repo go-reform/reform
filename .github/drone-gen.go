@@ -40,11 +40,11 @@ func main() {
 		{
 			"postgres",
 			[]string{
-				"9.2",
 				"9.3",
 				"9.4",
 				"9.5",
 				"9.6",
+				"10",
 			}, []Driver{
 				{
 					"postgres",

@@ -1,0 +1,9 @@
+---
+version: '3'
+services:
+  postgres:
+    image: postgres:${REFORM_IMAGE_VERSION}
+    environment:
+      - TZ=Europe/Moscow
+    ports:
+      - 127.0.0.1:5432:5432

@@ -1,0 +1,11 @@
+---
+version: '3'
+services:
+  mysql:
+    image: mysql/mysql-server:${REFORM_IMAGE_VERSION}
+    environment:
+      - TZ=Europe/Moscow
+      - MYSQL_ALLOW_EMPTY_PASSWORD=1
+      - MYSQL_ROOT_HOST=%
+    ports:
+      - 127.0.0.1:3306:3306

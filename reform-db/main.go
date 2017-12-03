@@ -8,6 +8,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"time"
 
 	_ "github.com/denisenkom/go-mssqldb"
 	_ "github.com/go-sql-driver/mysql"
@@ -25,6 +26,7 @@ var (
 	debugF  = flag.Bool("debug", false, "Enable debug logging")
 	driverF = flag.String("db-driver", "", "database driver (required)")
 	sourceF = flag.String("db-source", "", "database connection string (required)")
+	waitF   = flag.Duration("wait", 0, "wait for connection")
 )
 
 func init() {
@@ -57,9 +59,19 @@ func getDB() *reform.DB {
 	sqlDB.SetMaxOpenConns(1)
 	sqlDB.SetConnMaxLifetime(0)
 
-	err = sqlDB.Ping()
-	if err != nil {
-		logger.Fatalf("failed to ping database: %s", err)
+	start := time.Now()
+	for {
+		err = sqlDB.Ping()
+		if err == nil {
+			break
+		}
+
+		if time.Since(start) > *waitF {
+			logger.Fatalf("failed to ping database: %s", err)
+		}
+
+		logger.Debugf("failed to ping database: %s", err)
+		time.Sleep(time.Second)
 	}
 
 	dialect := dialects.ForDriver(*driverF)

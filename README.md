@@ -3,7 +3,6 @@
 [![GoDoc](https://godoc.org/gopkg.in/reform.v1?status.svg)](https://godoc.org/gopkg.in/reform.v1)
 [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/go-reform/reform?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 [![Travis CI Build Status](https://travis-ci.org/go-reform/reform.svg?branch=v1-stable)](https://travis-ci.org/go-reform/reform)
-[![Drone CI Build Status](https://drone.aleksi.io/api/badges/go-reform/reform/status.svg)](https://drone.aleksi.io/go-reform/reform)
 [![AppVeyor Build status](https://ci.appveyor.com/api/projects/status/kbkyjmic461xa7b3/branch/v1-stable?svg=true)](https://ci.appveyor.com/project/AlekSi/reform/branch/v1-stable)
 [![Coverage Report](https://codecov.io/gh/go-reform/reform/branch/v1-stable/graph/badge.svg)](https://codecov.io/gh/go-reform/reform)
 [![Go Report Card](https://goreportcard.com/badge/gopkg.in/reform.v1)](https://goreportcard.com/report/gopkg.in/reform.v1)

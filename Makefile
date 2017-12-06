@@ -40,7 +40,7 @@ test:
 
 # initialize database and run integration tests
 test-db:
-	-reform-db -db-driver="$(REFORM_DRIVER)" -db-source="$(REFORM_ROOT_SOURCE)" -wait=15s exec \
+	-reform-db -db-driver="$(REFORM_DRIVER)" -db-source="$(REFORM_ROOT_SOURCE)" -db-wait=15s exec \
 		internal/test/sql/$(REFORM_DATABASE)_drop.sql
 	reform-db -db-driver="$(REFORM_DRIVER)" -db-source="$(REFORM_ROOT_SOURCE)" exec \
 		internal/test/sql/$(REFORM_DATABASE)_create.sql

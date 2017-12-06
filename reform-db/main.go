@@ -24,9 +24,9 @@ var (
 	logger *internal.Logger
 
 	debugF  = flag.Bool("debug", false, "Enable debug logging")
-	driverF = flag.String("db-driver", "", "database driver (required)")
-	sourceF = flag.String("db-source", "", "database connection string (required)")
-	waitF   = flag.Duration("wait", 0, "wait for connection")
+	driverF = flag.String("db-driver", "", "Database driver (required)")
+	sourceF = flag.String("db-source", "", "Database connection string (required)")
+	waitF   = flag.Duration("db-wait", 0, "Wait for database connection to be established, retrying every second")
 )
 
 func init() {
@@ -46,11 +46,11 @@ func init() {
 
 func getDB() *reform.DB {
 	if *driverF == "" || *sourceF == "" {
-		logger.Fatalf("please set both -db-driver and -db-source flags.")
+		logger.Fatalf("Please set both -db-driver and -db-source flags.")
 	}
 	sqlDB, err := sql.Open(*driverF, *sourceF)
 	if err != nil {
-		logger.Fatalf("failed to connect to %s %q: %s", *driverF, *sourceF, err)
+		logger.Fatalf("Failed to connect to %s %q: %s", *driverF, *sourceF, err)
 	}
 
 	// Use single connection so various session-related variables work.
@@ -67,10 +67,10 @@ func getDB() *reform.DB {
 		}
 
 		if time.Since(start) > *waitF {
-			logger.Fatalf("failed to ping database: %s", err)
+			logger.Fatalf("Failed to ping database: %s.", err)
 		}
 
-		logger.Debugf("failed to ping database: %s", err)
+		logger.Debugf("Failed to ping database: %s.", err)
 		time.Sleep(time.Second)
 	}
 

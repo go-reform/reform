@@ -1,0 +1,10 @@
+---
+version: '3'
+services:
+  sqlserver:
+    image: microsoft/mssql-server-linux:${REFORM_IMAGE_VERSION}
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=reform-password123
+    ports:
+      - 127.0.0.1:1433:1433

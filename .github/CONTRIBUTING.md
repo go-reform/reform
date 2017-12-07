@@ -9,27 +9,20 @@ you want to implement _before_ implementing it.
 
 ## Running tests
 
-To run tests locally you have two options: installing database systems locally, or use Docker and Drone CLI.
+First of all, run `make deps` to install all dependencies. After that, you have two options: use Docker Compose (recommended), or installing database systems directly.
 
 
-### Local install
+### Docker Compose
 
-You should install _some_ versions of PostgreSQL and MySQL.
-For Mac with Homebrew this should work:
-```
-brew update
-brew install postgresql
-brew services start postgresql
-brew install mysql
-brew services start mysql
-```
-
-Download dependencies with `make download_deps` and install them with `make install_deps`.
-Then run tests with `make`. See [`Makefile`](../Makefile) for connection parameters.
+If you have Go, Docker and Docker Compose installed, you can run all tests and linters simply by running `make`.
 
 
-### Drone
+### Direct
 
-If you have Docker, you can use [Drone CI](http://readme.drone.io/0.5/) CLI to run tests without installing database
-systems. First, you should install [Drone 0.5 CLI](http://readme.drone.io/0.5/install/cli/). Then, run tests with
-`make drone`.
+Run `make test` to run basic unit tests. Run `make check` to run linters.
+See [`Makefile`](../Makefile) for Make targets for running integration tests and connection parameters.
+
+
+### Background information
+
+See [#5](https://github.com/go-reform/reform/issues/5), [#63](https://github.com/go-reform/reform/issues/63), and [#135](https://github.com/go-reform/reform/issues/135) for reasons for that design.

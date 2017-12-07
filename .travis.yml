@@ -1,15 +1,6 @@
+dist: trusty
+sudo: required
 language: go
-sudo: false
-
-env:
-  global:
-    - GORACE="halt_on_error=1"
-    - secure: "Q+bXWeD/7cOcyZniJOfhE2N2ilI+rZcEfElcDOtHykdkMAoIErszZMzhzeNtP77VQNeOGfszvyY22QIAP/l/G7UnmWfI8z9LBcM5UIu/8kIBdZe0f7Y5eK+YU9Gpls3VEoIjuh+bsWYW7lSgnDQMpnT+ugFb2tA5OCxYAoW00cRr1MNzt7IK16WK9g+wUvLAVOpxnVdbRi9qg9ma3ooLeIeX8fTj8FeYPZS26SvuQ8VBEgNOYeRGyMr8V18ZwnCE3ntPmd/XxWyPnqt21v3HCiSaOpLgYYmInAuPFRL5Kakq2GseXNYjNaq7DIutYgGROwvWDJZUXK7AuxwZzHKjCLmXL/rNYqTHUh7UpDozFT3vj7twz3IBRGA7c4tfI996+HD+4oK5jOkD5+IiA0Ve5pvcsCZU6cJk680ORChi+yPSJTYNU0kgqioX2Feb79cwlscpD9Bw4oXCVvj/z2QoF1R07gX6h3QLpOEsuM+c377z46vsdepIL3d9BiD0j5H0yPBKZg/Kv+eAb7POYDothRXbI73PpNssVFUnN5yPba5QzrZWJdaLGo9yQCxbggqQWBYqcUj6GgVUjMUZOVEYmfRD/jJjbxgPT2kX7gDW/WWomAYee9zSlKaTDUoT7dHj164m3KU+JtD0LZar4BXmP7tRU5f9RK7mA7Sp7WET97o="
-
-  matrix:
-    - TARGET=postgres
-    - TARGET=mysql
-    - TARGET=sqlite3
 
 go:
   - 1.7.x
@@ -19,22 +10,56 @@ go:
 
 go_import_path: gopkg.in/reform.v1
 
-before_install:
-  - if [[ $TARGET == *mysql* ]] ; then mysql_tzinfo_to_sql /usr/share/zoneinfo | mysql -u root mysql; fi
+before_script:
+  - sudo service postgresql stop
+  - sudo service mysql stop
+
+  - docker --version
+  - docker-compose --version
 
 install:
-  - make download_deps
-  - make install_deps
+  - make deps
 
 script:
-  - make test
-  - make $TARGET
+  - make test-dc
   - make check
 
 after_success:
-  - bash <(curl -s https://codecov.io/bash) -X fix
+  - bash <(curl -s https://codecov.io/bash) -f coverage.txt -X fix -e REFORM_TARGET,REFORM_IMAGE_VERSION
 
 notifications:
   webhooks:
     urls:
+      # Gitter
       - secure: "M5FL6dahsnY6TsU03QptqRoVriulkFPGLoKmbwLWAmPTk+h6SreMKIJHTmSba77snYVWR/gMLMNW01yMBrbV+ZmVgU6Sdp6yYlciA4cQcvIM7pwKuIfzeKhMCE2oeNVB3G2IHeu+FysbFXzI1JV9oU1I453aksyAPi4flf8eVUeMUa3nxWQt84MFC5RFn/pJ0G8lwUgAmHq56FjiOZ+5hF224s++CEEGGSclGZLH0/+T7SVH9sWSpyBuFtB6LZsl78JQ3mdxpFe95VAlpaB/PWdi7BXnZQ8XHgG1U1+1Z5at1uEmMmYjsQ5GzxaTEfjBRdC5AT6bRHjhW5wpI0tFKX77+1eexQXypuKyGIax7/7wFhKoEsU/9IUneqm17H9C5ZecF0xfvgTT4e2sHihm4qmYhQOFhGW+zlZdkp6rKzT17H0+g2q0IH3MJOKghyMO8l/YDy+wt2jdHggobfZLgcWLhyaHkUy0570jVUc+s+Zk/OOHr8kExvUcBuQeE38sQD6KEQoeeevXNlNtwrHvafjTfH1cUrc5JwFzP7go3VBEYxaHu+ctO7+DcUswOUsnTRiTQrp2FgNQP0TdlGgHgFV9cN5C+VcCwiB4NuU4ZM6J2TYmR6Wih4h/NooFKa8DiD++mqdyf6PhBn3tfHHtBFaLuE2GYMJ61MAv4kMNcBk="
+
+env:
+  global:
+    - GORACE="halt_on_error=1"
+
+  # Generated with 'go run .github/test-dc.go'.
+  # 16 combinations:
+  #   postgres: 9.3, 9.4, 9.5, 9.6, 10
+  #   mysql, mysql-traditional: 5.5, 5.6, 5.7, 8.0
+  #   sqlite3: dummy
+  #   mssql, sqlserver: latest
+  matrix:
+    - REFORM_TARGET=postgres REFORM_IMAGE_VERSION=9.3
+    - REFORM_TARGET=postgres REFORM_IMAGE_VERSION=9.4
+    - REFORM_TARGET=postgres REFORM_IMAGE_VERSION=9.5
+    - REFORM_TARGET=postgres REFORM_IMAGE_VERSION=9.6
+    - REFORM_TARGET=postgres REFORM_IMAGE_VERSION=10
+
+    - REFORM_TARGET=mysql REFORM_IMAGE_VERSION=5.5
+    - REFORM_TARGET=mysql REFORM_IMAGE_VERSION=5.6
+    - REFORM_TARGET=mysql REFORM_IMAGE_VERSION=5.7
+    - REFORM_TARGET=mysql REFORM_IMAGE_VERSION=8.0
+    - REFORM_TARGET=mysql-traditional REFORM_IMAGE_VERSION=5.5
+    - REFORM_TARGET=mysql-traditional REFORM_IMAGE_VERSION=5.6
+    - REFORM_TARGET=mysql-traditional REFORM_IMAGE_VERSION=5.7
+    - REFORM_TARGET=mysql-traditional REFORM_IMAGE_VERSION=8.0
+
+    - REFORM_TARGET=sqlite3 REFORM_IMAGE_VERSION=dummy
+
+    - REFORM_TARGET=mssql REFORM_IMAGE_VERSION=latest
+    - REFORM_TARGET=sqlserver REFORM_IMAGE_VERSION=latest

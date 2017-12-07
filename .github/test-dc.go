@@ -12,15 +12,16 @@ import (
 )
 
 type config struct {
-	Targets             []string // make targets, also parts for Docker Compose file name
+	ComposeName         string
 	ImageVersions       []string
 	DefaultImageVersion string
+	MakeTargets         []string
 }
 
 var configs = []config{
 	// https://www.postgresql.org/support/versioning/
 	{
-		[]string{"postgres", "pgx"},
+		"postgres",
 		[]string{
 			"9.3",
 			"9.4",
@@ -29,11 +30,12 @@ var configs = []config{
 			"10",
 		},
 		"10",
+		[]string{"postgres", "pgx"},
 	},
 
 	// https://www.mysql.com/support/supportedplatforms/database.html
 	{
-		[]string{"mysql", "mysql-traditional"},
+		"mysql",
 		[]string{
 			"5.5",
 			"5.6",
@@ -41,22 +43,25 @@ var configs = []config{
 			"8.0",
 		},
 		"5.7",
+		[]string{"mysql", "mysql-traditional"},
 	},
 
 	{
-		[]string{"sqlite3"},
+		"sqlite3",
 		[]string{
 			"dummy",
 		},
 		"dummy",
+		[]string{"sqlite3"},
 	},
 
 	{
-		[]string{"mssql", "sqlserver"},
+		"mssql",
 		[]string{
 			"latest",
 		},
 		"latest",
+		[]string{"mssql", "sqlserver"},
 	},
 }
 
@@ -64,7 +69,7 @@ var configs = []config{
 func gen() {
 	var buf bytes.Buffer
 	for _, c := range configs {
-		s := fmt.Sprintf("  #   %s: %s\n", strings.Join(c.Targets, ", "), strings.Join(c.ImageVersions, ", "))
+		s := fmt.Sprintf("  #   %s: %s\n", strings.Join(c.MakeTargets, ", "), strings.Join(c.ImageVersions, ", "))
 		buf.WriteString(s)
 	}
 
@@ -73,11 +78,12 @@ func gen() {
 	var count int
 	for _, c := range configs {
 		fmt.Fprint(&buf, "\n")
-		for _, t := range c.Targets {
-			for _, v := range c.ImageVersions {
+		for _, v := range c.ImageVersions {
+			for _, t := range c.MakeTargets {
 				fmt.Fprint(&buf, "    - ")
-				fmt.Fprintf(&buf, "REFORM_TARGET=%s ", t)
-				fmt.Fprintf(&buf, "REFORM_IMAGE_VERSION=%s\n", v)
+				fmt.Fprintf(&buf, "REFORM_COMPOSE_NAME=%s ", c.ComposeName)
+				fmt.Fprintf(&buf, "REFORM_IMAGE_VERSION=%s ", v)
+				fmt.Fprintf(&buf, "REFORM_MAKE_TARGET=%s\n", t)
 				count++
 			}
 		}
@@ -104,15 +110,17 @@ func gen() {
 
 // testOne tests a single configuration
 func testOne() {
-	t := os.Getenv("REFORM_TARGET")
+	n := os.Getenv("REFORM_COMPOSE_NAME")
 	v := os.Getenv("REFORM_IMAGE_VERSION")
-	log.Printf("REFORM_TARGET=%s REFORM_IMAGE_VERSION=%s", t, v)
+	t := os.Getenv("REFORM_MAKE_TARGET")
+	log.Printf("REFORM_COMPOSE_NAME=%s REFORM_IMAGE_VERSION=%s REFORM_MAKE_TARGET=%s", n, v, t)
+	f := fmt.Sprintf(".github/docker-compose-%s.yml", n)
 
 	for _, c := range []string{
-		fmt.Sprintf("docker-compose --file=.github/docker-compose-%s.yml --project-name=reform pull", t),
-		fmt.Sprintf("docker-compose --file=.github/docker-compose-%s.yml --project-name=reform up -d --remove-orphans --force-recreate", t),
+		fmt.Sprintf("docker-compose --file=%s --project-name=reform pull", f),
+		fmt.Sprintf("docker-compose --file=%s --project-name=reform up -d --remove-orphans --force-recreate", f),
 		fmt.Sprintf("make %s", t),
-		fmt.Sprintf("docker-compose --file=.github/docker-compose-%s.yml --project-name=reform down --remove-orphans --volumes", t),
+		fmt.Sprintf("docker-compose --file=%s --project-name=reform down --remove-orphans --volumes", f),
 	} {
 		log.Print(c)
 		args := strings.Split(c, " ")
@@ -126,18 +134,19 @@ func testOne() {
 }
 
 func test() {
-	// Test only a single configuration if REFORM_TARGET environment variable is defined.
+	// Test only a single configuration if REFORM_MAKE_TARGET environment variable is defined.
 	// Used by Travis CI for matrix builds.
-	if os.Getenv("REFORM_TARGET") != "" {
+	if os.Getenv("REFORM_MAKE_TARGET") != "" {
 		testOne()
 		return
 	}
 
 	// test all configurations one by one
 	for _, c := range configs {
-		for _, t := range c.Targets {
-			os.Setenv("REFORM_TARGET", t)
+		for _, t := range c.MakeTargets {
+			os.Setenv("REFORM_COMPOSE_NAME", c.ComposeName)
 			os.Setenv("REFORM_IMAGE_VERSION", c.DefaultImageVersion)
+			os.Setenv("REFORM_MAKE_TARGET", t)
 			testOne()
 		}
 	}

@@ -123,6 +123,27 @@ sqlserver: export REFORM_TEST_SOURCE = server=localhost;user id=sa;password=refo
 sqlserver: test
 	make test-db
 
+
+
+# run unit tests and integration tests for PostgreSQL (postgres driver)
+cockroach-postgres: export REFORM_DATABASE = cockroach
+cockroach-postgres: export REFORM_DRIVER = postgres
+cockroach-postgres: export REFORM_ROOT_SOURCE = postgres://root@127.0.0.1/template1?sslmode=disable
+cockroach-postgres: export REFORM_INIT_SOURCE = postgres://root@127.0.0.1/reform-database?sslmode=disable&TimeZone=UTC
+cockroach-postgres: export REFORM_TEST_SOURCE = postgres://root@127.0.0.1/reform-database?sslmode=disable&TimeZone=America/New_York
+cockroach-postgres: test
+	make test-db
+
+# run unit tests and integration tests for PostgreSQL (pgx driver)
+cockroach-pgx: export REFORM_DATABASE = cockroach
+cockroach-pgx: export REFORM_DRIVER = pgx
+cockroach-pgx: export REFORM_ROOT_SOURCE = postgres://root@127.0.0.1/template1?sslmode=disable
+cockroach-pgx: export REFORM_INIT_SOURCE = postgres://root@127.0.0.1/reform-database?sslmode=disable&TimeZone=UTC
+cockroach-pgx: export REFORM_TEST_SOURCE = postgres://root@127.0.0.1/reform-database?sslmode=disable&TimeZone=America/New_York
+cockroach-pgx: test
+	make test-db
+
+
 # Windows: run unit tests and integration tests for SQL Server (mssql driver)
 win-mssql: REFORM_SQL_HOST ?= 127.0.0.1
 win-mssql: REFORM_SQL_INSTANCE ?= SQLEXPRESS

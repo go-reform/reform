@@ -19,6 +19,15 @@ type config struct {
 }
 
 var configs = []config{
+	{
+		"cockroach",
+		[]string{
+			"latest",
+		},
+		"latest",
+		[]string{"cockroach-postgres", "cockroach-pgx"},
+	},
+
 	// https://www.postgresql.org/support/versioning/
 	{
 		"postgres",

@@ -52,11 +52,11 @@ func ConnectToTestDB() *reform.DB {
 		if err = db.QueryRow("SHOW server_version").Scan(&version); err != nil {
 			log.Fatal(err)
 		}
-		if err = db.QueryRow("SHOW TimeZone").Scan(&tz); err != nil {
+		if err = db.QueryRow("SHOW Time Zone").Scan(&tz); err != nil {
 			log.Fatal(err)
 		}
 		log.Printf("PostgreSQL version  = %q", version)
-		log.Printf("PostgreSQL TimeZone = %q", tz)
+		log.Printf("PostgreSQL Time Zone = %q", tz)
 
 	case mysql.Dialect:
 		q := "SELECT @@version, @@sql_mode, @@autocommit, @@time_zone"

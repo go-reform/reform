@@ -1,0 +1,10 @@
+---
+version: '3'
+services:
+  cockroach:
+    image: cockroachdb/cockroach:${REFORM_IMAGE_VERSION}
+    command: start --insecure
+    environment:
+      - TZ=Europe/Moscow
+    ports:
+      - 127.0.0.1:5432:26257

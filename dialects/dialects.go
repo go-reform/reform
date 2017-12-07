@@ -13,7 +13,7 @@ import (
 // ForDriver returns reform Dialect for given driver string, or nil.
 func ForDriver(driver string) reform.Dialect {
 	switch driver {
-	case "postgres":
+	case "postgres", "pgx":
 		return postgresql.Dialect
 	case "mysql":
 		return mysql.Dialect

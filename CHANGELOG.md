@@ -3,7 +3,7 @@
 ## v1.4.0 (not released yet)
 
 * Go 1.9+ is now required.
-
+* Added support for [github.com/jackc/pgx](https://github.com/jackc/pgx) driver.
 
 ## v1.3.1 (2017-12-07, https://github.com/go-reform/reform/milestones/v1.3.1)
 

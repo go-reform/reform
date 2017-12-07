@@ -1,5 +1,10 @@
 # Changelog
 
+## v1.3.1 (2017-12-07, https://github.com/go-reform/reform/milestones/v1.3.1)
+
+* No user-visible changes.
+* Major changes in CI and development environment.
+
 ## v1.3.0 (2017-12-01, https://github.com/go-reform/reform/milestones/v1.3.0)
 
 * Go 1.7+ is now required.

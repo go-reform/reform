@@ -22,4 +22,4 @@
 package reform // import "gopkg.in/reform.v1"
 
 // Version defines reform version.
-const Version = "v1.3.1-dev"
+const Version = "v1.3.1"

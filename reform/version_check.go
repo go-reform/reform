@@ -1,4 +1,4 @@
-// +build !go1.7
+// +build !go1.9
 
 package main
 
@@ -8,5 +8,5 @@ import (
 )
 
 func init() {
-	log.Fatalf("reform requires Go 1.7+, but was compiled with %s.", runtime.Version())
+	log.Fatalf("reform requires Go 1.9+, but was compiled with %s.", runtime.Version())
 }

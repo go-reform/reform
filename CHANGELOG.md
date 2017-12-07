@@ -1,5 +1,10 @@
 # Changelog
 
+## v1.4.0 (not released yet)
+
+* Go 1.9+ is now required.
+
+
 ## v1.3.1 (2017-12-07, https://github.com/go-reform/reform/milestones/v1.3.1)
 
 * No user-visible changes.

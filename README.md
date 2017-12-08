@@ -1,4 +1,5 @@
 # reform
+
 [![Release](https://github-release-version.herokuapp.com/github/go-reform/reform/release.svg?style=flat)](https://github.com/go-reform/reform/releases/latest)
 [![GoDoc](https://godoc.org/gopkg.in/reform.v1?status.svg)](https://godoc.org/gopkg.in/reform.v1)
 [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/go-reform/reform?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
@@ -25,9 +26,10 @@ Supported SQL dialects:
 
 Note that for MySQL [`clientFoundRows=true`](https://github.com/go-sql-driver/mysql#clientfoundrows) flag is required.
 
+
 ## Quickstart
 
-1. Make sure you are using Go 1.7+. Install or update `reform` package, `reform` and `reform-db` commands
+1. Make sure you are using Go 1.9+. Install or update `reform` package, `reform` and `reform-db` commands
    (see about versioning below):
 
     ```

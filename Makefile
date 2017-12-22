@@ -16,14 +16,14 @@ deps:
 	go get -u github.com/AlekSi/pointer
 	go get -u github.com/stretchr/testify/...
 	go get -u github.com/enodata/faker
-	go get -u gopkg.in/alecthomas/gometalinter.v1
+	go get -u gopkg.in/alecthomas/gometalinter.v2
 	go get -u github.com/AlekSi/gocoverutil
 
-	gometalinter.v1 --install
+	gometalinter.v2 --install
 
 # run all linters
 check:
-	-gometalinter.v1 ./... --deadline=180s --severity=vet:error
+	-gometalinter.v2 ./... --tests --deadline=180s --severity=vet:error
 
 # run unit tests, generate models, install tools
 test:

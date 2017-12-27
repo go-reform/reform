@@ -88,11 +88,11 @@ mysql-traditional: test
 # run unit tests and integration tests for SQLite3
 sqlite3: export REFORM_DATABASE = sqlite3
 sqlite3: export REFORM_DRIVER = sqlite3
-sqlite3: export REFORM_ROOT_SOURCE = /tmp/reform-database.sqlite3
-sqlite3: export REFORM_INIT_SOURCE = /tmp/reform-database.sqlite3
-sqlite3: export REFORM_TEST_SOURCE = /tmp/reform-database.sqlite3
+sqlite3: export REFORM_ROOT_SOURCE = $(CURDIR)/reform-database.sqlite3
+sqlite3: export REFORM_INIT_SOURCE = $(CURDIR)/reform-database.sqlite3
+sqlite3: export REFORM_TEST_SOURCE = $(CURDIR)/reform-database.sqlite3
 sqlite3: test
-	rm -f /tmp/reform-database.sqlite3
+	rm -f $(CURDIR)/reform-database.sqlite3
 	make test-db
 
 # run unit tests and integration tests for SQL Server (mssql driver)

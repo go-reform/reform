@@ -27,20 +27,21 @@ environment:
 
 install:
   - powershell -file .github\appveyor-prepare-mssql.ps1
-  - set PATH=%PATH%;C:\msys64\mingw64\bin;%GOPATH%\bin
+  - set PATH=C:\msys64\usr\bin;C:\msys64\mingw64\bin;%GOPATH%\bin;%PATH%
+  - pacman -Rsc --noconfirm gcc
 
   - go version
   # - echo %PATH%
   # - go env
-  # - where mingw32-make
+  # - where make
   # - where gcc
 
 build_script:
-  - mingw32-make deps
+  - make deps
 
 test_script:
-  - mingw32-make %REFORM_TARGET%
-  - mingw32-make check
+  - make %REFORM_TARGET%
+  - make check
 
 on_success:
   - ls -al

@@ -5,6 +5,8 @@ clone_folder: c:\gopath\src\gopkg.in\reform.v1
 environment:
   GOPATH: c:\gopath
   matrix:
+    - REFORM_TARGET: sqlite3
+
     - REFORM_SQL_INSTANCE: SQL2008R2SP2
       REFORM_TARGET: win-mssql
     - REFORM_SQL_INSTANCE: SQL2008R2SP2
@@ -26,7 +28,7 @@ environment:
       REFORM_TARGET: win-sqlserver
 
 install:
-  - powershell -file .github\appveyor-prepare-mssql.ps1
+  - if defined REFORM_SQL_INSTANCE powershell -file .github\appveyor-prepare-mssql.ps1
   - set PATH=C:\msys64\usr\bin;C:\msys64\mingw64\bin;%GOPATH%\bin;%PATH%
   - pacman -Rsc --noconfirm gcc
 

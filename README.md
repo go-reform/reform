@@ -161,7 +161,7 @@ Canonical import path is `gopkg.in/reform.v2-unstable`.
 
 ## License
 
-Code is covered by standard MIT-style license. Copyright (c) 2016-2017 Alexey Palazhchenko.
+Code is covered by standard MIT-style license. Copyright (c) 2016-2018 Alexey Palazhchenko.
 See [LICENSE](LICENSE) for details. Note that generated code is covered by the terms of your choice.
 
 The reform gopher was drawn by Natalya Glebova. Please use it only as reform logo.

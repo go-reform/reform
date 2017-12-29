@@ -88,11 +88,11 @@ mysql-traditional: test
 # run unit tests and integration tests for SQLite3
 sqlite3: export REFORM_DATABASE = sqlite3
 sqlite3: export REFORM_DRIVER = sqlite3
-sqlite3: export REFORM_ROOT_SOURCE = /tmp/reform-database.sqlite3
-sqlite3: export REFORM_INIT_SOURCE = /tmp/reform-database.sqlite3
-sqlite3: export REFORM_TEST_SOURCE = /tmp/reform-database.sqlite3
+sqlite3: export REFORM_ROOT_SOURCE = $(CURDIR)/reform-database.sqlite3
+sqlite3: export REFORM_INIT_SOURCE = $(CURDIR)/reform-database.sqlite3
+sqlite3: export REFORM_TEST_SOURCE = $(CURDIR)/reform-database.sqlite3
 sqlite3: test
-	rm -f /tmp/reform-database.sqlite3
+	rm -f $(CURDIR)/reform-database.sqlite3
 	make test-db
 
 # run unit tests and integration tests for SQL Server (mssql driver)
@@ -122,7 +122,7 @@ win-mssql: export REFORM_ROOT_SOURCE = server=$(REFORM_SQL_HOST)\$(REFORM_SQL_IN
 win-mssql: export REFORM_INIT_SOURCE = server=$(REFORM_SQL_HOST)\$(REFORM_SQL_INSTANCE);database=reform-database
 win-mssql: export REFORM_TEST_SOURCE = server=$(REFORM_SQL_HOST)\$(REFORM_SQL_INSTANCE);database=reform-database
 win-mssql: test
-	mingw32-make test-db
+	make test-db
 
 # Windows: run unit tests and integration tests for SQL Server (sqlserver driver)
 win-sqlserver: REFORM_SQL_HOST ?= 127.0.0.1
@@ -133,6 +133,6 @@ win-sqlserver: export REFORM_ROOT_SOURCE = sqlserver://$(REFORM_SQL_HOST)/$(REFO
 win-sqlserver: export REFORM_INIT_SOURCE = sqlserver://$(REFORM_SQL_HOST)/$(REFORM_SQL_INSTANCE)?database=reform-database
 win-sqlserver: export REFORM_TEST_SOURCE = sqlserver://$(REFORM_SQL_HOST)/$(REFORM_SQL_INSTANCE)?database=reform-database
 win-sqlserver: test
-	mingw32-make test-db
+	make test-db
 
 .PHONY: docs parse reform reform-db

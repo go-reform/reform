@@ -128,6 +128,20 @@ func main() {
 
 		cmdInit(getDB(), dir)
 
+	case "migrate":
+		migrateFlags.Parse(flag.Args()[1:])
+		err := cmdMigrate()
+		if err != nil {
+			logger.Fatalf("%s", err)
+		}
+
+	case "create-migration":
+		createMigraitonFlags.Parse(flag.Args()[1:])
+		err := cmdCreateMigration()
+		if err != nil {
+			logger.Fatalf("%s", err)
+		}
+
 	default:
 		flag.Usage()
 		logger.Fatalf("Unexpected command %q", flag.Arg(0))

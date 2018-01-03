@@ -60,7 +60,7 @@ Note that for MySQL [`clientFoundRows=true`](https://github.com/go-sql-driver/my
     Magic comment `//reform:people` links this model to `people` table or view in SQL database.
     The first value in field's `reform` tag is a column name. `pk` marks primary key.
     Use value `-` or omit tag completely to skip a field.
-    Use pointers for nullable fields.
+    Use pointers (recommended) or `sql.NullXXX` types for nullable fields.
 
 4. Run `reform [package or directory]` or `go generate [package or file]`. This will create `person_reform.go`
    in the same package with type `PersonTable` and methods on `Person`.

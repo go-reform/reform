@@ -8,6 +8,7 @@ import (
 	"log"
 	"os"
 	"os/exec"
+	"strconv"
 	"strings"
 )
 
@@ -108,12 +109,14 @@ func testOne() {
 	v := os.Getenv("REFORM_IMAGE_VERSION")
 	log.Printf("REFORM_TARGET=%s REFORM_IMAGE_VERSION=%s", t, v)
 
-	for _, c := range []string{
-		fmt.Sprintf("docker-compose --file=.github/docker-compose-%s.yml --project-name=reform pull", t),
-		fmt.Sprintf("docker-compose --file=.github/docker-compose-%s.yml --project-name=reform up -d --remove-orphans --force-recreate", t),
-		fmt.Sprintf("make %s", t),
-		fmt.Sprintf("docker-compose --file=.github/docker-compose-%s.yml --project-name=reform down --remove-orphans --volumes", t),
-	} {
+	var commands []string
+	if offline, _ := strconv.ParseBool(os.Getenv("REFORM_OFFLINE")); !offline {
+		commands = append(commands, fmt.Sprintf("docker-compose --file=.github/docker-compose-%s.yml --project-name=reform pull", t))
+	}
+	commands = append(commands, fmt.Sprintf("docker-compose --file=.github/docker-compose-%s.yml --project-name=reform up -d --remove-orphans --force-recreate", t))
+	commands = append(commands, fmt.Sprintf("make %s", t))
+	commands = append(commands, fmt.Sprintf("docker-compose --file=.github/docker-compose-%s.yml --project-name=reform down --remove-orphans --volumes", t))
+	for _, c := range commands {
 		log.Print(c)
 		args := strings.Split(c, " ")
 		cmd := exec.Command(args[0], args[1:]...)

@@ -85,7 +85,7 @@ func gen() {
 	}
 
 	const filename = ".travis.yml"
-	const start = "# Generated with 'go run .github/test-dc.go'."
+	const start = "# Generated with 'go run .github/test-dc.go gen'."
 	b, err := ioutil.ReadFile(filename)
 	if err != nil {
 		log.Fatal(err)

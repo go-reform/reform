@@ -34,7 +34,7 @@ func cmdCreateMigration() error {
 		return fmt.Errorf("Expected one argument for %q, got %d", "create-migration", initFlags.NArg())
 	}
 
-	migration := createMigraitonFlags.Arg(1)
+	migration := createMigraitonFlags.Arg(0)
 	_, err := migrator.Create(*migrationDir, migration, time.Now().UTC())
 	return err
 }

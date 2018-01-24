@@ -14,7 +14,9 @@ import (
 )
 
 func TestCreate(t *testing.T) {
-	dir := os.TempDir()
+	dir, err := ioutil.TempDir("", "ReformDBTestMigrator")
+	require.NoError(t, err)
+
 	migration := "a-couple-of-words"
 	filename := filepath.Join(dir, "2017-12-22-17-30-"+migration+".sql")
 

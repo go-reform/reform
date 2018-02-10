@@ -36,9 +36,9 @@ env:
     - GORACE="halt_on_error=1"
 
   # Generated with 'go run .github/test-dc.go gen'.
-  # 21 combinations:
+  # 19 combinations:
   #   postgres, pgx: 9.3, 9.4, 9.5, 9.6, 10
-  #   mysql, mysql-traditional: 5.5, 5.6, 5.7, 8.0
+  #   mysql, mysql-traditional: 5.5, 5.6, 5.7
   #   sqlite3: dummy
   #   mssql, sqlserver: latest
   matrix:
@@ -56,11 +56,9 @@ env:
     - REFORM_TARGET=mysql REFORM_IMAGE_VERSION=5.5
     - REFORM_TARGET=mysql REFORM_IMAGE_VERSION=5.6
     - REFORM_TARGET=mysql REFORM_IMAGE_VERSION=5.7
-    - REFORM_TARGET=mysql REFORM_IMAGE_VERSION=8.0
     - REFORM_TARGET=mysql-traditional REFORM_IMAGE_VERSION=5.5
     - REFORM_TARGET=mysql-traditional REFORM_IMAGE_VERSION=5.6
     - REFORM_TARGET=mysql-traditional REFORM_IMAGE_VERSION=5.7
-    - REFORM_TARGET=mysql-traditional REFORM_IMAGE_VERSION=8.0
 
     - REFORM_TARGET=sqlite3 REFORM_IMAGE_VERSION=dummy
 

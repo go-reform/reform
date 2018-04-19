@@ -45,19 +45,29 @@ func checkForeignKeys(t *testing.T, q *reform.Querier) {
 	require.True(t, enabled)
 }
 
-// setIdentityInsert allows or disallows insertions of rows with set primary keys for MS SQL.
-func setIdentityInsert(t *testing.T, q *reform.Querier, table string, allow bool) {
+// withIdentityInsert executes an action with MS SQL IDENTITY_INSERT enabled for a table
+func withIdentityInsert(suite *ReformSuite, q *reform.Querier, table string, action func()) {
 	if q.Dialect != mssql.Dialect && q.Dialect != sqlserver.Dialect {
+		action()
 		return
 	}
 
-	allowString := "OFF"
-	if allow {
-		allowString = "ON"
-	}
-	sql := fmt.Sprintf("SET IDENTITY_INSERT %s %s", q.QuoteIdentifier(table), allowString)
-	_, err := q.Exec(sql)
-	require.NoError(t, err)
+	t := suite.T()
+	sqlTemplate := fmt.Sprintf("SET IDENTITY_INSERT %s %%s", q.QuoteIdentifier(table))
+
+	_, onErr := q.Exec(fmt.Sprintf(sqlTemplate, "ON"))
+	require.NoError(t, onErr)
+
+	action()
+
+	_, offErr := q.Exec(fmt.Sprintf(sqlTemplate, "OFF"))
+	require.NoError(t, offErr)
+}
+
+func insertPersonWithID(suite *ReformSuite, q *reform.Querier, str reform.Struct) error {
+	var err error
+	withIdentityInsert(suite, q, "people", func() { err = q.Insert(str) })
+	return err
 }
 
 type ReformSuite struct {
@@ -80,8 +90,6 @@ func (s *ReformSuite) SetupTest() {
 	s.Require().NoError(err)
 
 	s.q = s.tx.WithTag("test")
-
-	setIdentityInsert(s.T(), s.q, "people", false)
 }
 
 func (s *ReformSuite) TearDownTest() {
@@ -161,8 +169,6 @@ func (s *ReformSuite) TestPlaceholders() {
 }
 
 func (s *ReformSuite) TestTimezones() {
-	setIdentityInsert(s.T(), s.q, "people", true)
-
 	t1 := time.Now()
 	t2 := t1.UTC()
 	vlat, err := time.LoadLocation("Asia/Vladivostok")
@@ -176,8 +182,11 @@ func (s *ReformSuite) TestTimezones() {
 		q := fmt.Sprintf(`INSERT INTO people (id, name, created_at) VALUES `+
 			`(11, '11', %s), (12, '12', %s), (13, '13', %s), (14, '14', %s)`,
 			s.q.Placeholder(1), s.q.Placeholder(2), s.q.Placeholder(3), s.q.Placeholder(4))
-		_, err := s.q.Exec(q, t1, t2, tVLAT, tHST)
-		s.NoError(err)
+
+		withIdentityInsert(s, s.q, "people", func() {
+			_, err := s.q.Exec(q, t1, t2, tVLAT, tHST)
+			s.NoError(err)
+		})
 
 		q = `SELECT created_at, created_at FROM people WHERE id IN (11, 12, 13, 14) ORDER BY id`
 		rows, err := s.q.Query(q)
@@ -200,8 +209,11 @@ func (s *ReformSuite) TestTimezones() {
 		q := fmt.Sprintf(`INSERT INTO projects (id, name, start) VALUES `+
 			`('11', '11', %s), ('12', '12', %s), ('13', '13', %s), ('14', '14', %s)`,
 			s.q.Placeholder(1), s.q.Placeholder(2), s.q.Placeholder(3), s.q.Placeholder(4))
-		_, err := s.q.Exec(q, t1, t2, tVLAT, tHST)
-		s.NoError(err)
+
+		withIdentityInsert(s, s.q, "people", func() {
+			_, err := s.q.Exec(q, t1, t2, tVLAT, tHST)
+			s.NoError(err)
+		})
 
 		q = `SELECT start, start FROM projects WHERE id IN ('11', '12', '13', '14') ORDER BY id`
 		rows, err := s.q.Query(q)

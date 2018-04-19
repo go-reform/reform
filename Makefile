@@ -44,11 +44,16 @@ test-db:
 		internal/test/sql/$(REFORM_DATABASE)_drop.sql
 	reform-db -db-driver="$(REFORM_DRIVER)" -db-source="$(REFORM_ROOT_SOURCE)" exec \
 		internal/test/sql/$(REFORM_DATABASE)_create.sql
-	reform-db -db-driver="$(REFORM_DRIVER)" -db-source="$(REFORM_INIT_SOURCE)" exec \
+	
+	cat \
 		internal/test/sql/$(REFORM_DATABASE)_init.sql \
 		internal/test/sql/data.sql \
 		internal/test/sql/$(REFORM_DATABASE)_data.sql \
-		internal/test/sql/$(REFORM_DATABASE)_set.sql
+		internal/test/sql/$(REFORM_DATABASE)_set.sql \
+		> internal/test/sql/$(REFORM_DATABASE)_combined.tmp.sql
+	reform-db -db-driver="$(REFORM_DRIVER)" -db-source="$(REFORM_INIT_SOURCE)" exec \
+		internal/test/sql/$(REFORM_DATABASE)_combined.tmp.sql
+	
 	go test $(REFORM_TEST_FLAGS) -covermode=count -coverprofile=reform-db.cover gopkg.in/reform.v1/reform-db
 	go test $(REFORM_TEST_FLAGS) -covermode=count -coverprofile=reform.cover
 	gocoverutil -coverprofile=coverage.txt merge *.cover

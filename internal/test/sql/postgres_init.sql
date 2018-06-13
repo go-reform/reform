@@ -9,6 +9,8 @@ CREATE TABLE people (
   -- updated_at timestamp without time zone
 );
 
+CREATE VIEW people_copy AS SELECT * from people;
+
 CREATE TABLE projects (
   name varchar NOT NULL,
   id varchar PRIMARY KEY,

@@ -7,6 +7,8 @@ CREATE TABLE people (
   updated_at datetime
 );
 
+CREATE VIEW people_copy AS SELECT * from people;
+
 CREATE TABLE projects (
   name varchar NOT NULL,
   id varchar NOT NULL PRIMARY KEY,

@@ -8,8 +8,9 @@ import (
 
 // Querier performs queries and commands.
 type Querier struct {
-	dbtx DBTX
-	tag  string
+	dbtx     DBTX
+	tag      string
+	viewName string
 	Dialect
 	Logger Logger
 }
@@ -53,9 +54,19 @@ func (q *Querier) WithTag(format string, args ...interface{}) *Querier {
 	return newQ
 }
 
+// WithView returns a copy of Querier with appointed view name.
+func (q *Querier) WithView(viewName string) *Querier {
+	newQ := newQuerier(q.dbtx, q.Dialect, q.Logger)
+	newQ.viewName = viewName
+	return newQ
+}
+
 // QualifiedView returns quoted qualified view name.
 func (q *Querier) QualifiedView(view View) string {
 	v := q.QuoteIdentifier(view.Name())
+	if q.viewName != "" {
+		v = q.QuoteIdentifier(q.viewName)
+	}
 	if view.Schema() != "" {
 		v = q.QuoteIdentifier(view.Schema()) + "." + v
 	}

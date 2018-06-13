@@ -81,6 +81,17 @@ func ExampleQuerier_WithTag() {
 	// Name: `Vicious Baron` (string), ID: `baron` (string), Start: 2014-06-01 00:00:00 +0000 UTC (time.Time), End: 2016-02-21 00:00:00 +0000 UTC (*time.Time)
 }
 
+func ExampleQuerier_WithView() {
+	id := 1
+	person, err := DB.WithView("people_copy").FindByPrimaryKeyFrom(PersonTable, id)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(person)
+	// Output:
+	// ID: 1 (int32), GroupID: 65534 (*int32), Name: `Denis Mills` (string), Email: <nil> (*string), CreatedAt: 2009-11-10 23:00:00 +0000 UTC (time.Time), UpdatedAt: <nil> (*time.Time)
+}
+
 func ExampleQuerier_SelectRows() {
 	tail := fmt.Sprintf("WHERE created_at < %s ORDER BY id", DB.Placeholder(1))
 	y2010 := time.Date(2010, 1, 1, 0, 0, 0, 0, time.UTC)

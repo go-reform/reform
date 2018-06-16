@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.3.2 (2018-XX-XX, https://github.com/go-reform/reform/milestones/v1.3.2)
+
+* Go 1.8+ is now required due to changes in github.com/lib/pq driver.
+
 ## v1.3.1 (2017-12-07, https://github.com/go-reform/reform/milestones/v1.3.1)
 
 * No user-visible changes.

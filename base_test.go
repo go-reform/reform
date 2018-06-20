@@ -46,27 +46,26 @@ func checkForeignKeys(t *testing.T, q *reform.Querier) {
 }
 
 // withIdentityInsert executes an action with MS SQL IDENTITY_INSERT enabled for a table
-func withIdentityInsert(suite *ReformSuite, q *reform.Querier, table string, action func()) {
+func withIdentityInsert(t *testing.T, q *reform.Querier, table string, action func()) {
 	if q.Dialect != mssql.Dialect && q.Dialect != sqlserver.Dialect {
 		action()
 		return
 	}
 
-	t := suite.T()
-	sqlTemplate := fmt.Sprintf("SET IDENTITY_INSERT %s %%s", q.QuoteIdentifier(table))
+	query := fmt.Sprintf("SET IDENTITY_INSERT %s %%s", q.QuoteIdentifier(table))
 
-	_, onErr := q.Exec(fmt.Sprintf(sqlTemplate, "ON"))
-	require.NoError(t, onErr)
+	_, err := q.Exec(fmt.Sprintf(query, "ON"))
+	require.NoError(t, err)
 
 	action()
 
-	_, offErr := q.Exec(fmt.Sprintf(sqlTemplate, "OFF"))
-	require.NoError(t, offErr)
+	_, err = q.Exec(fmt.Sprintf(query, "OFF"))
+	require.NoError(t, err)
 }
 
-func insertPersonWithID(suite *ReformSuite, q *reform.Querier, str reform.Struct) error {
+func insertPersonWithID(t *testing.T, q *reform.Querier, str reform.Struct) error {
 	var err error
-	withIdentityInsert(suite, q, "people", func() { err = q.Insert(str) })
+	withIdentityInsert(t, q, "people", func() { err = q.Insert(str) })
 	return err
 }
 
@@ -183,7 +182,7 @@ func (s *ReformSuite) TestTimezones() {
 			`(11, '11', %s), (12, '12', %s), (13, '13', %s), (14, '14', %s)`,
 			s.q.Placeholder(1), s.q.Placeholder(2), s.q.Placeholder(3), s.q.Placeholder(4))
 
-		withIdentityInsert(s, s.q, "people", func() {
+		withIdentityInsert(s.T(), s.q, "people", func() {
 			_, err := s.q.Exec(q, t1, t2, tVLAT, tHST)
 			s.NoError(err)
 		})
@@ -210,7 +209,7 @@ func (s *ReformSuite) TestTimezones() {
 			`('11', '11', %s), ('12', '12', %s), ('13', '13', %s), ('14', '14', %s)`,
 			s.q.Placeholder(1), s.q.Placeholder(2), s.q.Placeholder(3), s.q.Placeholder(4))
 
-		withIdentityInsert(s, s.q, "people", func() {
+		withIdentityInsert(s.T(), s.q, "people", func() {
 			_, err := s.q.Exec(q, t1, t2, tVLAT, tHST)
 			s.NoError(err)
 		})

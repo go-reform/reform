@@ -55,7 +55,7 @@ func (s *ReformSuite) TestInsertWithValues() {
 func (s *ReformSuite) TestInsertWithPrimaryKey() {
 	newEmail := faker.Internet().Email()
 	person := &Person{ID: 50, Email: &newEmail}
-	err := insertPersonWithID(s, s.q, person)
+	err := insertPersonWithID(s.T(), s.q, person)
 	s.NoError(err)
 	s.Equal(int32(50), person.ID)
 	s.Equal("", person.Name)
@@ -165,7 +165,7 @@ func (s *ReformSuite) TestInsertMultiWithPrimaryKeys() {
 	newName := faker.Name().Name()
 	person1, person2 := &Person{ID: 50, Email: &newEmail}, &Person{ID: 51, Name: newName}
 
-	withIdentityInsert(s, s.q, "people", func() {
+	withIdentityInsert(s.T(), s.q, "people", func() {
 		err := s.q.InsertMulti(person1, person2)
 		s.NoError(err)
 	})
@@ -367,7 +367,7 @@ func (s *ReformSuite) TestSaveWithPrimaryKey() {
 	newName := faker.Name().Name()
 	person := &Person{ID: 99, Name: newName}
 
-	withIdentityInsert(s, s.q, "people", func() {
+	withIdentityInsert(s.T(), s.q, "people", func() {
 		err := s.q.Save(person)
 		s.NoError(err)
 	})

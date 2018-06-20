@@ -16,6 +16,8 @@ First of all, run `make deps` to install all dependencies. After that, you have 
 
 If you have Go, Docker and Docker Compose installed, you can run all tests and linters simply by running `make`.
 
+You can also set `REFORM_TARGET` and `REFORM_IMAGE_VERSION` environment variables to test a specific combination.
+See [`.travis.yml`](../.travis.yml) for possible values.
 
 ### Direct
 

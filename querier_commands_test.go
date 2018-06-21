@@ -53,11 +53,9 @@ func (s *ReformSuite) TestInsertWithValues() {
 }
 
 func (s *ReformSuite) TestInsertWithPrimaryKey() {
-	setIdentityInsert(s.T(), s.q, "people", true)
-
 	newEmail := faker.Internet().Email()
 	person := &Person{ID: 50, Email: &newEmail}
-	err := s.q.Insert(person)
+	err := insertPersonWithID(s.T(), s.q, person)
 	s.NoError(err)
 	s.Equal(int32(50), person.ID)
 	s.Equal("", person.Name)
@@ -163,13 +161,14 @@ func (s *ReformSuite) TestInsertMulti() {
 }
 
 func (s *ReformSuite) TestInsertMultiWithPrimaryKeys() {
-	setIdentityInsert(s.T(), s.q, "people", true)
-
 	newEmail := faker.Internet().Email()
 	newName := faker.Name().Name()
 	person1, person2 := &Person{ID: 50, Email: &newEmail}, &Person{ID: 51, Name: newName}
-	err := s.q.InsertMulti(person1, person2)
-	s.NoError(err)
+
+	withIdentityInsert(s.T(), s.q, "people", func() {
+		err := s.q.InsertMulti(person1, person2)
+		s.NoError(err)
+	})
 
 	s.Equal(int32(50), person1.ID)
 	s.Equal("", person1.Name)
@@ -365,15 +364,16 @@ func (s *ReformSuite) TestSave() {
 }
 
 func (s *ReformSuite) TestSaveWithPrimaryKey() {
-	setIdentityInsert(s.T(), s.q, "people", true)
-
 	newName := faker.Name().Name()
 	person := &Person{ID: 99, Name: newName}
-	err := s.q.Save(person)
-	s.NoError(err)
+
+	withIdentityInsert(s.T(), s.q, "people", func() {
+		err := s.q.Save(person)
+		s.NoError(err)
+	})
 
 	// that should cause no-op UPDATE, see https://github.com/go-reform/reform/issues/131
-	err = s.q.Save(person)
+	err := s.q.Save(person)
 	s.NoError(err)
 }
 

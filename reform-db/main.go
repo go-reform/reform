@@ -10,6 +10,7 @@ import (
 	"strings"
 	"time"
 
+	_ "github.com/AlekSi/mysqlx"
 	_ "github.com/denisenkom/go-mssqldb"
 	_ "github.com/go-sql-driver/mysql"
 	_ "github.com/jackc/pgx/stdlib"

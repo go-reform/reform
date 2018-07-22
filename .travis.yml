@@ -50,9 +50,10 @@ env:
     - REFORM_SKIP_PULL=1
 
   # Generated with 'go run .github/test-dc.go gen'.
-  # 11 combinations:
+  # 13 combinations:
   #   postgres, pgx: 9.4, 9.5, 9.6, 10, 11
   #   mysql, mysql-traditional: 5.5, 5.6, 5.7, 8.0
+  #   mysqlx: 5.7, 8.0
   #   sqlite3: dummy
   #   mssql, sqlserver: latest
   matrix:
@@ -66,6 +67,9 @@ env:
     - REFORM_IMAGE_VERSION=5.6 REFORM_TARGETS=mysql,mysql-traditional
     - REFORM_IMAGE_VERSION=5.7 REFORM_TARGETS=mysql,mysql-traditional
     - REFORM_IMAGE_VERSION=8.0 REFORM_TARGETS=mysql,mysql-traditional
+
+    - REFORM_IMAGE_VERSION=5.7 REFORM_TARGETS=mysqlx
+    - REFORM_IMAGE_VERSION=8.0 REFORM_TARGETS=mysqlx
 
     - REFORM_IMAGE_VERSION=dummy REFORM_TARGETS=sqlite3
 

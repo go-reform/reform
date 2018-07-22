@@ -43,6 +43,14 @@ var configs = []config{
 		},
 		"5.7",
 	},
+	{
+		[]string{"mysqlx"},
+		[]string{
+			"5.7",
+			"8.0",
+		},
+		"5.7",
+	},
 
 	{
 		[]string{"sqlite3"},

@@ -8,6 +8,7 @@ REFORM_TEST_FLAGS ?=
 # install dependencies
 deps:
 	go get -u github.com/lib/pq
+	go get -u github.com/jackc/pgx/stdlib
 	go get -u github.com/go-sql-driver/mysql
 	go get -u github.com/mattn/go-sqlite3
 	go get -u github.com/denisenkom/go-mssqldb
@@ -15,14 +16,14 @@ deps:
 	go get -u github.com/AlekSi/pointer
 	go get -u github.com/stretchr/testify/...
 	go get -u syreclabs.com/go/faker
-	go get -u gopkg.in/alecthomas/gometalinter.v1
+	go get -u gopkg.in/alecthomas/gometalinter.v2
 	go get -u github.com/AlekSi/gocoverutil
 
-	gometalinter.v1 --install
+	gometalinter.v2 --install
 
 # run all linters
 check:
-	-gometalinter.v1 ./... --deadline=180s --severity=vet:error
+	-gometalinter.v2 ./... --tests --deadline=180s --severity=vet:error
 
 # run unit tests, generate models, install tools
 test:
@@ -66,13 +67,22 @@ test-db:
 test-dc:
 	go run .github/test-dc.go test
 
-# run unit tests and integration tests for PostgreSQL
+# run unit tests and integration tests for PostgreSQL (postgres driver)
 postgres: export REFORM_DATABASE = postgres
 postgres: export REFORM_DRIVER = postgres
 postgres: export REFORM_ROOT_SOURCE = postgres://postgres@127.0.0.1/template1?sslmode=disable
 postgres: export REFORM_INIT_SOURCE = postgres://postgres@127.0.0.1/reform-database?sslmode=disable&TimeZone=UTC
 postgres: export REFORM_TEST_SOURCE = postgres://postgres@127.0.0.1/reform-database?sslmode=disable&TimeZone=America/New_York
 postgres: test
+	make test-db
+
+# run unit tests and integration tests for PostgreSQL (pgx driver)
+pgx: export REFORM_DATABASE = postgres
+pgx: export REFORM_DRIVER = pgx
+pgx: export REFORM_ROOT_SOURCE = postgres://postgres@127.0.0.1/template1?sslmode=disable
+pgx: export REFORM_INIT_SOURCE = postgres://postgres@127.0.0.1/reform-database?sslmode=disable&TimeZone=UTC
+pgx: export REFORM_TEST_SOURCE = postgres://postgres@127.0.0.1/reform-database?sslmode=disable&TimeZone=America/New_York
+pgx: test
 	make test-db
 
 # run unit tests and integration tests for MySQL (ANSI SQL mode)

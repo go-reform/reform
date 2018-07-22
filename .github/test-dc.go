@@ -21,7 +21,7 @@ type config struct {
 var configs = []config{
 	// https://www.postgresql.org/support/versioning/
 	{
-		[]string{"postgres"},
+		[]string{"postgres", "pgx"},
 		[]string{
 			"9.3",
 			"9.4",

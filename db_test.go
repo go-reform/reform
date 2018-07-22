@@ -98,9 +98,18 @@ func (s *ReformSuite) TestAbortedTransaction() {
 	tx, err := DB.Begin()
 	s.Require().NoError(err)
 	s.NoError(insertPersonWithID(s.T(), tx.Querier, person1))
-	s.EqualError(insertPersonWithID(s.T(), tx.Querier, person1), `pq: duplicate key value violates unique constraint "people_pkey"`)
-	s.EqualError(insertPersonWithID(s.T(), tx.Querier, person2), `pq: current transaction is aborted, commands ignored until end of transaction block`)
-	s.EqualError(tx.Commit(), `pq: Could not complete operation in a failed transaction`)
+	s.Contains(insertPersonWithID(s.T(), tx.Querier, person1).Error(), `duplicate key value violates unique constraint "people_pkey"`)
+	s.Contains(insertPersonWithID(s.T(), tx.Querier, person2).Error(), `current transaction is aborted, commands ignored until end of transaction block`)
+	err = tx.Commit()
+	s.Require().Error(err)
+	switch err.Error() {
+	case `pq: Could not complete operation in a failed transaction`: // pq.ErrInFailedTransaction
+		// nothing
+	case `commit unexpectedly resulted in rollback`: // pgx.ErrTxCommitRollback
+		// nothing
+	default:
+		s.Failf("unexpected error", "actual: %s", err)
+	}
 	s.Equal(tx.Rollback(), reform.ErrTxDone)
 	s.EqualError(DB.Reload(person1), reform.ErrNoRows.Error())
 	s.EqualError(DB.Reload(person2), reform.ErrNoRows.Error())
@@ -109,8 +118,8 @@ func (s *ReformSuite) TestAbortedTransaction() {
 	tx, err = DB.Begin()
 	s.Require().NoError(err)
 	s.NoError(insertPersonWithID(s.T(), tx.Querier, person1))
-	s.EqualError(insertPersonWithID(s.T(), tx.Querier, person1), `pq: duplicate key value violates unique constraint "people_pkey"`)
-	s.EqualError(insertPersonWithID(s.T(), tx.Querier, person2), `pq: current transaction is aborted, commands ignored until end of transaction block`)
+	s.Contains(insertPersonWithID(s.T(), tx.Querier, person1).Error(), `duplicate key value violates unique constraint "people_pkey"`)
+	s.Contains(insertPersonWithID(s.T(), tx.Querier, person2).Error(), `current transaction is aborted, commands ignored until end of transaction block`)
 	s.NoError(tx.Rollback())
 	s.Equal(tx.Commit(), reform.ErrTxDone)
 	s.Equal(tx.Rollback(), reform.ErrTxDone)

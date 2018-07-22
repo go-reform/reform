@@ -1,5 +1,10 @@
 # Changelog
 
+## v1.4.0 (not released yet)
+
+* Go 1.9+ is now required.
+* Added support for [github.com/jackc/pgx](https://github.com/jackc/pgx) driver.
+
 ## v1.3.3 (2018-12-11, https://github.com/go-reform/reform/milestones/v1.3.3)
 
 * Fix tests for Go 1.12.

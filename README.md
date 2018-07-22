@@ -1,4 +1,5 @@
 # reform
+
 [![Release](https://github-release-version.herokuapp.com/github/go-reform/reform/release.svg?style=flat)](https://github.com/go-reform/reform/releases/latest)
 [![GoDoc](https://godoc.org/gopkg.in/reform.v1?status.svg)](https://godoc.org/gopkg.in/reform.v1)
 [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/go-reform/reform?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
@@ -16,12 +17,12 @@ as opposed to `interface{}`, type system sidestepping, and runtime reflection. I
 
 Supported SQL dialects:
 
-| RDBMS                | Library and drivers                                                                                 | Tested with
-| -----                | -------------------                                                                                 | -----------
-| PostgreSQL           | [github.com/lib/pq](https://github.com/lib/pq) (`postgres`)                                         | All [supported](https://www.postgresql.org/support/versioning/) versions.
-| MySQL                | [github.com/go-sql-driver/mysql](https://github.com/go-sql-driver/mysql) (`mysql`)                  | All [supported](https://www.mysql.com/support/supportedplatforms/database.html) versions.
-| SQLite3              | [github.com/mattn/go-sqlite3](https://github.com/mattn/go-sqlite3) (`sqlite3`)                      |
-| Microsoft SQL Server | [github.com/denisenkom/go-mssqldb](https://github.com/denisenkom/go-mssqldb) (`mssql`, `sqlserver`) | Windows: SQL2008R2SP2, SQL2012SP1, SQL2014, SQL2016. Linux: [`microsoft/mssql-server-linux:latest` Docker image](https://hub.docker.com/r/microsoft/mssql-server-linux/).
+| RDBMS                | Library and drivers                                                                                                              | Tested with
+| -----                | -------------------                                                                                                              | -----------
+| PostgreSQL           | [github.com/lib/pq](https://github.com/lib/pq) (`postgres`), [github.com/jackc/pgx/stdlib](https://github.com/jackc/pgx) (`pgx`) | All [supported](https://www.postgresql.org/support/versioning/) versions.
+| MySQL                | [github.com/go-sql-driver/mysql](https://github.com/go-sql-driver/mysql) (`mysql`)                                               | All [supported](https://www.mysql.com/support/supportedplatforms/database.html) versions.
+| SQLite3              | [github.com/mattn/go-sqlite3](https://github.com/mattn/go-sqlite3) (`sqlite3`)                                                   |
+| Microsoft SQL Server | [github.com/denisenkom/go-mssqldb](https://github.com/denisenkom/go-mssqldb) (`mssql`, `sqlserver`)                              | Windows: SQL2008R2SP2, SQL2012SP1, SQL2014, SQL2016. Linux: [`microsoft/mssql-server-linux:latest` Docker image](https://hub.docker.com/r/microsoft/mssql-server-linux/).
 
 Notes:
 * [`clientFoundRows=true` flag](https://github.com/go-sql-driver/mysql#clientfoundrows) is required for `mysql` driver.
@@ -30,7 +31,7 @@ Notes:
 
 ## Quickstart
 
-1. Make sure you are using Go 1.8+. Install or update `reform` package, `reform` and `reform-db` commands
+1. Make sure you are using Go 1.9+. Install or update `reform` package, `reform` and `reform-db` commands
    (see about versioning below):
 
     ```
@@ -61,7 +62,7 @@ Notes:
     Magic comment `//reform:people` links this model to `people` table or view in SQL database.
     The first value in field's `reform` tag is a column name. `pk` marks primary key.
     Use value `-` or omit tag completely to skip a field.
-    Use pointers for nullable fields.
+    Use pointers (recommended) or `sql.NullXXX` types for nullable fields.
 
 4. Run `reform [package or directory]` or `go generate [package or file]`. This will create `person_reform.go`
    in the same package with type `PersonTable` and methods on `Person`.

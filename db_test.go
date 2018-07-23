@@ -4,7 +4,7 @@ import (
 	"errors"
 
 	"github.com/AlekSi/pointer"
-	"github.com/enodata/faker"
+	"syreclabs.com/go/faker"
 
 	"gopkg.in/reform.v1"
 	"gopkg.in/reform.v1/dialects/postgresql"
@@ -15,13 +15,11 @@ func (s *ReformSuite) TestBeginCommit() {
 	s.Require().NoError(s.tx.Rollback())
 	s.q = nil
 
-	setIdentityInsert(s.T(), DB.Querier, "people", true)
-
 	person := &Person{ID: 42, Email: pointer.ToString(faker.Internet().Email())}
 
 	tx, err := DB.Begin()
 	s.Require().NoError(err)
-	s.NoError(tx.Insert(person))
+	s.NoError(insertPersonWithID(s.T(), tx.Querier, person))
 	s.NoError(tx.Commit())
 	s.Equal(tx.Commit(), reform.ErrTxDone)
 	s.Equal(tx.Rollback(), reform.ErrTxDone)
@@ -33,13 +31,11 @@ func (s *ReformSuite) TestBeginRollback() {
 	s.Require().NoError(s.tx.Rollback())
 	s.q = nil
 
-	setIdentityInsert(s.T(), DB.Querier, "people", true)
-
 	person := &Person{ID: 42, Email: pointer.ToString(faker.Internet().Email())}
 
 	tx, err := DB.Begin()
 	s.Require().NoError(err)
-	s.NoError(tx.Insert(person))
+	s.NoError(insertPersonWithID(s.T(), tx.Querier, person))
 	s.NoError(tx.Rollback())
 	s.Equal(tx.Commit(), reform.ErrTxDone)
 	s.Equal(tx.Rollback(), reform.ErrTxDone)
@@ -55,17 +51,15 @@ func (s *ReformSuite) TestErrorInTransaction() {
 	s.Require().NoError(s.tx.Rollback())
 	s.q = nil
 
-	setIdentityInsert(s.T(), DB.Querier, "people", true)
-
 	person1 := &Person{ID: 42, Email: pointer.ToString(faker.Internet().Email())}
 	person2 := &Person{ID: 43, Email: pointer.ToString(faker.Internet().Email())}
 
 	// commit works
 	tx, err := DB.Begin()
 	s.Require().NoError(err)
-	s.NoError(tx.Insert(person1))
-	s.Error(tx.Insert(person1))   // duplicate PK
-	s.NoError(tx.Insert(person2)) // INSERT works
+	s.NoError(insertPersonWithID(s.T(), tx.Querier, person1))
+	s.Error(insertPersonWithID(s.T(), tx.Querier, person1))   // duplicate PK
+	s.NoError(insertPersonWithID(s.T(), tx.Querier, person2)) // INSERT works
 	s.NoError(tx.Commit())
 	s.Equal(tx.Commit(), reform.ErrTxDone)
 	s.Equal(tx.Rollback(), reform.ErrTxDone)
@@ -77,9 +71,9 @@ func (s *ReformSuite) TestErrorInTransaction() {
 	// rollback works
 	tx, err = DB.Begin()
 	s.Require().NoError(err)
-	s.NoError(tx.Insert(person1))
-	s.Error(tx.Insert(person1))   // duplicate PK
-	s.NoError(tx.Insert(person2)) // INSERT works
+	s.NoError(insertPersonWithID(s.T(), tx.Querier, person1))
+	s.Error(insertPersonWithID(s.T(), tx.Querier, person1))   // duplicate PK
+	s.NoError(insertPersonWithID(s.T(), tx.Querier, person2)) // INSERT works
 	s.NoError(tx.Rollback())
 	s.Equal(tx.Commit(), reform.ErrTxDone)
 	s.Equal(tx.Rollback(), reform.ErrTxDone)
@@ -97,17 +91,15 @@ func (s *ReformSuite) TestAbortedTransaction() {
 	s.Require().NoError(s.tx.Rollback())
 	s.q = nil
 
-	setIdentityInsert(s.T(), DB.Querier, "people", true)
-
 	person1 := &Person{ID: 42, Email: pointer.ToString(faker.Internet().Email())}
 	person2 := &Person{ID: 43, Email: pointer.ToString(faker.Internet().Email())}
 
 	// commit fails
 	tx, err := DB.Begin()
 	s.Require().NoError(err)
-	s.NoError(tx.Insert(person1))
-	s.EqualError(tx.Insert(person1), `pq: duplicate key value violates unique constraint "people_pkey"`)
-	s.EqualError(tx.Insert(person2), `pq: current transaction is aborted, commands ignored until end of transaction block`)
+	s.NoError(insertPersonWithID(s.T(), tx.Querier, person1))
+	s.EqualError(insertPersonWithID(s.T(), tx.Querier, person1), `pq: duplicate key value violates unique constraint "people_pkey"`)
+	s.EqualError(insertPersonWithID(s.T(), tx.Querier, person2), `pq: current transaction is aborted, commands ignored until end of transaction block`)
 	s.EqualError(tx.Commit(), `pq: Could not complete operation in a failed transaction`)
 	s.Equal(tx.Rollback(), reform.ErrTxDone)
 	s.EqualError(DB.Reload(person1), reform.ErrNoRows.Error())
@@ -116,9 +108,9 @@ func (s *ReformSuite) TestAbortedTransaction() {
 	// rollback works
 	tx, err = DB.Begin()
 	s.Require().NoError(err)
-	s.NoError(tx.Insert(person1))
-	s.EqualError(tx.Insert(person1), `pq: duplicate key value violates unique constraint "people_pkey"`)
-	s.EqualError(tx.Insert(person2), `pq: current transaction is aborted, commands ignored until end of transaction block`)
+	s.NoError(insertPersonWithID(s.T(), tx.Querier, person1))
+	s.EqualError(insertPersonWithID(s.T(), tx.Querier, person1), `pq: duplicate key value violates unique constraint "people_pkey"`)
+	s.EqualError(insertPersonWithID(s.T(), tx.Querier, person2), `pq: current transaction is aborted, commands ignored until end of transaction block`)
 	s.NoError(tx.Rollback())
 	s.Equal(tx.Commit(), reform.ErrTxDone)
 	s.Equal(tx.Rollback(), reform.ErrTxDone)
@@ -130,13 +122,11 @@ func (s *ReformSuite) TestInTransaction() {
 	s.Require().NoError(s.tx.Rollback())
 	s.q = nil
 
-	setIdentityInsert(s.T(), DB.Querier, "people", true)
-
 	person := &Person{ID: 42, Email: pointer.ToString(faker.Internet().Email())}
 
 	// error in closure
 	err := DB.InTransaction(func(tx *reform.TX) error {
-		s.NoError(tx.Insert(person))
+		s.NoError(insertPersonWithID(s.T(), tx.Querier, person))
 		return errors.New("epic error")
 	})
 	s.EqualError(err, "epic error")
@@ -145,7 +135,7 @@ func (s *ReformSuite) TestInTransaction() {
 	// panic in closure
 	s.Panics(func() {
 		err = DB.InTransaction(func(tx *reform.TX) error {
-			s.NoError(tx.Insert(person))
+			s.NoError(insertPersonWithID(s.T(), tx.Querier, person))
 			panic("epic panic!")
 		})
 	})
@@ -153,8 +143,8 @@ func (s *ReformSuite) TestInTransaction() {
 
 	// duplicate PK in closure
 	err = DB.InTransaction(func(tx *reform.TX) error {
-		s.NoError(tx.Insert(person))
-		err := tx.Insert(person)
+		s.NoError(insertPersonWithID(s.T(), tx.Querier, person))
+		err := insertPersonWithID(s.T(), tx.Querier, person)
 		s.Error(err)
 		return err
 	})
@@ -163,7 +153,7 @@ func (s *ReformSuite) TestInTransaction() {
 
 	// no error
 	err = DB.InTransaction(func(tx *reform.TX) error {
-		s.NoError(tx.Insert(person))
+		s.NoError(insertPersonWithID(s.T(), tx.Querier, person))
 		return nil
 	})
 	s.NoError(err)

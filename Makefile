@@ -14,7 +14,7 @@ deps:
 
 	go get -u github.com/AlekSi/pointer
 	go get -u github.com/stretchr/testify/...
-	go get -u github.com/enodata/faker
+	go get -u syreclabs.com/go/faker
 	go get -u gopkg.in/alecthomas/gometalinter.v1
 	go get -u github.com/AlekSi/gocoverutil
 
@@ -44,11 +44,19 @@ test-db:
 		internal/test/sql/$(REFORM_DATABASE)_drop.sql
 	reform-db -db-driver="$(REFORM_DRIVER)" -db-source="$(REFORM_ROOT_SOURCE)" exec \
 		internal/test/sql/$(REFORM_DATABASE)_create.sql
-	reform-db -db-driver="$(REFORM_DRIVER)" -db-source="$(REFORM_INIT_SOURCE)" exec \
+
+	# TODO remove that hack in reform 1.4
+	# https://github.com/go-reform/reform/issues/151
+	# https://github.com/go-reform/reform/issues/157
+	cat \
 		internal/test/sql/$(REFORM_DATABASE)_init.sql \
 		internal/test/sql/data.sql \
 		internal/test/sql/$(REFORM_DATABASE)_data.sql \
-		internal/test/sql/$(REFORM_DATABASE)_set.sql
+		internal/test/sql/$(REFORM_DATABASE)_set.sql \
+		> internal/test/sql/$(REFORM_DATABASE)_combined.tmp.sql
+	reform-db -db-driver="$(REFORM_DRIVER)" -db-source="$(REFORM_INIT_SOURCE)" exec \
+		internal/test/sql/$(REFORM_DATABASE)_combined.tmp.sql
+
 	go test $(REFORM_TEST_FLAGS) -covermode=count -coverprofile=reform-db.cover gopkg.in/reform.v1/reform-db
 	go test $(REFORM_TEST_FLAGS) -covermode=count -coverprofile=reform.cover
 	gocoverutil -coverprofile=coverage.txt merge *.cover
@@ -88,11 +96,11 @@ mysql-traditional: test
 # run unit tests and integration tests for SQLite3
 sqlite3: export REFORM_DATABASE = sqlite3
 sqlite3: export REFORM_DRIVER = sqlite3
-sqlite3: export REFORM_ROOT_SOURCE = /tmp/reform-database.sqlite3
-sqlite3: export REFORM_INIT_SOURCE = /tmp/reform-database.sqlite3
-sqlite3: export REFORM_TEST_SOURCE = /tmp/reform-database.sqlite3
+sqlite3: export REFORM_ROOT_SOURCE = $(CURDIR)/reform-database.sqlite3
+sqlite3: export REFORM_INIT_SOURCE = $(CURDIR)/reform-database.sqlite3
+sqlite3: export REFORM_TEST_SOURCE = $(CURDIR)/reform-database.sqlite3
 sqlite3: test
-	rm -f /tmp/reform-database.sqlite3
+	rm -f $(CURDIR)/reform-database.sqlite3
 	make test-db
 
 # run unit tests and integration tests for SQL Server (mssql driver)
@@ -122,7 +130,7 @@ win-mssql: export REFORM_ROOT_SOURCE = server=$(REFORM_SQL_HOST)\$(REFORM_SQL_IN
 win-mssql: export REFORM_INIT_SOURCE = server=$(REFORM_SQL_HOST)\$(REFORM_SQL_INSTANCE);database=reform-database
 win-mssql: export REFORM_TEST_SOURCE = server=$(REFORM_SQL_HOST)\$(REFORM_SQL_INSTANCE);database=reform-database
 win-mssql: test
-	mingw32-make test-db
+	make test-db
 
 # Windows: run unit tests and integration tests for SQL Server (sqlserver driver)
 win-sqlserver: REFORM_SQL_HOST ?= 127.0.0.1
@@ -133,6 +141,6 @@ win-sqlserver: export REFORM_ROOT_SOURCE = sqlserver://$(REFORM_SQL_HOST)/$(REFO
 win-sqlserver: export REFORM_INIT_SOURCE = sqlserver://$(REFORM_SQL_HOST)/$(REFORM_SQL_INSTANCE)?database=reform-database
 win-sqlserver: export REFORM_TEST_SOURCE = sqlserver://$(REFORM_SQL_HOST)/$(REFORM_SQL_INSTANCE)?database=reform-database
 win-sqlserver: test
-	mingw32-make test-db
+	make test-db
 
 .PHONY: docs parse reform reform-db

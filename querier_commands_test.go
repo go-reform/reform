@@ -254,9 +254,9 @@ func (s *ReformSuite) TestUpdateColumns() {
 	newEmail := faker.Internet().Email()
 
 	for p, columns := range map[*Person][]string{
-		&Person{Name: "Elfrieda Abbott", Email: &newEmail}:                             {"email", "updated_at"},
-		&Person{Name: newName, Email: pointer.ToString("elfrieda_abbott@example.org")}: {"name", "name", "updated_at"},
-		&Person{Name: newName, Email: &newEmail}:                                       {"name", "email", "updated_at"},
+		{Name: "Elfrieda Abbott", Email: &newEmail}:                             {"email", "updated_at"},
+		{Name: newName, Email: pointer.ToString("elfrieda_abbott@example.org")}: {"name", "name", "updated_at"},
+		{Name: newName, Email: &newEmail}:                                       {"name", "email", "updated_at"},
 	} {
 		var person Person
 		err := s.q.FindByPrimaryKeyTo(&person, 102)
@@ -298,9 +298,9 @@ func (s *ReformSuite) TestUpdateView() {
 	newEmail := faker.Internet().Email()
 
 	for p, columns := range map[*Person][]string{
-		&Person{Name: "Elfrieda Abbott", Email: &newEmail}:                             {"email", "updated_at"},
-		&Person{Name: newName, Email: pointer.ToString("elfrieda_abbott@example.org")}: {"name", "name", "updated_at"},
-		&Person{Name: newName, Email: &newEmail}:                                       {"name", "email", "updated_at"},
+		{Name: "Elfrieda Abbott", Email: &newEmail}:                             {"email", "updated_at"},
+		{Name: newName, Email: pointer.ToString("elfrieda_abbott@example.org")}: {"name", "name", "updated_at"},
+		{Name: newName, Email: &newEmail}:                                       {"name", "email", "updated_at"},
 	} {
 		var person Person
 		err := s.q.FindByPrimaryKeyTo(&person, 102)

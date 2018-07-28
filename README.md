@@ -1,6 +1,6 @@
 # reform
 
-[![Release](https://github-release-version.herokuapp.com/github/go-reform/reform/release.svg?style=flat)](https://github.com/go-reform/reform/releases/latest)
+[![Release](https://img.shields.io/github/release/go-reform/reform.svg)](https://github.com/go-reform/reform/releases/latest)
 [![GoDoc](https://godoc.org/gopkg.in/reform.v1?status.svg)](https://godoc.org/gopkg.in/reform.v1)
 [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/go-reform/reform?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 [![Travis CI Build Status](https://travis-ci.org/go-reform/reform.svg?branch=v1-stable)](https://travis-ci.org/go-reform/reform)

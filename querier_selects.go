@@ -120,8 +120,8 @@ func (q *Querier) SelectAllFrom(view View, tail string, args ...interface{}) (st
 }
 
 // findTail returns a tail of SELECT query for given view, column and arg.
-func (q *Querier) findTail(view string, column string, arg interface{}, limit1 bool) (tail string, needArg bool) {
-	qi := q.QuoteIdentifier(view) + "." + q.QuoteIdentifier(column)
+func (q *Querier) findTail(view View, column string, arg interface{}, limit1 bool) (tail string, needArg bool) {
+	qi := q.QualifiedView(view) + "." + q.QuoteIdentifier(column)
 	if arg == nil {
 		tail = fmt.Sprintf("WHERE %s IS NULL", qi)
 	} else {
@@ -142,7 +142,7 @@ func (q *Querier) findTail(view string, column string, arg interface{}, limit1 b
 // If there are no rows in result, it returns ErrNoRows. It also may return QueryRow(), Scan()
 // and AfterFinder errors.
 func (q *Querier) FindOneTo(str Struct, column string, arg interface{}) error {
-	tail, needArg := q.findTail(str.View().Name(), column, arg, true)
+	tail, needArg := q.findTail(str.View(), column, arg, true)
 	if needArg {
 		return q.SelectOneTo(str, tail, arg)
 	}
@@ -155,7 +155,7 @@ func (q *Querier) FindOneTo(str Struct, column string, arg interface{}) error {
 // If there are no rows in result, it returns nil, ErrNoRows. It also may return QueryRow(), Scan()
 // and AfterFinder errors.
 func (q *Querier) FindOneFrom(view View, column string, arg interface{}) (Struct, error) {
-	tail, needArg := q.findTail(view.Name(), column, arg, true)
+	tail, needArg := q.findTail(view, column, arg, true)
 	if needArg {
 		return q.SelectOneFrom(view, tail, arg)
 	}
@@ -169,7 +169,7 @@ func (q *Querier) FindOneFrom(view View, column string, arg interface{}) (Struct
 //
 // See SelectRows example for idiomatic usage.
 func (q *Querier) FindRows(view View, column string, arg interface{}) (*sql.Rows, error) {
-	tail, needArg := q.findTail(view.Name(), column, arg, false)
+	tail, needArg := q.findTail(view, column, arg, false)
 	if needArg {
 		return q.SelectRows(view, tail, arg)
 	}

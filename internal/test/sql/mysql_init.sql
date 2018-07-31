@@ -11,6 +11,8 @@ CREATE TABLE people (
   PRIMARY KEY (id)
 );
 
+CREATE VIEW people_copy AS SELECT * from people;
+
 CREATE TABLE projects (
   name varchar(255) NOT NULL,
   id varchar(255) NOT NULL,

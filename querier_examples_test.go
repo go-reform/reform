@@ -83,13 +83,14 @@ func ExampleQuerier_WithTag() {
 
 func ExampleQuerier_WithView() {
 	id := 1
-	person, err := DB.WithView("people_copy").FindByPrimaryKeyFrom(PersonTable, id)
+	view := fmt.Sprintf("people_%d", id%3)
+	person, err := DB.WithView(view).FindByPrimaryKeyFrom(PersonTable, id)
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Println(person)
+	fmt.Printf("%s: %s", view, person)
 	// Output:
-	// ID: 1 (int32), GroupID: 65534 (*int32), Name: `Denis Mills` (string), Email: <nil> (*string), CreatedAt: 2009-11-10 23:00:00 +0000 UTC (time.Time), UpdatedAt: <nil> (*time.Time)
+	// people_1: ID: 1 (int32), GroupID: 65534 (*int32), Name: `Denis Mills` (string), Email: <nil> (*string), CreatedAt: 2009-11-10 23:00:00 +0000 UTC (time.Time), UpdatedAt: <nil> (*time.Time)
 }
 
 func ExampleQuerier_SelectRows() {

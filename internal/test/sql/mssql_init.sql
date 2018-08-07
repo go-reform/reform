@@ -7,7 +7,10 @@ CREATE TABLE [people] (
   [updated_at] datetime2
 );
 
-EXEC('CREATE VIEW [people_copy] AS SELECT * from [people]')
+-- EXEC is workaround for "'CREATE VIEW' must be the first statement in a query batch."
+EXEC('CREATE VIEW [people_0] AS SELECT * FROM [people] WHERE (id % 3) = 0');
+EXEC('CREATE VIEW [people_1] AS SELECT * FROM [people] WHERE (id % 3) = 1');
+EXEC('CREATE VIEW [people_2] AS SELECT * FROM [people] WHERE (id % 3) = 2');
 
 CREATE TABLE [projects] (
   [name] varchar(255) NOT NULL,

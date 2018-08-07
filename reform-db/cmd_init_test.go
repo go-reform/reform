@@ -38,11 +38,7 @@ func (s *ReformDBSuite) TestInit() {
 
 	fis, err := ioutil.ReadDir(dir)
 	s.Require().NoError(err)
-	if s.db.Dialect == sqlite3.Dialect {
-		s.Require().Len(fis, 4) // generate 4 struct files for sqlite3
-	} else {
-		s.Require().Len(fis, 5) // generate 5 struct files for other DBs
-	}
+	s.Require().Len(fis, 7) // 4 tables + views people_0, people_1, people_2
 
 	ff := filepath.Join(dir, "people.go")
 	actual, err := parse.File(ff)

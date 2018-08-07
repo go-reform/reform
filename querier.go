@@ -8,9 +8,9 @@ import (
 
 // Querier performs queries and commands.
 type Querier struct {
-	dbtx     DBTX
-	tag      string
-	viewName string
+	dbtx              DBTX
+	tag               string
+	qualifiedViewName string
 	Dialect
 	Logger Logger
 }
@@ -51,24 +51,25 @@ func (q *Querier) WithTag(format string, args ...interface{}) *Querier {
 	} else {
 		newQ.tag = fmt.Sprintf(format, args...)
 	}
+	newQ.qualifiedViewName = q.qualifiedViewName
 	return newQ
 }
 
-// WithView returns a copy of Querier with appointed view name.
-func (q *Querier) WithView(viewName string) *Querier {
+// WithQualifiedViewName returns a copy of Querier with set qualified view name.
+// Returned Querier is tied to the same DB or TX.
+// TODO Support INSERT/UPDATE/DELETE. More test.
+func (q *Querier) WithQualifiedViewName(qualifiedViewName string) *Querier {
 	newQ := newQuerier(q.dbtx, q.Dialect, q.Logger)
-	newQ.viewName = viewName
+	newQ.tag = q.tag
+	newQ.qualifiedViewName = qualifiedViewName
 	return newQ
 }
 
-// QualifiedView returns quoted qualified view name.
+// QualifiedView returns quoted qualified view name of given view.
 func (q *Querier) QualifiedView(view View) string {
 	v := q.QuoteIdentifier(view.Name())
-	if q.viewName != "" {
-		v = q.QuoteIdentifier(q.viewName)
-	}
-	if view.Schema() != "" {
-		v = q.QuoteIdentifier(view.Schema()) + "." + v
+	if s := view.Schema(); s != "" {
+		v = q.QuoteIdentifier(s) + "." + v
 	}
 	return v
 }

@@ -42,8 +42,12 @@ func (q *Querier) selectQuery(view View, tail string, limit1 bool) string {
 		query += " TOP 1"
 	}
 
-	return fmt.Sprintf("%s %s FROM %s %s",
-		query, strings.Join(q.QualifiedColumns(view), ", "), q.QualifiedView(view), tail)
+	from := q.QualifiedView(view)
+	if q.qualifiedViewName != "" {
+		from = q.qualifiedViewName + " AS " + from
+	}
+
+	return fmt.Sprintf("%s %s FROM %s %s", query, strings.Join(q.QualifiedColumns(view), ", "), from, tail)
 }
 
 // SelectOneTo queries str's View with tail and args and scans first result to str.

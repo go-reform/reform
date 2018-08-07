@@ -81,16 +81,18 @@ func ExampleQuerier_WithTag() {
 	// Name: `Vicious Baron` (string), ID: `baron` (string), Start: 2014-06-01 00:00:00 +0000 UTC (time.Time), End: 2016-02-21 00:00:00 +0000 UTC (*time.Time)
 }
 
-func ExampleQuerier_WithView() {
-	id := 1
-	view := fmt.Sprintf("people_%d", id%3)
-	person, err := DB.WithView(view).FindByPrimaryKeyFrom(PersonTable, id)
+func ExampleQuerier_WithQualifiedViewName() {
+	_, err := DB.WithQualifiedViewName("people_0").FindByPrimaryKeyFrom(PersonTable, 1)
+	if err != reform.ErrNoRows {
+		log.Fatal(err)
+	}
+	person, err := DB.WithQualifiedViewName("people_1").FindByPrimaryKeyFrom(PersonTable, 1)
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Printf("%s: %s", view, person)
+	fmt.Println(person)
 	// Output:
-	// people_1: ID: 1 (int32), GroupID: 65534 (*int32), Name: `Denis Mills` (string), Email: <nil> (*string), CreatedAt: 2009-11-10 23:00:00 +0000 UTC (time.Time), UpdatedAt: <nil> (*time.Time)
+	// ID: 1 (int32), GroupID: 65534 (*int32), Name: `Denis Mills` (string), Email: <nil> (*string), CreatedAt: 2009-11-10 23:00:00 +0000 UTC (time.Time), UpdatedAt: <nil> (*time.Time)
 }
 
 func ExampleQuerier_SelectRows() {

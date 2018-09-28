@@ -107,7 +107,7 @@ func getPrimaryKeyColumn(db *reform.DB, catalog, schema, tableName string) *keyC
 		logger.Fatalf("%s", err)
 	}
 	if key.OrdinalPosition > 1 {
-		logger.Fatalf("Expected single column primary key, got %d", key.OrdinalPosition)
+		logger.Printf("Expected single column primary key, got %d", key.OrdinalPosition)
 	}
 	return &key
 }

@@ -294,8 +294,13 @@ func (s *ReformSuite) TestSelectsSchema() {
 }
 
 func (s *ReformSuite) TestCount() {
-	var person Person
-	cnt, err := s.q.Count(&person)
+	cnt1, err := s.q.Count(PersonTable, "")
 	s.NoError(err)
-	s.Equal(0, cnt)
+	s.Equal(5, cnt1)
+	cnt2, err := s.q.Count(PersonTable, "WHERE id = ?", 1)
+	s.NoError(err)
+	s.Equal(1, cnt2)
+	cnt3, err := s.q.Count(PersonTable, "BROKEN QUERY")
+	s.Error(err)
+	s.Equal(0, cnt3)
 }

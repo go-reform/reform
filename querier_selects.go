@@ -215,3 +215,13 @@ func (q *Querier) FindByPrimaryKeyFrom(table Table, pk interface{}) (Record, err
 func (q *Querier) Reload(record Record) error {
 	return q.FindByPrimaryKeyTo(record, record.PKValue())
 }
+
+// Count is a handy method for counting number of rows for a query
+func (q *Querier) Count(table Table, tail string, args ...interface{}) (int, error) {
+	query := q.startQuery("SELECT COUNT(*) AS `cnt` FROM %s %s")
+	cnt := 0
+	if err := q.QueryRow(fmt.Sprintf(query, q.QualifiedView(table), tail), args...).Scan(&cnt); err != nil {
+		return 0, err
+	}
+	return cnt, nil
+}

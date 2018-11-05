@@ -292,3 +292,10 @@ func (s *ReformSuite) TestSelectsSchema() {
 		&LegacyPerson{ID: 1003, Name: pointer.ToString("Dena Cummings")},
 	}, structs)
 }
+
+func (s *ReformSuite) TestCount() {
+	var person Person
+	cnt, err := s.q.Count(&person)
+	s.NoError(err)
+	s.Equal(0, cnt)
+}

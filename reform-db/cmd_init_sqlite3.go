@@ -61,7 +61,7 @@ func goTypeSQLite3(sqlType string, nullable bool) (typ string, pack string, comm
 
 // initModelsSQLite3 returns structs from SQLite3 database.
 func initModelsSQLite3(db *reform.DB) (structs []StructData) {
-	tables, err := db.SelectAllFrom(sqliteMasterView, "WHERE type = ?", "table")
+	tables, err := db.SelectAllFrom(sqliteMasterView, "WHERE type IN (?, ?)", "table", "view")
 	if err != nil {
 		logger.Fatalf("%s", err)
 	}

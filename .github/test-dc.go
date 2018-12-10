@@ -23,13 +23,13 @@ var configs = []config{
 	{
 		[]string{"postgres", "pgx"},
 		[]string{
-			"9.3",
 			"9.4",
 			"9.5",
 			"9.6",
 			"10",
+			"11",
 		},
-		"10",
+		"11",
 	},
 
 	// https://www.mysql.com/support/supportedplatforms/database.html

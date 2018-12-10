@@ -31,7 +31,7 @@ Notes:
 
 ## Quickstart
 
-1. Make sure you are using Go 1.9+. Install or update `reform` package, `reform` and `reform-db` commands
+1. Make sure you are using Go 1.10+. Install or update `reform` package, `reform` and `reform-db` commands
    (see about versioning below):
 
     ```

@@ -38,21 +38,21 @@ env:
 
   # Generated with 'go run .github/test-dc.go gen'.
   # 21 combinations:
-  #   postgres, pgx: 9.3, 9.4, 9.5, 9.6, 10
+  #   postgres, pgx: 9.4, 9.5, 9.6, 10, 11
   #   mysql, mysql-traditional: 5.5, 5.6, 5.7, 8.0
   #   sqlite3: dummy
   #   mssql, sqlserver: latest
   matrix:
-    - REFORM_TARGET=postgres REFORM_IMAGE_VERSION=9.3
     - REFORM_TARGET=postgres REFORM_IMAGE_VERSION=9.4
     - REFORM_TARGET=postgres REFORM_IMAGE_VERSION=9.5
     - REFORM_TARGET=postgres REFORM_IMAGE_VERSION=9.6
     - REFORM_TARGET=postgres REFORM_IMAGE_VERSION=10
-    - REFORM_TARGET=pgx REFORM_IMAGE_VERSION=9.3
+    - REFORM_TARGET=postgres REFORM_IMAGE_VERSION=11
     - REFORM_TARGET=pgx REFORM_IMAGE_VERSION=9.4
     - REFORM_TARGET=pgx REFORM_IMAGE_VERSION=9.5
     - REFORM_TARGET=pgx REFORM_IMAGE_VERSION=9.6
     - REFORM_TARGET=pgx REFORM_IMAGE_VERSION=10
+    - REFORM_TARGET=pgx REFORM_IMAGE_VERSION=11
 
     - REFORM_TARGET=mysql REFORM_IMAGE_VERSION=5.5
     - REFORM_TARGET=mysql REFORM_IMAGE_VERSION=5.6

@@ -101,6 +101,8 @@ func (s *ReformSuite) TearDownTest() {
 	}
 
 	checkForeignKeys(s.T(), DB.Querier)
+
+	DB.Logger = nil
 }
 
 func (s *ReformSuite) RestartTransaction() {

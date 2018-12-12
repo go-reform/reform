@@ -274,6 +274,20 @@ func (s *ReformSuite) TestReload() {
 	s.Equal(reform.ErrNoRows, err)
 }
 
+func (s *ReformSuite) TestCount() {
+	count, err := s.q.Count(PersonTable, "")
+	s.NoError(err)
+	s.Equal(5, count)
+
+	count, err = s.q.Count(PersonTable, "WHERE id = "+s.q.Placeholder(1), 1)
+	s.NoError(err)
+	s.Equal(1, count)
+
+	count, err = s.q.Count(PersonTable, "WHERE invalid_tail")
+	s.Error(err)
+	s.Equal(0, count)
+}
+
 func (s *ReformSuite) TestSelectsSchema() {
 	if s.q.Dialect != postgresql.Dialect {
 		s.T().Skip("only PostgreSQL supports schemas")
@@ -291,16 +305,4 @@ func (s *ReformSuite) TestSelectsSchema() {
 		&LegacyPerson{ID: 1002, Name: pointer.ToString("Anastacio Ledner")},
 		&LegacyPerson{ID: 1003, Name: pointer.ToString("Dena Cummings")},
 	}, structs)
-}
-
-func (s *ReformSuite) TestCount() {
-	cnt1, err := s.q.Count(PersonTable, "")
-	s.NoError(err)
-	s.Equal(5, cnt1)
-	cnt2, err := s.q.Count(PersonTable, "WHERE id = ?", 1)
-	s.NoError(err)
-	s.Equal(1, cnt2)
-	cnt3, err := s.q.Count(PersonTable, "BROKEN QUERY")
-	s.Error(err)
-	s.Equal(0, cnt3)
 }

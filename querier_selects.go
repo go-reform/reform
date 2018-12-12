@@ -216,12 +216,12 @@ func (q *Querier) Reload(record Record) error {
 	return q.FindByPrimaryKeyTo(record, record.PKValue())
 }
 
-// Count is a handy method for counting number of rows for a query
+// Count queries view with tail and args and returns a number (COUNT(*)) of matching rows.
 func (q *Querier) Count(view View, tail string, args ...interface{}) (int, error) {
-	query := q.startQuery("SELECT COUNT(*) AS cnt FROM %s %s")
-	cnt := 0
-	if err := q.QueryRow(fmt.Sprintf(query, q.QualifiedView(view), tail), args...).Scan(&cnt); err != nil {
+	query := fmt.Sprintf("%s COUNT(*) FROM %s %s", q.startQuery("SELECT"), q.QualifiedView(view), tail)
+	var count int
+	if err := q.QueryRow(query, args...).Scan(&count); err != nil {
 		return 0, err
 	}
-	return cnt, nil
+	return count, nil
 }

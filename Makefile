@@ -18,10 +18,10 @@ deps:
 	go get -u syreclabs.com/go/faker
 	go get -u github.com/AlekSi/gocoverutil
 
-	curl -sfL https://install.goreleaser.com/github.com/golangci/golangci-lint.sh | sh -s -- -b $(GOPATH)/bin v1.12.3
+	curl -sfL https://install.goreleaser.com/github.com/golangci/golangci-lint.sh | sh -s -- -b . v1.12.3
 # run all linters
 check:
-	golangci-lint run ./...
+	./golangci-lint run ./...
 
 # run unit tests, generate models, install tools
 test:

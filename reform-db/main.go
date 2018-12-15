@@ -91,15 +91,15 @@ func main() {
 
 	switch flag.Arg(0) {
 	case "exec":
-		execFlags.Parse(flag.Args()[1:])
+		_ = execFlags.Parse(flag.Args()[1:])
 		cmdExec(getDB(), execFlags.Args())
 
 	case "query":
-		queryFlags.Parse(flag.Args()[1:])
+		_ = queryFlags.Parse(flag.Args()[1:])
 		cmdQuery(getDB(), queryFlags.Args())
 
 	case "init":
-		initFlags.Parse(flag.Args()[1:])
+		_ = initFlags.Parse(flag.Args()[1:])
 
 		if initFlags.NArg() > 1 {
 			logger.Fatalf("Expected zero or one argument for %q, got %d", "init", initFlags.NArg())

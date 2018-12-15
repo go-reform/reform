@@ -29,7 +29,7 @@ func (sqlserver) QuoteIdentifier(identifier string) string {
 	return "[" + identifier + "]"
 }
 
-func (sqlserver) LastInsertIdMethod() reform.LastInsertIdMethod {
+func (sqlserver) LastInsertIDMethod() reform.LastInsertIDMethod {
 	return reform.OutputInserted
 }
 

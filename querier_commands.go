@@ -58,7 +58,7 @@ func (q *Querier) insert(str Struct, columns []string, values []interface{}) err
 
 	view := str.View()
 	record, _ := str.(Record)
-	lastInsertIdMethod := q.LastInsertIdMethod()
+	lastInsertIDMethod := q.LastInsertIDMethod()
 	defaultValuesMethod := q.DefaultValuesMethod()
 
 	var pk uint
@@ -71,7 +71,7 @@ func (q *Querier) insert(str Struct, columns []string, values []interface{}) err
 	if len(columns) != 0 || defaultValuesMethod == EmptyLists {
 		query += " (" + strings.Join(columns, ", ") + ")"
 	}
-	if record != nil && lastInsertIdMethod == OutputInserted {
+	if record != nil && lastInsertIDMethod == OutputInserted {
 		query += fmt.Sprintf(" OUTPUT INSERTED.%s", q.QuoteIdentifier(view.Columns()[pk]))
 	}
 	if len(placeholders) != 0 || defaultValuesMethod == EmptyLists {
@@ -79,11 +79,11 @@ func (q *Querier) insert(str Struct, columns []string, values []interface{}) err
 	} else {
 		query += " DEFAULT VALUES"
 	}
-	if record != nil && lastInsertIdMethod == Returning {
+	if record != nil && lastInsertIDMethod == Returning {
 		query += fmt.Sprintf(" RETURNING %s", q.QuoteIdentifier(view.Columns()[pk]))
 	}
 
-	switch lastInsertIdMethod {
+	switch lastInsertIDMethod {
 	case LastInsertId:
 		res, err := q.Exec(query, values...)
 		if err != nil {
@@ -108,7 +108,7 @@ func (q *Querier) insert(str Struct, columns []string, values []interface{}) err
 		return err
 
 	default:
-		panic("reform: Unhandled LastInsertIdMethod. Please report this bug.")
+		panic("reform: Unhandled LastInsertIDMethod. Please report this bug.")
 	}
 }
 

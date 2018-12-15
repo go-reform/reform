@@ -11,6 +11,7 @@ import (
 //go:generate reform
 
 type (
+	// Person struct
 	//reform:people
 	Person struct {
 		ID        int32      `reform:"id,pk"`
@@ -106,12 +107,14 @@ type PersonProject struct {
 	ProjectID string `reform:"project_id"`
 }
 
+// LegacyPerson struct
 //reform:legacy.people
 type LegacyPerson struct {
 	ID   int32   `reform:"id,pk"`
 	Name *string `reform:"name"`
 }
 
+// IDOnly struct
 // reform:id_only
 type IDOnly struct {
 	ID int32 `reform:"id,pk"`

@@ -151,11 +151,11 @@ func (s *ReformSuite) TestInTransaction() {
 	s.Equal(DB.Reload(person), reform.ErrNoRows)
 
 	// duplicate PK in closure
-	err = DB.InTransaction(func(tx *reform.TX) error {
+	err = DB.InTransaction(func(tx *reform.TX) (err error) {
 		s.NoError(insertPersonWithID(s.T(), tx.Querier, person))
-		err := insertPersonWithID(s.T(), tx.Querier, person)
+		err = insertPersonWithID(s.T(), tx.Querier, person)
 		s.Error(err)
-		return err
+		return
 	})
 	s.Error(err)
 	s.Equal(DB.Reload(person), reform.ErrNoRows)

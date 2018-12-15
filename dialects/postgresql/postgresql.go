@@ -29,7 +29,7 @@ func (postgresql) QuoteIdentifier(identifier string) string {
 	return `"` + identifier + `"`
 }
 
-func (postgresql) LastInsertIdMethod() reform.LastInsertIdMethod {
+func (postgresql) LastInsertIDMethod() reform.LastInsertIDMethod {
 	return reform.Returning
 }
 

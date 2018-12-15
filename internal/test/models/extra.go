@@ -4,12 +4,20 @@ package models
 
 // types for testing
 type (
+	// Integer int32
 	Integer int32
-	String  string
-	Bytes   []byte
-	Uint8s  []uint8
+
+	// String string
+	String string
+
+	// Bytes []byte
+	Bytes []byte
+
+	// Uint8s []uint8
+	Uint8s []uint8
 )
 
+// Extra struct
 //reform:extra
 type Extra struct {
 	ID Integer `reform:"id,pk"`

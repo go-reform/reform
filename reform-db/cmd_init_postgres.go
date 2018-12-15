@@ -7,36 +7,36 @@ import (
 // goTypePostgres converts given SQL type to Go type. https://www.postgresql.org/docs/current/static/datatype.html
 func goTypePostgres(sqlType string, nullable bool) (typ string, pack string, comment string) {
 	switch sqlType {
-	case "smallint", "smallserial":
-		return maybePointer("int16", nullable), "", ""
-	case "integer", "serial":
-		return maybePointer("int32", nullable), "", ""
-	case "bigint", "bigserial":
-		return maybePointer("int64", nullable), "", ""
+	case sqlTypeSmallint, sqlTypeSmallserial:
+		return maybePointer(typeInt16, nullable), "", ""
+	case sqlTypeInteger, sqlTypeSerial:
+		return maybePointer(typeInt32, nullable), "", ""
+	case sqlTypeBigint, sqlTypeBigserial:
+		return maybePointer(typeInt64, nullable), "", ""
 
-	case "decimal", "numeric":
-		return maybePointer("string", nullable), "", ""
+	case sqlTypeDecimal, sqlTypeNumeric:
+		return maybePointer(typeString, nullable), "", ""
 
-	case "real":
-		return maybePointer("float32", nullable), "", ""
-	case "double precision":
-		return maybePointer("float64", nullable), "", ""
+	case sqlTypeReal:
+		return maybePointer(typeFloat32, nullable), "", ""
+	case sqlTypeDoublePrecision:
+		return maybePointer(typeFloat64, nullable), "", ""
 
-	case "character varying", "varchar", "character", "char", "text":
-		return maybePointer("string", nullable), "", ""
+	case sqlTypeCharacterVarying, sqlTypeVarchar, sqlTypeCharacter, sqlTypeChar, sqlTypeText:
+		return maybePointer(typeString, nullable), "", ""
 
-	case "bytea":
-		return "[]byte", "", "" // never a pointer
+	case sqlTypeBytea:
+		return typeSliceByte, "", "" // never a pointer
 
-	case "date", "time", "time with time zone", "timestamp", "timestamp with time zone":
-		return maybePointer("time.Time", nullable), "time", ""
+	case sqlTypeDate, sqlTypeTime, sqlTypeTimeWithTimeZone, sqlTypeTimestamp, sqlTypeTimestampWithTimeZone:
+		return maybePointer(typeTime, nullable), packageTime, ""
 		// interval can't be mapped to time.Duration: https://github.com/lib/pq/issues/78
 
-	case "boolean":
-		return maybePointer("bool", nullable), "", ""
+	case sqlTypeBoolean:
+		return maybePointer(typeBool, nullable), "", ""
 
 	default:
 		// logger.Fatalf("unhandled PostgreSQL type %q", sqlType)
-		return "[]byte", "", fmt.Sprintf("// FIXME unhandled database type %q", sqlType) // never a pointer
+		return typeSliceByte, "", fmt.Sprintf("// FIXME unhandled database type %q", sqlType) // never a pointer
 	}
 }

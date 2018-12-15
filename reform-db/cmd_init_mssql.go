@@ -7,39 +7,39 @@ import (
 // goTypeMSSQL converts given SQL type to Go type. https://msdn.microsoft.com/en-us/library/ms187752.aspx
 func goTypeMSSQL(sqlType string, nullable bool) (typ string, pack string, comment string) {
 	switch sqlType {
-	case "tinyint":
-		return maybePointer("uint8", nullable), "", "" // unsigned
-	case "smallint":
-		return maybePointer("int16", nullable), "", ""
-	case "int":
-		return maybePointer("int32", nullable), "", ""
-	case "bigint":
-		return maybePointer("int64", nullable), "", ""
+	case sqlTypeTinyint:
+		return maybePointer(typeUInt8, nullable), "", "" // unsigned
+	case sqlTypeSmallint:
+		return maybePointer(typeInt16, nullable), "", ""
+	case sqlTypeInt:
+		return maybePointer(typeInt32, nullable), "", ""
+	case sqlTypeBigint:
+		return maybePointer(typeInt64, nullable), "", ""
 
-	case "decimal", "numeric":
-		return maybePointer("string", nullable), "", ""
+	case sqlTypeDecimal, sqlTypeNumeric:
+		return maybePointer(typeString, nullable), "", ""
 
-	case "real":
-		return maybePointer("float32", nullable), "", ""
-	case "float":
-		return maybePointer("float64", nullable), "", ""
+	case sqlTypeReal:
+		return maybePointer(typeFloat32, nullable), "", ""
+	case sqlTypeFloat:
+		return maybePointer(typeFloat64, nullable), "", ""
 
-	case "date", "time", "datetime", "datetime2", "smalldatetime":
-		return maybePointer("time.Time", nullable), "time", ""
+	case sqlTypeDate, sqlTypeTime, sqlTypeDatetime, sqlTypeDatetime2, sqlTypeSmalldatetime:
+		return maybePointer(typeTime, nullable), packageTime, ""
 
-	case "char", "varchar", "text":
+	case sqlTypeChar, sqlTypeVarchar, sqlTypeText:
 		fallthrough
-	case "nchar", "nvarchar", "ntext":
-		return maybePointer("string", nullable), "", ""
+	case sqlTypeNChar, sqlTypeNVarChar, sqlTypeNText:
+		return maybePointer(typeString, nullable), "", ""
 
-	case "binary", "varbinary":
-		return "[]byte", "", "" // never a pointer
+	case sqlTypeBinary, sqlTypeVarBinary:
+		return typeSliceByte, "", "" // never a pointer
 
-	case "bit":
-		return maybePointer("bool", nullable), "", ""
+	case sqlTypeBit:
+		return maybePointer(typeBool, nullable), "", ""
 
 	default:
 		// logger.Fatalf("unhandled MSSQL type %q", sqlType)
-		return "[]byte", "", fmt.Sprintf("// FIXME unhandled database type %q", sqlType) // never a pointer
+		return typeSliceByte, "", fmt.Sprintf("// FIXME unhandled database type %q", sqlType) // never a pointer
 	}
 }

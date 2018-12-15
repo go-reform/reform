@@ -120,12 +120,12 @@ type DBTX interface {
 	QueryRow(query string, args ...interface{}) *sql.Row
 }
 
-// LastInsertIdMethod is a method of receiving primary key of last inserted row.
-type LastInsertIdMethod int
+// LastInsertIDMethod is a method of receiving primary key of last inserted row.
+type LastInsertIDMethod int
 
 const (
 	// LastInsertId is method using sql.Result.LastInsertId().
-	LastInsertId LastInsertIdMethod = iota
+	LastInsertId LastInsertIDMethod = iota
 
 	// Returning is method using "RETURNING id" SQL syntax.
 	Returning
@@ -173,8 +173,8 @@ type Dialect interface {
 	// typically "identifier" or `identifier`.
 	QuoteIdentifier(identifier string) string
 
-	// LastInsertIdMethod returns a method of receiving primary key of last inserted row.
-	LastInsertIdMethod() LastInsertIdMethod
+	// LastInsertIDMethod returns a method of receiving primary key of last inserted row.
+	LastInsertIDMethod() LastInsertIDMethod
 
 	// SelectLimitMethod returns a method of limiting the number of rows in a query result.
 	SelectLimitMethod() SelectLimitMethod

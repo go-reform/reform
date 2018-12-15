@@ -18,6 +18,73 @@ import (
 	"gopkg.in/reform.v1/parse"
 )
 
+const (
+	sqlTypeTinyint               = "tinyint"
+	sqlTypeSmallint              = "smallint"
+	sqlTypeSmallserial           = "smallserial"
+	sqlTypeInt                   = "int"
+	sqlTypeInteger               = "integer"
+	sqlTypeSerial                = "serial"
+	sqlTypeBigint                = "bigint"
+	sqlTypeBigserial             = "bigserial"
+	sqlTypeMediumint             = "mediumint"
+	sqlTypeDecimal               = "decimal"
+	sqlTypeDouble                = "double"
+	sqlTypeNumeric               = "numeric"
+	sqlTypeNum                   = "num"
+	sqlTypeDec                   = "dec"
+	sqlTypeReal                  = "real"
+	sqlTypeFloat                 = "float"
+	sqlTypeFloa                  = "floa"
+	sqlTypeDoublePrecision       = "double precision"
+	sqlTypeDoub                  = "doub"
+	sqlTypeDate                  = "date"
+	sqlTypeTime                  = "time"
+	sqlTypeDatetime              = "datetime"
+	sqlTypeDatetime2             = "datetime2"
+	sqlTypeSmalldatetime         = "smalldatetime"
+	sqlTypeYear                  = "year"
+	sqlTypeTimestamp             = "timestamp"
+	sqlTypeTimeWithTimeZone      = "time with time zone"
+	sqlTypeTimestampWithTimeZone = "timestamp with time zone"
+	sqlTypeChar                  = "char"
+	sqlTypeVarchar               = "varchar"
+	sqlTypeText                  = "text"
+	sqlTypeTinytext              = "tinytext"
+	sqlTypeMediumtext            = "mediumtext"
+	sqlTypeLongtext              = "longtext"
+	sqlTypeNChar                 = "nchar"
+	sqlTypeNVarChar              = "nvarchar"
+	sqlTypeNText                 = "ntext"
+	sqlTypeCharacterVarying      = "character varying"
+	sqlTypeCharacter             = "character"
+	sqlTypeClob                  = "clob"
+	sqlTypeBinary                = "binary"
+	sqlTypeVarBinary             = "varbinary"
+	sqlTypeBit                   = "bit"
+	sqlTypeBytea                 = "bytea"
+	sqlTypeTinyblob              = "tinyblob"
+	sqlTypeMediumblob            = "mediumblob"
+	sqlTypeBlob                  = "blob"
+	sqlTypeLongblob              = "longblob"
+	sqlTypeBool                  = "bool"
+	sqlTypeBoolean               = "boolean"
+
+	typeSliceByte = "[]byte"
+	typeString    = "string"
+	typeUInt8     = "uint8"
+	typeInt8      = "int8"
+	typeInt16     = "int16"
+	typeInt32     = "int32"
+	typeInt64     = "int64"
+	typeFloat32   = "float32"
+	typeFloat64   = "float64"
+	typeTime      = "time.Time"
+	typeBool      = "bool"
+
+	packageTime = "time"
+)
+
 var (
 	initFlags = flag.NewFlagSet("init", flag.ExitOnError)
 	gofmtF    = initFlags.Bool("gofmt", true, "Format with gofmt")
@@ -117,7 +184,7 @@ func getPrimaryKeyColumn(db *reform.DB, catalog, schema, tableName string) *keyC
 }
 
 // initModelsInformationSchema returns structs from database with information_schema.
-func initModelsInformationSchema(db *reform.DB, tablesTail string, typeFunc typeFunc) (structs []StructData) {
+func initModelsInformationSchema(db *reform.DB, tablesTail string, typeFunc typeFunc) (structs []structData) {
 	tables, err := db.SelectAllFrom(tableView, tablesTail)
 	if err != nil {
 		logger.Fatalf("%s", err)
@@ -161,7 +228,7 @@ func initModelsInformationSchema(db *reform.DB, tablesTail string, typeFunc type
 			}
 		}
 
-		structs = append(structs, StructData{
+		structs = append(structs, structData{
 			Imports:       imports,
 			StructInfo:    str,
 			FieldComments: comments,
@@ -173,7 +240,7 @@ func initModelsInformationSchema(db *reform.DB, tablesTail string, typeFunc type
 
 // cmdInit implements init command.
 func cmdInit(db *reform.DB, dir string) {
-	var structs []StructData
+	var structs []structData
 	switch db.Dialect {
 	case postgresql.Dialect:
 		// catalog is a currently selected database (reform-database, postgres, template0, etc.)

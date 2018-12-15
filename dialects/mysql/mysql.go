@@ -27,7 +27,7 @@ func (mysql) QuoteIdentifier(identifier string) string {
 	return "`" + identifier + "`"
 }
 
-func (mysql) LastInsertIdMethod() reform.LastInsertIdMethod {
+func (mysql) LastInsertIDMethod() reform.LastInsertIDMethod {
 	return reform.LastInsertId
 }
 

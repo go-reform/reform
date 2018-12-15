@@ -21,7 +21,7 @@ deps:
 	curl -sfL https://install.goreleaser.com/github.com/golangci/golangci-lint.sh | sh -s v1.12.3
 # run all linters
 check:
-	./bin/golangci-lint run ./...
+	golangci-lint run ./...
 
 # run unit tests, generate models, install tools
 test:

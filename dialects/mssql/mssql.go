@@ -25,7 +25,7 @@ func (mssql) QuoteIdentifier(identifier string) string {
 	return "[" + identifier + "]"
 }
 
-func (mssql) LastInsertIdMethod() reform.LastInsertIdMethod {
+func (mssql) LastInsertIDMethod() reform.LastInsertIDMethod {
 	return reform.OutputInserted
 }
 

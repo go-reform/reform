@@ -4,6 +4,7 @@ package bogus
 
 type (
 	// BogusType is an exported type used for testing.
+	//nolint
 	BogusType string
 
 	// BogusType is a non-exported type used for testing.

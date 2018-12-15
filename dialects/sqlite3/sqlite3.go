@@ -27,7 +27,7 @@ func (sqlite3) QuoteIdentifier(identifier string) string {
 	return `"` + identifier + `"`
 }
 
-func (sqlite3) LastInsertIdMethod() reform.LastInsertIdMethod {
+func (sqlite3) LastInsertIDMethod() reform.LastInsertIDMethod {
 	return reform.LastInsertId
 }
 

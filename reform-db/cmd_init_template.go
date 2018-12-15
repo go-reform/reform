@@ -6,7 +6,7 @@ import (
 	"gopkg.in/reform.v1/parse"
 )
 
-type StructData struct {
+type structData struct {
 	Imports map[string]struct{}
 	parse.StructInfo
 	FieldComments []string

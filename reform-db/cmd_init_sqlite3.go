@@ -26,41 +26,41 @@ func goTypeSQLite3(sqlType string, nullable bool) (typ string, pack string, comm
 
 	// SQLite rules 1-4
 	switch {
-	case strings.Contains(sqlType, "int"):
-		return maybePointer("int64", nullable), "", ""
+	case strings.Contains(sqlType, sqlTypeInt):
+		return maybePointer(typeInt64, nullable), "", ""
 
-	case strings.Contains(sqlType, "char") || strings.Contains(sqlType, "clob") || strings.Contains(sqlType, "text"):
-		return maybePointer("string", nullable), "", ""
+	case strings.Contains(sqlType, sqlTypeChar) || strings.Contains(sqlType, sqlTypeClob) || strings.Contains(sqlType, sqlTypeText):
+		return maybePointer(typeString, nullable), "", ""
 
-	case strings.Contains(sqlType, "blob") || sqlType == "":
-		return "[]byte", "", "" // never a pointer
+	case strings.Contains(sqlType, sqlTypeBlob) || sqlType == "":
+		return typeSliceByte, "", "" // never a pointer
 
-	case strings.Contains(sqlType, "real") || strings.Contains(sqlType, "floa") || strings.Contains(sqlType, "doub"):
-		return maybePointer("float64", nullable), "", ""
+	case strings.Contains(sqlType, sqlTypeReal) || strings.Contains(sqlType, sqlTypeFloa) || strings.Contains(sqlType, sqlTypeDoub):
+		return maybePointer(typeFloat64, nullable), "", ""
 	}
 
 	// common SQL data types
 	switch {
 	// numeric, decimal, etc.
-	case strings.Contains(sqlType, "num") || strings.Contains(sqlType, "dec"):
-		return maybePointer("string", nullable), "", ""
+	case strings.Contains(sqlType, sqlTypeNum) || strings.Contains(sqlType, sqlTypeDec):
+		return maybePointer(typeString, nullable), "", ""
 
 	// bool, boolean, etc.
-	case strings.Contains(sqlType, "bool"):
-		return maybePointer("bool", nullable), "", ""
+	case strings.Contains(sqlType, sqlTypeBool):
+		return maybePointer(typeBool, nullable), "", ""
 
 	// date, datetime, timestamp, etc.
-	case strings.Contains(sqlType, "date") || strings.Contains(sqlType, "time"):
-		return maybePointer("time.Time", nullable), "time", ""
+	case strings.Contains(sqlType, sqlTypeDate) || strings.Contains(sqlType, sqlTypeTime):
+		return maybePointer(typeTime, nullable), packageTime, ""
 
 	default:
 		// logger.Fatalf("unhandled SQLite3 type %q", sqlType)
-		return "[]byte", "", fmt.Sprintf("// FIXME unhandled database type %q", sqlType) // never a pointer
+		return typeSliceByte, "", fmt.Sprintf("// FIXME unhandled database type %q", sqlType) // never a pointer
 	}
 }
 
 // initModelsSQLite3 returns structs from SQLite3 database.
-func initModelsSQLite3(db *reform.DB) (structs []StructData) {
+func initModelsSQLite3(db *reform.DB) (structs []structData) {
 	tables, err := db.SelectAllFrom(sqliteMasterView, "WHERE type IN (?, ?)", "table", "view")
 	if err != nil {
 		logger.Fatalf("%s", err)
@@ -110,7 +110,7 @@ func initModelsSQLite3(db *reform.DB) (structs []StructData) {
 			logger.Fatalf("%s", err)
 		}
 
-		structs = append(structs, StructData{
+		structs = append(structs, structData{
 			Imports:       imports,
 			StructInfo:    str,
 			FieldComments: comments,

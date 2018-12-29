@@ -18,11 +18,11 @@ deps:
 	go get -u github.com/brianvoe/gofakeit
 	go get -u github.com/stretchr/testify/...
 
-	curl -sfL https://install.goreleaser.com/github.com/golangci/golangci-lint.sh | sh -s -- -b $(GOPATH)/bin v1.12.3
+	curl -sfL https://install.goreleaser.com/github.com/golangci/golangci-lint.sh | sh -s -- -b $(shell go env GOPATH)/bin
 
 # run all linters
 check:
-	$(GOPATH)/bin/golangci-lint run ./...
+	$(shell go env GOPATH)/bin/golangci-lint run ./...
 
 # run unit tests, generate models, install tools
 test:

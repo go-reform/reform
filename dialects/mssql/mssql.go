@@ -3,7 +3,9 @@
 // Deprecated: Use sqlserver dialect instead. https://github.com/denisenkom/go-mssqldb#deprecated
 package mssql // import "gopkg.in/reform.v1/dialects/mssql"
 
-import "gopkg.in/reform.v1"
+import (
+	"gopkg.in/reform.v1"
+)
 
 type mssql struct{}
 

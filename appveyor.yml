@@ -33,19 +33,13 @@ install:
   - pacman -Rsc --noconfirm gcc
 
   - go version
-  # - echo %PATH%
-  # - go env
-  # - where make
-  # - where gcc
 
 build_script:
   - make deps
 
 test_script:
   - make %REFORM_TARGET%
-  - make check
 
 on_success:
-  - ls -al
   - curl -s -o codecov https://codecov.io/bash
   - bash codecov -f coverage.txt -X fix -e REFORM_SQL_INSTANCE,REFORM_TARGET

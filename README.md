@@ -22,7 +22,7 @@ Supported SQL dialects:
 | PostgreSQL           | [github.com/lib/pq](https://github.com/lib/pq) (`postgres`), [github.com/jackc/pgx/stdlib](https://github.com/jackc/pgx) (`pgx`) | All [supported](https://www.postgresql.org/support/versioning/) versions.
 | MySQL                | [github.com/go-sql-driver/mysql](https://github.com/go-sql-driver/mysql) (`mysql`)                                               | All [supported](https://www.mysql.com/support/supportedplatforms/database.html) versions.
 | SQLite3              | [github.com/mattn/go-sqlite3](https://github.com/mattn/go-sqlite3) (`sqlite3`)                                                   |
-| Microsoft SQL Server | [github.com/denisenkom/go-mssqldb](https://github.com/denisenkom/go-mssqldb) (`mssql`, `sqlserver`)                              | Windows: SQL2008R2SP2, SQL2012SP1, SQL2014, SQL2016. Linux: [`microsoft/mssql-server-linux:latest` Docker image](https://hub.docker.com/r/microsoft/mssql-server-linux/).
+| Microsoft SQL Server | [github.com/denisenkom/go-mssqldb](https://github.com/denisenkom/go-mssqldb) (`sqlserver`, `mssql`)                              | Windows: SQL2008R2SP2, SQL2012SP1, SQL2014, SQL2016. Linux: [`microsoft/mssql-server-linux:latest` Docker image](https://hub.docker.com/r/microsoft/mssql-server-linux/).
 
 Notes:
 * [`clientFoundRows=true` flag](https://github.com/go-sql-driver/mysql#clientfoundrows) is required for `mysql` driver.
@@ -33,7 +33,6 @@ Notes:
 
 1. Make sure you are using Go 1.10+. Install or update `reform` package, `reform` and `reform-db` commands
    (see about versioning below):
-
     ```
     go get -u gopkg.in/reform.v1/...
     ```
@@ -45,7 +44,6 @@ Notes:
 
 3. Update generated models or write your own – `struct` representing a table or view row. For example,
    store this in file `person.go`:
-
     ```go
     //go:generate reform
 
@@ -66,6 +64,7 @@ Notes:
 
 4. Run `reform [package or directory]` or `go generate [package or file]`. This will create `person_reform.go`
    in the same package with type `PersonTable` and methods on `Person`.
+
 5. See [documentation](https://godoc.org/gopkg.in/reform.v1) how to use it. Simple example:
 
     ```go
@@ -135,7 +134,7 @@ using [gopkg.in](https://gopkg.in) and filling a [changelog](CHANGELOG.md).
 We use branch `v1-stable` (default on Github) for v1 development and tags `v1.Y.Z` for releases.
 All v1 releases are SemVer-compatible, breaking changes will not be applied.
 Canonical import path is `gopkg.in/reform.v1`.
-`go get -u gopkg.in/reform.v1/reform` will install latest released version.
+`go get -u gopkg.in/reform.v1/...` will install the latest released version.
 To install not yet released v1 version one can do checkout manually while preserving import path:
 ```
 cd $GOPATH/src/gopkg.in/reform.v1
@@ -143,9 +142,6 @@ git fetch
 git checkout origin/v1-stable
 go install -v gopkg.in/reform.v1/reform
 ```
-
-Branch `v2-unstable` is used for v2 development. It doesn't have any releases yet, and no compatibility is guaranteed.
-Canonical import path is `gopkg.in/reform.v2-unstable`.
 
 
 ## Additional packages

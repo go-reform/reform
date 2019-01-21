@@ -18,6 +18,7 @@ If you have Go, Docker and Docker Compose installed, you can run all tests and l
 
 You can also set `REFORM_TARGET` and `REFORM_IMAGE_VERSION` environment variables to test a specific combination.
 See [`.travis.yml`](../.travis.yml) for possible values.
+You can also set `REFORM_OFFLINE` to `1` to avoid running `docker-compose pull` if image is already present.
 
 ### Direct
 

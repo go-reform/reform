@@ -4,7 +4,7 @@ import (
 	"errors"
 
 	"github.com/AlekSi/pointer"
-	"syreclabs.com/go/faker"
+	"github.com/brianvoe/gofakeit"
 
 	"gopkg.in/reform.v1"
 	"gopkg.in/reform.v1/dialects/postgresql"
@@ -15,7 +15,7 @@ func (s *ReformSuite) TestBeginCommit() {
 	s.Require().NoError(s.tx.Rollback())
 	s.q = nil
 
-	person := &Person{ID: 42, Email: pointer.ToString(faker.Internet().Email())}
+	person := &Person{ID: 42, Email: pointer.ToString(gofakeit.Email())}
 
 	tx, err := DB.Begin()
 	s.Require().NoError(err)
@@ -31,7 +31,7 @@ func (s *ReformSuite) TestBeginRollback() {
 	s.Require().NoError(s.tx.Rollback())
 	s.q = nil
 
-	person := &Person{ID: 42, Email: pointer.ToString(faker.Internet().Email())}
+	person := &Person{ID: 42, Email: pointer.ToString(gofakeit.Email())}
 
 	tx, err := DB.Begin()
 	s.Require().NoError(err)
@@ -51,8 +51,8 @@ func (s *ReformSuite) TestErrorInTransaction() {
 	s.Require().NoError(s.tx.Rollback())
 	s.q = nil
 
-	person1 := &Person{ID: 42, Email: pointer.ToString(faker.Internet().Email())}
-	person2 := &Person{ID: 43, Email: pointer.ToString(faker.Internet().Email())}
+	person1 := &Person{ID: 42, Email: pointer.ToString(gofakeit.Email())}
+	person2 := &Person{ID: 43, Email: pointer.ToString(gofakeit.Email())}
 
 	// commit works
 	tx, err := DB.Begin()
@@ -91,8 +91,8 @@ func (s *ReformSuite) TestAbortedTransaction() {
 	s.Require().NoError(s.tx.Rollback())
 	s.q = nil
 
-	person1 := &Person{ID: 42, Email: pointer.ToString(faker.Internet().Email())}
-	person2 := &Person{ID: 43, Email: pointer.ToString(faker.Internet().Email())}
+	person1 := &Person{ID: 42, Email: pointer.ToString(gofakeit.Email())}
+	person2 := &Person{ID: 43, Email: pointer.ToString(gofakeit.Email())}
 
 	// commit fails
 	tx, err := DB.Begin()
@@ -122,7 +122,7 @@ func (s *ReformSuite) TestInTransaction() {
 	s.Require().NoError(s.tx.Rollback())
 	s.q = nil
 
-	person := &Person{ID: 42, Email: pointer.ToString(faker.Internet().Email())}
+	person := &Person{ID: 42, Email: pointer.ToString(gofakeit.Email())}
 
 	// error in closure
 	err := DB.InTransaction(func(tx *reform.TX) error {

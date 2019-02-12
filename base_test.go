@@ -9,6 +9,7 @@ import (
 
 	_ "github.com/denisenkom/go-mssqldb"
 	_ "github.com/go-sql-driver/mysql"
+	_ "github.com/jackc/pgx/stdlib"
 	_ "github.com/lib/pq"
 	_ "github.com/mattn/go-sqlite3"
 
@@ -170,7 +171,7 @@ func (s *ReformSuite) TestPlaceholders() {
 }
 
 func (s *ReformSuite) TestTimezones() {
-	t1 := time.Now()
+	t1 := time.Now().Round(0)
 	t2 := t1.UTC()
 	vlat, err := time.LoadLocation("Asia/Vladivostok")
 	s.NoError(err)

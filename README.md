@@ -1,5 +1,6 @@
 # reform
-[![Release](https://github-release-version.herokuapp.com/github/go-reform/reform/release.svg?style=flat)](https://github.com/go-reform/reform/releases/latest)
+
+[![Release](https://img.shields.io/github/release/go-reform/reform.svg)](https://github.com/go-reform/reform/releases/latest)
 [![GoDoc](https://godoc.org/gopkg.in/reform.v1?status.svg)](https://godoc.org/gopkg.in/reform.v1)
 [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/go-reform/reform?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 [![Travis CI Build Status](https://travis-ci.org/go-reform/reform.svg?branch=v1-stable)](https://travis-ci.org/go-reform/reform)
@@ -16,12 +17,12 @@ as opposed to `interface{}`, type system sidestepping, and runtime reflection. I
 
 Supported SQL dialects:
 
-| RDBMS                | Library and drivers                                                                                 | Tested with
-| -----                | -------------------                                                                                 | -----------
-| PostgreSQL           | [github.com/lib/pq](https://github.com/lib/pq) (`postgres`)                                         | All [supported](https://www.postgresql.org/support/versioning/) versions.
-| MySQL                | [github.com/go-sql-driver/mysql](https://github.com/go-sql-driver/mysql) (`mysql`)                  | All [supported](https://www.mysql.com/support/supportedplatforms/database.html) versions.
-| SQLite3              | [github.com/mattn/go-sqlite3](https://github.com/mattn/go-sqlite3) (`sqlite3`)                      |
-| Microsoft SQL Server | [github.com/denisenkom/go-mssqldb](https://github.com/denisenkom/go-mssqldb) (`mssql`, `sqlserver`) | Windows: SQL2008R2SP2, SQL2012SP1, SQL2014, SQL2016. Linux: [`microsoft/mssql-server-linux:latest` Docker image](https://hub.docker.com/r/microsoft/mssql-server-linux/).
+| RDBMS                | Library and drivers                                                                                                              | Tested with
+| -----                | -------------------                                                                                                              | -----------
+| PostgreSQL           | [github.com/lib/pq](https://github.com/lib/pq) (`postgres`), [github.com/jackc/pgx/stdlib](https://github.com/jackc/pgx) (`pgx`) | All [supported](https://www.postgresql.org/support/versioning/) versions.
+| MySQL                | [github.com/go-sql-driver/mysql](https://github.com/go-sql-driver/mysql) (`mysql`)                                               | All [supported](https://www.mysql.com/support/supportedplatforms/database.html) versions.
+| SQLite3              | [github.com/mattn/go-sqlite3](https://github.com/mattn/go-sqlite3) (`sqlite3`)                                                   |
+| Microsoft SQL Server | [github.com/denisenkom/go-mssqldb](https://github.com/denisenkom/go-mssqldb) (`sqlserver`, `mssql`)                              | Windows: SQL2008R2SP2, SQL2012SP1, SQL2014, SQL2016. Linux: [`microsoft/mssql-server-linux:latest` Docker image](https://hub.docker.com/r/microsoft/mssql-server-linux/).
 
 Notes:
 * [`clientFoundRows=true` flag](https://github.com/go-sql-driver/mysql#clientfoundrows) is required for `mysql` driver.
@@ -30,9 +31,8 @@ Notes:
 
 ## Quickstart
 
-1. Make sure you are using Go 1.8+. Install or update `reform` package, `reform` and `reform-db` commands
+1. Make sure you are using Go 1.10+. Install or update `reform` package, `reform` and `reform-db` commands
    (see about versioning below):
-
     ```
     go get -u gopkg.in/reform.v1/...
     ```
@@ -44,7 +44,6 @@ Notes:
 
 3. Update generated models or write your own – `struct` representing a table or view row. For example,
    store this in file `person.go`:
-
     ```go
     //go:generate reform
 
@@ -61,10 +60,11 @@ Notes:
     Magic comment `//reform:people` links this model to `people` table or view in SQL database.
     The first value in field's `reform` tag is a column name. `pk` marks primary key.
     Use value `-` or omit tag completely to skip a field.
-    Use pointers for nullable fields.
+    Use pointers (recommended) or `sql.NullXXX` types for nullable fields.
 
 4. Run `reform [package or directory]` or `go generate [package or file]`. This will create `person_reform.go`
    in the same package with type `PersonTable` and methods on `Person`.
+
 5. See [documentation](https://godoc.org/gopkg.in/reform.v1) how to use it. Simple example:
 
     ```go
@@ -134,7 +134,7 @@ using [gopkg.in](https://gopkg.in) and filling a [changelog](CHANGELOG.md).
 We use branch `v1-stable` (default on Github) for v1 development and tags `v1.Y.Z` for releases.
 All v1 releases are SemVer-compatible, breaking changes will not be applied.
 Canonical import path is `gopkg.in/reform.v1`.
-`go get -u gopkg.in/reform.v1/reform` will install latest released version.
+`go get -u gopkg.in/reform.v1/...` will install the latest released version.
 To install not yet released v1 version one can do checkout manually while preserving import path:
 ```
 cd $GOPATH/src/gopkg.in/reform.v1
@@ -142,9 +142,6 @@ git fetch
 git checkout origin/v1-stable
 go install -v gopkg.in/reform.v1/reform
 ```
-
-Branch `v2-unstable` is used for v2 development. It doesn't have any releases yet, and no compatibility is guaranteed.
-Canonical import path is `gopkg.in/reform.v2-unstable`.
 
 
 ## Additional packages
@@ -162,7 +159,7 @@ Canonical import path is `gopkg.in/reform.v2-unstable`.
 
 ## License
 
-Code is covered by standard MIT-style license. Copyright (c) 2016-2017 Alexey Palazhchenko.
+Code is covered by standard MIT-style license. Copyright (c) 2016-2018 Alexey Palazhchenko.
 See [LICENSE](LICENSE) for details. Note that generated code is covered by the terms of your choice.
 
 The reform gopher was drawn by Natalya Glebova. Please use it only as reform logo.

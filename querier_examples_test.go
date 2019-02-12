@@ -16,6 +16,8 @@ import (
 	. "gopkg.in/reform.v1/internal/test/models"
 )
 
+// This example should be synced with README.
+
 func Example() {
 	// Use reform.NewDB to create DB.
 
@@ -56,7 +58,7 @@ func Example() {
 
 func ExampleNewDB() {
 	// Get *sql.DB as usual. PostgreSQL example:
-	conn, err := sql.Open("postgres", "postgres://localhost:5432/database?sslmode=disable")
+	conn, err := sql.Open("postgres", "postgres://127.0.0.1:5432/database")
 	if err != nil {
 		log.Fatal(err)
 	}

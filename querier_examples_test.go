@@ -9,7 +9,7 @@ import (
 	"time"
 
 	"github.com/AlekSi/pointer"
-	"syreclabs.com/go/faker"
+	"github.com/brianvoe/gofakeit"
 
 	"gopkg.in/reform.v1"
 	"gopkg.in/reform.v1/dialects/postgresql"
@@ -125,20 +125,20 @@ var persons = []reform.Struct{
 		Email: pointer.ToString("alexey.palazhchenko@gmail.com"),
 	},
 	&Person{
-		Name:  faker.Name().Name(),
-		Email: pointer.ToString(faker.Internet().Email()),
+		Name:  gofakeit.Name(),
+		Email: pointer.ToString(gofakeit.Email()),
 	},
 	&Person{
-		Name:  faker.Name().Name(),
-		Email: pointer.ToString(faker.Internet().Email()),
+		Name:  gofakeit.Name(),
+		Email: pointer.ToString(gofakeit.Email()),
 	},
 	&Person{
-		Name:  faker.Name().Name(),
-		Email: pointer.ToString(faker.Internet().Email()),
+		Name:  gofakeit.Name(),
+		Email: pointer.ToString(gofakeit.Email()),
 	},
 	&Person{
-		Name:  faker.Name().Name(),
-		Email: pointer.ToString(faker.Internet().Email()),
+		Name:  gofakeit.Name(),
+		Email: pointer.ToString(gofakeit.Email()),
 	},
 }
 

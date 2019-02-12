@@ -15,7 +15,7 @@ deps:
 
 	go get -u github.com/AlekSi/pointer
 	go get -u github.com/stretchr/testify/...
-	go get -u syreclabs.com/go/faker
+	go get -u github.com/brianvoe/gofakeit
 	go get -u gopkg.in/alecthomas/gometalinter.v2
 	go get -u github.com/AlekSi/gocoverutil
 

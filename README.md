@@ -18,8 +18,8 @@ as opposed to `interface{}`, type system sidestepping, and runtime reflection. I
 
 Supported SQL dialects:
 
-| RDBMS                | Library and drivers                                                                                                              | Status
-| -----                | -------------------                                                                                                              | ------
+| RDBMS                | Library and drivers                                                                                 | Status
+| -----                | -------------------                                                                                 | ------
 | PostgreSQL           | [github.com/lib/pq](https://github.com/lib/pq) (`postgres`)                                         | Stable. Tested with all [supported](https://www.postgresql.org/support/versioning/) versions.
 |                      | [github.com/jackc/pgx/stdlib](https://github.com/jackc/pgx) (`pgx`)                                 | Stable. Tested with all [supported](https://www.postgresql.org/support/versioning/) versions.
 | MySQL                | [github.com/go-sql-driver/mysql](https://github.com/go-sql-driver/mysql) (`mysql`)                  | Stable. Tested with all [supported](https://www.mysql.com/support/supportedplatforms/database.html) versions.

@@ -74,13 +74,11 @@ func gen() {
 	var count int
 	for _, c := range configs {
 		fmt.Fprint(&buf, "\n")
-		for _, t := range c.Targets {
-			for _, v := range c.ImageVersions {
-				fmt.Fprint(&buf, "    - ")
-				fmt.Fprintf(&buf, "REFORM_TARGET=%s ", t)
-				fmt.Fprintf(&buf, "REFORM_IMAGE_VERSION=%s\n", v)
-				count++
-			}
+		for _, v := range c.ImageVersions {
+			fmt.Fprint(&buf, "    - ")
+			fmt.Fprintf(&buf, "REFORM_TARGETS=%s ", strings.Join(c.Targets, ","))
+			fmt.Fprintf(&buf, "REFORM_IMAGE_VERSION=%s\n", v)
+			count++
 		}
 	}
 
@@ -103,45 +101,47 @@ func gen() {
 	log.Printf("%s matrix updated with %d combinations.", filename, count)
 }
 
-// testOne tests a single configuration
-func testOne() {
-	t := os.Getenv("REFORM_TARGET")
-	v := os.Getenv("REFORM_IMAGE_VERSION")
-	log.Printf("REFORM_TARGET=%s REFORM_IMAGE_VERSION=%s", t, v)
+// testTargets tests specific combinations.
+func testTargets() {
+	for _, t := range strings.Split(os.Getenv("REFORM_TARGETS"), ",") {
+		for _, v := range strings.Split(os.Getenv("REFORM_IMAGE_VERSION"), ",") {
+			log.Printf("target=%s REFORM_IMAGE_VERSION=%s", t, v)
 
-	var commands []string
-	if offline, _ := strconv.ParseBool(os.Getenv("REFORM_OFFLINE")); !offline {
-		commands = append(commands, fmt.Sprintf("docker-compose --file=.github/docker-compose-%s.yml --project-name=reform pull", t))
-	}
-	commands = append(commands, fmt.Sprintf("docker-compose --file=.github/docker-compose-%s.yml --project-name=reform up -d --remove-orphans --force-recreate", t))
-	commands = append(commands, fmt.Sprintf("make %s", t))
-	commands = append(commands, fmt.Sprintf("docker-compose --file=.github/docker-compose-%s.yml --project-name=reform down --remove-orphans --volumes", t))
-	for _, c := range commands {
-		log.Print(c)
-		args := strings.Split(c, " ")
-		cmd := exec.Command(args[0], args[1:]...)
-		cmd.Stdout = os.Stdout
-		cmd.Stderr = os.Stderr
-		if err := cmd.Run(); err != nil {
-			log.Fatal(err)
+			var commands []string
+			if offline, _ := strconv.ParseBool(os.Getenv("REFORM_OFFLINE")); !offline {
+				commands = append(commands, fmt.Sprintf("docker-compose --file=.github/docker-compose-%s.yml --project-name=reform pull", t))
+			}
+			commands = append(commands, fmt.Sprintf("docker-compose --file=.github/docker-compose-%s.yml --project-name=reform up -d --remove-orphans --force-recreate", t))
+			commands = append(commands, fmt.Sprintf("make %s", t))
+			commands = append(commands, fmt.Sprintf("docker-compose --file=.github/docker-compose-%s.yml --project-name=reform down --remove-orphans --volumes", t))
+			for _, c := range commands {
+				log.Print(c)
+				args := strings.Split(c, " ")
+				cmd := exec.Command(args[0], args[1:]...)
+				cmd.Stdout = os.Stdout
+				cmd.Stderr = os.Stderr
+				if err := cmd.Run(); err != nil {
+					log.Fatal(err)
+				}
+			}
 		}
 	}
 }
 
 func test() {
-	// Test only a single configuration if REFORM_TARGET environment variable is defined.
+	// Test only specific combinations if REFORM_TARGETS environment variable is defined.
 	// Used by Travis CI for matrix builds.
-	if os.Getenv("REFORM_TARGET") != "" {
-		testOne()
+	if os.Getenv("REFORM_TARGETS") != "" {
+		testTargets()
 		return
 	}
 
-	// test all configurations one by one
+	// test default combinations one by one
 	for _, c := range configs {
 		for _, t := range c.Targets {
-			os.Setenv("REFORM_TARGET", t)
+			os.Setenv("REFORM_TARGETS", t)
 			os.Setenv("REFORM_IMAGE_VERSION", c.DefaultImageVersion)
-			testOne()
+			testTargets()
 		}
 	}
 }

@@ -9,14 +9,14 @@ you want to implement _before_ implementing it.
 
 ## Running tests
 
-First of all, run `make deps` to install all dependencies. After that, you have two options: use Docker Compose (recommended), or installing database systems directly.
+First of all, run `make deps deps-check` to install all dependencies. After that, you have two options: use Docker Compose (recommended), or installing database systems directly.
 
 
 ### Docker Compose
 
-If you have Go, Docker and Docker Compose installed, you can run all tests and linters simply by running `make`.
+If you have Go, Docker and Docker Compose installed, you can run all tests and linters simply by running `make test-dc check`.
 
-You can also set `REFORM_TARGET` and `REFORM_IMAGE_VERSION` environment variables to test a specific combination.
+You can also set `REFORM_TARGETS` and `REFORM_IMAGE_VERSION` environment variables to test specific combinations.
 See [`.travis.yml`](../.travis.yml) for possible values.
 You can also set `REFORM_OFFLINE` to `1` to avoid running `docker-compose pull` if image is already present.
 

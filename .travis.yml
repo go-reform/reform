@@ -14,6 +14,14 @@ matrix:
 
 go_import_path: gopkg.in/reform.v1
 
+before_cache:
+  - go clean -testcache
+
+cache:
+  directories:
+    - /home/travis/.cache/go-build
+    - /home/travis/gopath/pkg
+
 before_script:
   - sudo service postgresql stop
   - sudo service mysql stop

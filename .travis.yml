@@ -5,9 +5,22 @@ language: go
 go:
   - 1.10.x
   - 1.11.x
+  # - TODO 1.12.x
   - master
 
+matrix:
+  allow_failures:
+    - go: master
+
 go_import_path: gopkg.in/reform.v1
+
+before_cache:
+  - go clean -testcache
+
+cache:
+  directories:
+    - /home/travis/.cache/go-build
+    - /home/travis/gopath/pkg
 
 before_script:
   - sudo service postgresql stop
@@ -21,7 +34,6 @@ install:
 
 script:
   - make test-dc
-  - make check
 
 after_success:
   - bash <(curl -s https://codecov.io/bash) -f coverage.txt -X fix -e REFORM_TARGET,REFORM_IMAGE_VERSION

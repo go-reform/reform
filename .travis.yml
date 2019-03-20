@@ -5,7 +5,12 @@ language: go
 go:
   - 1.10.x
   - 1.11.x
+  # - TODO 1.12.x
   - master
+
+matrix:
+  allow_failures:
+    - go: master
 
 go_import_path: gopkg.in/reform.v1
 

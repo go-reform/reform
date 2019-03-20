@@ -47,6 +47,7 @@ notifications:
 env:
   global:
     - GORACE="halt_on_error=1"
+    - REFORM_SKIP_PULL=1
 
   # Generated with 'go run .github/test-dc.go gen'.
   # 11 combinations:
@@ -55,17 +56,17 @@ env:
   #   sqlite3: dummy
   #   mssql, sqlserver: latest
   matrix:
-    - REFORM_TARGETS=postgres,pgx REFORM_IMAGE_VERSION=9.4
-    - REFORM_TARGETS=postgres,pgx REFORM_IMAGE_VERSION=9.5
-    - REFORM_TARGETS=postgres,pgx REFORM_IMAGE_VERSION=9.6
-    - REFORM_TARGETS=postgres,pgx REFORM_IMAGE_VERSION=10
-    - REFORM_TARGETS=postgres,pgx REFORM_IMAGE_VERSION=11
+    - REFORM_IMAGE_VERSION=9.4 REFORM_TARGETS=postgres,pgx
+    - REFORM_IMAGE_VERSION=9.5 REFORM_TARGETS=postgres,pgx
+    - REFORM_IMAGE_VERSION=9.6 REFORM_TARGETS=postgres,pgx
+    - REFORM_IMAGE_VERSION=10 REFORM_TARGETS=postgres,pgx
+    - REFORM_IMAGE_VERSION=11 REFORM_TARGETS=postgres,pgx
 
-    - REFORM_TARGETS=mysql,mysql-traditional REFORM_IMAGE_VERSION=5.5
-    - REFORM_TARGETS=mysql,mysql-traditional REFORM_IMAGE_VERSION=5.6
-    - REFORM_TARGETS=mysql,mysql-traditional REFORM_IMAGE_VERSION=5.7
-    - REFORM_TARGETS=mysql,mysql-traditional REFORM_IMAGE_VERSION=8.0
+    - REFORM_IMAGE_VERSION=5.5 REFORM_TARGETS=mysql,mysql-traditional
+    - REFORM_IMAGE_VERSION=5.6 REFORM_TARGETS=mysql,mysql-traditional
+    - REFORM_IMAGE_VERSION=5.7 REFORM_TARGETS=mysql,mysql-traditional
+    - REFORM_IMAGE_VERSION=8.0 REFORM_TARGETS=mysql,mysql-traditional
 
-    - REFORM_TARGETS=sqlite3 REFORM_IMAGE_VERSION=dummy
+    - REFORM_IMAGE_VERSION=dummy REFORM_TARGETS=sqlite3
 
-    - REFORM_TARGETS=mssql,sqlserver REFORM_IMAGE_VERSION=latest
+    - REFORM_IMAGE_VERSION=latest REFORM_TARGETS=mssql,sqlserver

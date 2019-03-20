@@ -76,8 +76,8 @@ func gen() {
 		fmt.Fprint(&buf, "\n")
 		for _, v := range c.ImageVersions {
 			fmt.Fprint(&buf, "    - ")
-			fmt.Fprintf(&buf, "REFORM_TARGETS=%s ", strings.Join(c.Targets, ","))
-			fmt.Fprintf(&buf, "REFORM_IMAGE_VERSION=%s\n", v)
+			fmt.Fprintf(&buf, "REFORM_IMAGE_VERSION=%s ", v)
+			fmt.Fprintf(&buf, "REFORM_TARGETS=%s\n", strings.Join(c.Targets, ","))
 			count++
 		}
 	}
@@ -103,26 +103,25 @@ func gen() {
 
 // testTargets tests specific combinations.
 func testTargets() {
+	v := os.Getenv("REFORM_IMAGE_VERSION")
 	for _, t := range strings.Split(os.Getenv("REFORM_TARGETS"), ",") {
-		for _, v := range strings.Split(os.Getenv("REFORM_IMAGE_VERSION"), ",") {
-			log.Printf("target=%s REFORM_IMAGE_VERSION=%s", t, v)
+		log.Printf("REFORM_IMAGE_VERSION=%s target=%s ", v, t)
 
-			var commands []string
-			if offline, _ := strconv.ParseBool(os.Getenv("REFORM_OFFLINE")); !offline {
-				commands = append(commands, fmt.Sprintf("docker-compose --file=.github/docker-compose-%s.yml --project-name=reform pull", t))
-			}
-			commands = append(commands, fmt.Sprintf("docker-compose --file=.github/docker-compose-%s.yml --project-name=reform up -d --remove-orphans --force-recreate", t))
-			commands = append(commands, fmt.Sprintf("make %s", t))
-			commands = append(commands, fmt.Sprintf("docker-compose --file=.github/docker-compose-%s.yml --project-name=reform down --remove-orphans --volumes", t))
-			for _, c := range commands {
-				log.Print(c)
-				args := strings.Split(c, " ")
-				cmd := exec.Command(args[0], args[1:]...)
-				cmd.Stdout = os.Stdout
-				cmd.Stderr = os.Stderr
-				if err := cmd.Run(); err != nil {
-					log.Fatal(err)
-				}
+		var commands []string
+		if skipPull, _ := strconv.ParseBool(os.Getenv("REFORM_SKIP_PULL")); !skipPull {
+			commands = append(commands, fmt.Sprintf("docker-compose --file=.github/docker-compose-%s.yml --project-name=reform pull", t))
+		}
+		commands = append(commands, fmt.Sprintf("docker-compose --file=.github/docker-compose-%s.yml --project-name=reform up -d --remove-orphans --force-recreate", t))
+		commands = append(commands, fmt.Sprintf("make %s", t))
+		commands = append(commands, fmt.Sprintf("docker-compose --file=.github/docker-compose-%s.yml --project-name=reform down --remove-orphans --volumes", t))
+		for _, c := range commands {
+			log.Print(c)
+			args := strings.Split(c, " ")
+			cmd := exec.Command(args[0], args[1:]...)
+			cmd.Stdout = os.Stdout
+			cmd.Stderr = os.Stderr
+			if err := cmd.Run(); err != nil {
+				log.Fatal(err)
 			}
 		}
 	}
@@ -139,8 +138,8 @@ func test() {
 	// test default combinations one by one
 	for _, c := range configs {
 		for _, t := range c.Targets {
-			os.Setenv("REFORM_TARGETS", t)
 			os.Setenv("REFORM_IMAGE_VERSION", c.DefaultImageVersion)
+			os.Setenv("REFORM_TARGETS", t)
 			testTargets()
 		}
 	}

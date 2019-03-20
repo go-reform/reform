@@ -2,6 +2,12 @@
 //
 // See README (https://github.com/go-reform/reform/blob/v1-stable/README.md) for quickstart information.
 //
+//
+//
+// Context support
+//
+//           !!! TODO TODO FIXME FIXME
+//
 // Tagging
 //
 // reform allows one to add tags (comments) to generated queries with WithTag Querier method.
@@ -12,7 +18,7 @@
 //  SELECT /* GetProject:baron */ "projects"."name", "projects"."id", "projects"."start", "projects"."end" FROM "projects" WHERE "projects"."id" = ? LIMIT 1
 // Please keep in mind that dynamic tags can affect RDBMS query cache. Consult your RDBMS documentation for details.
 // Some known links:
-//  MySQL / Percona Server: https://www.percona.com/doc/percona-server/LATEST/performance/query_cache_enhance.html#ignoring-comments
+//  MySQL / Percona Server: https://www.percona.com/doc/percona-server/5.7/performance/query_cache_enhance.html#ignoring-comments
 //  Microsoft SQL Server: https://msdn.microsoft.com/en-us/library/cc293623.aspx
 //
 // Short example

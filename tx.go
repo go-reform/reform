@@ -1,14 +1,17 @@
 package reform
 
 import (
+	"context"
 	"database/sql"
 	"time"
 )
 
 // TXInterface is a subset of *sql.Tx used by reform.
 // Can be used together with NewTXFromInterface for easier integration with existing code or for passing test doubles.
+//
+// It may grow and shrink over time to include only needed *sql.Tx methods.
 type TXInterface interface {
-	DBTX
+	DBTXContext
 	Commit() error
 	Rollback() error
 }
@@ -25,15 +28,19 @@ type TX struct {
 // NewTX creates new TX object for given SQL database transaction.
 // Logger can be nil.
 func NewTX(tx *sql.Tx, dialect Dialect, logger Logger) *TX {
-	return NewTXFromInterface(tx, dialect, logger)
+	return newTX(context.Background(), tx, dialect, logger)
 }
 
 // NewTXFromInterface creates new TX object for given TXInterface.
 // Can be used for easier integration with existing code or for passing test doubles.
 // Logger can be nil.
 func NewTXFromInterface(tx TXInterface, dialect Dialect, logger Logger) *TX {
+	return newTX(context.Background(), tx, dialect, logger)
+}
+
+func newTX(ctx context.Context, tx TXInterface, dialect Dialect, logger Logger) *TX {
 	return &TX{
-		Querier: newQuerier(tx, dialect, logger),
+		Querier: newQuerier(context.Background(), tx, "", dialect, logger),
 		tx:      tx,
 	}
 }

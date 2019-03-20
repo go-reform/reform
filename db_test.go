@@ -1,10 +1,14 @@
 package reform_test
 
 import (
+	"database/sql"
 	"errors"
 
 	"github.com/AlekSi/pointer"
 	"github.com/brianvoe/gofakeit"
+	"github.com/jackc/pgx"
+	"github.com/jackc/pgx/stdlib"
+	"github.com/lib/pq"
 
 	"gopkg.in/reform.v1"
 	"gopkg.in/reform.v1/dialects/postgresql"
@@ -102,13 +106,14 @@ func (s *ReformSuite) TestAbortedTransaction() {
 	s.Contains(insertPersonWithID(s.T(), tx.Querier, person2).Error(), `current transaction is aborted, commands ignored until end of transaction block`)
 	err = tx.Commit()
 	s.Require().Error(err)
-	switch err.Error() {
-	case `pq: Could not complete operation in a failed transaction`: // pq.ErrInFailedTransaction
-		// nothing
-	case `commit unexpectedly resulted in rollback`: // pgx.ErrTxCommitRollback
-		// nothing
+
+	switch DB.DBInterface().(*sql.DB).Driver().(type) {
+	case *pq.Driver:
+		s.Equal(pq.ErrInFailedTransaction, err)
+	case *stdlib.Driver:
+		s.Equal(pgx.ErrTxCommitRollback, err)
 	default:
-		s.Failf("unexpected error", "actual: %s", err)
+		s.Failf("unexpected driver", "error: %s", err)
 	}
 	s.Equal(tx.Rollback(), reform.ErrTxDone)
 	s.EqualError(DB.Reload(person1), reform.ErrNoRows.Error())

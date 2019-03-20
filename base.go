@@ -1,6 +1,7 @@
 package reform
 
 import (
+	"context"
 	"database/sql"
 	"errors"
 )
@@ -105,7 +106,7 @@ type AfterFinder interface {
 }
 
 // DBTX is an interface for database connection or transaction.
-// It's implemented by *sql.DB, *sql.Tx, *DB, *TX and *Querier.
+// It's implemented by *sql.DB, *sql.Tx, *DB, *TX, and *Querier.
 type DBTX interface {
 	// Exec executes a query without returning any rows.
 	// The args are for any placeholder parameters in the query.
@@ -117,7 +118,27 @@ type DBTX interface {
 
 	// QueryRow executes a query that is expected to return at most one row.
 	// QueryRow always returns a non-nil value. Errors are deferred until Row's Scan method is called.
+	// If the query selects no rows, the *Row's Scan will return ErrNoRows.
+	// Otherwise, the *Row's Scan scans the first selected row and discards the rest.
 	QueryRow(query string, args ...interface{}) *sql.Row
+}
+
+// DBTXContext is an interface for database connection or transaction with context support.
+// It's implemented by *sql.DB, *sql.Tx, and *sql.Conn.
+type DBTXContext interface {
+	// ExecContext executes a query without returning any rows.
+	// The args are for any placeholder parameters in the query.
+	ExecContext(ctx context.Context, query string, args ...interface{}) (sql.Result, error)
+
+	// QueryContext executes a query that returns rows, typically a SELECT.
+	// The args are for any placeholder parameters in the query.
+	QueryContext(ctx context.Context, query string, args ...interface{}) (*sql.Rows, error)
+
+	// QueryRowContext executes a query that is expected to return at most one row.
+	// QueryRowContext always returns a non-nil value. Errors are deferred until Row's Scan method is called.
+	// If the query selects no rows, the *Row's Scan will return ErrNoRows.
+	// Otherwise, the *Row's Scan scans the first selected row and discards the rest.
+	QueryRowContext(ctx context.Context, query string, args ...interface{}) *sql.Row
 }
 
 // LastInsertIdMethod is a method of receiving primary key of last inserted row.
@@ -183,8 +204,11 @@ type Dialect interface {
 	DefaultValuesMethod() DefaultValuesMethod
 }
 
-// check interface
+// check interfaces
 var (
-	_ DBTX = (*sql.DB)(nil)
-	_ DBTX = (*sql.Tx)(nil)
+	_ DBTX        = (*sql.DB)(nil)
+	_ DBTX        = (*sql.Tx)(nil)
+	_ DBTXContext = (*sql.DB)(nil)
+	_ DBTXContext = (*sql.Tx)(nil)
+	_ DBTXContext = (*sql.Conn)(nil)
 )

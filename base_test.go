@@ -35,7 +35,9 @@ func TestMain(m *testing.M) {
 }
 
 // checkForeignKeys checks that foreign keys are still enforced for sqlite3.
-func checkForeignKeys(t *testing.T, q *reform.Querier) {
+func checkForeignKeys(t testing.TB, q *reform.Querier) {
+	t.Helper()
+
 	if q.Dialect != sqlite3.Dialect {
 		return
 	}
@@ -47,7 +49,9 @@ func checkForeignKeys(t *testing.T, q *reform.Querier) {
 }
 
 // withIdentityInsert executes an action with MS SQL IDENTITY_INSERT enabled for a table
-func withIdentityInsert(t *testing.T, q *reform.Querier, table string, action func()) {
+func withIdentityInsert(t testing.TB, q *reform.Querier, table string, action func()) {
+	t.Helper()
+
 	if q.Dialect != mssql.Dialect && q.Dialect != sqlserver.Dialect {
 		action()
 		return
@@ -64,7 +68,9 @@ func withIdentityInsert(t *testing.T, q *reform.Querier, table string, action fu
 	require.NoError(t, err)
 }
 
-func insertPersonWithID(t *testing.T, q *reform.Querier, str reform.Struct) error {
+func insertPersonWithID(t testing.TB, q *reform.Querier, str reform.Struct) error {
+	t.Helper()
+
 	var err error
 	withIdentityInsert(t, q, "people", func() { err = q.Insert(str) })
 	return err
@@ -80,30 +86,45 @@ func TestReformSuite(t *testing.T) {
 	suite.Run(t, new(ReformSuite))
 }
 
-func (s *ReformSuite) SetupTest() {
-	pl := reform.NewPrintfLogger(s.T().Logf)
+func setupTest(t testing.TB) (*reform.TX, *reform.Querier) {
+	t.Helper()
+
+	if testing.Short() {
+		t.Skip("skipping in short mode")
+	}
+
+	pl := reform.NewPrintfLogger(t.Logf)
 	pl.LogTypes = true
 	DB.Logger = pl
 
 	var err error
-	s.tx, err = DB.Begin()
-	s.Require().NoError(err)
+	tx, err := DB.Begin()
+	require.NoError(t, err)
+	return tx, tx.WithTag("test")
+}
 
-	s.q = s.tx.WithTag("test")
+func (s *ReformSuite) SetupTest() {
+	s.tx, s.q = setupTest(s.T())
+}
+
+func tearDownTest(t testing.TB, tx *reform.TX, q *reform.Querier) {
+	t.Helper()
+
+	// some transactional tests rollback and nilify q
+	if q != nil {
+		checkForeignKeys(t, q)
+
+		err := tx.Rollback()
+		require.NoError(t, err)
+	}
+
+	checkForeignKeys(t, DB.Querier)
+
+	DB.Logger = nil
 }
 
 func (s *ReformSuite) TearDownTest() {
-	// some transactional tests rollback and nilify q
-	if s.q != nil {
-		checkForeignKeys(s.T(), s.q)
-
-		err := s.tx.Rollback()
-		s.Require().NoError(err)
-	}
-
-	checkForeignKeys(s.T(), DB.Querier)
-
-	DB.Logger = nil
+	tearDownTest(s.T(), s.tx, s.q)
 }
 
 func (s *ReformSuite) RestartTransaction() {

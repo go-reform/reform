@@ -1,15 +1,18 @@
 package reform
 
 import (
+	"context"
 	"database/sql"
 	"time"
 )
 
 // DBInterface is a subset of *sql.DB used by reform.
 // Can be used together with NewDBFromInterface for easier integration with existing code or for passing test doubles.
+//
+// It may grow and shrink over time to include only needed *sql.DB methods.
 type DBInterface interface {
-	DBTX
-	Begin() (*sql.Tx, error)
+	DBTXContext
+	BeginTx(ctx context.Context, opts *sql.TxOptions) (*sql.Tx, error)
 }
 
 // check interface
@@ -32,7 +35,7 @@ func NewDB(db *sql.DB, dialect Dialect, logger Logger) *DB {
 // Logger can be nil.
 func NewDBFromInterface(db DBInterface, dialect Dialect, logger Logger) *DB {
 	return &DB{
-		Querier: newQuerier(db, dialect, logger),
+		Querier: newQuerier(context.Background(), db, "", dialect, logger),
 		db:      db,
 	}
 }
@@ -42,22 +45,35 @@ func (db *DB) DBInterface() DBInterface {
 	return db.db
 }
 
-// Begin starts a transaction.
+// Begin starts transaction with Querier's context and default options.
 func (db *DB) Begin() (*TX, error) {
+	return db.BeginTx(db.Querier.ctx, nil)
+}
+
+// BeginTx starts transaction with given context and options (can be nil).
+func (db *DB) BeginTx(ctx context.Context, opts *sql.TxOptions) (*TX, error) {
 	db.logBefore("BEGIN", nil)
 	start := time.Now()
-	tx, err := db.db.Begin()
+	tx, err := db.db.BeginTx(ctx, opts)
 	db.logAfter("BEGIN", nil, time.Since(start), err)
 	if err != nil {
 		return nil, err
 	}
-	return NewTX(tx, db.Dialect, db.Logger), nil
+	return newTX(ctx, tx, db.Dialect, db.Logger), nil
 }
 
-// InTransaction wraps function execution in transaction, rolling back it in case of error or panic,
-// committing otherwise.
+// InTransaction wraps function execution in transaction with Querier's context and default options,
+// rolling back it in case of error or panic, committing otherwise.
 func (db *DB) InTransaction(f func(t *TX) error) error {
-	tx, err := db.Begin()
+	return db.InTransactionWithOptions(db.Querier.ctx, nil, f)
+}
+
+// InTransaction wraps function execution in transaction with given context and options (can be nil),
+// rolling back it in case of error or panic, committing otherwise.
+//
+// TODO better name?
+func (db *DB) InTransactionWithOptions(ctx context.Context, opts *sql.TxOptions, f func(t *TX) error) error {
+	tx, err := db.BeginTx(ctx, opts)
 	if err != nil {
 		return err
 	}

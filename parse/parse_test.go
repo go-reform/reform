@@ -153,7 +153,6 @@ func TestFileBogus(t *testing.T) {
 		"bogus8.go":  errors.New(`reform: Bogus8 has field Bogus with invalid "reform:" tag value, it is not allowed`),
 		"bogus9.go":  errors.New(`reform: Bogus9 has field Bogus2 with "reform:" tag with duplicate column name bogus (used by Bogus1), it is not allowed`),
 		"bogus10.go": errors.New(`reform: Bogus10 has field Bogus2 with with duplicate "pk" label in "reform:" tag (first used by Bogus1), it is not allowed`),
-		"bogus11.go": errors.New(`reform: Bogus11 has slice field Bogus with with "pk" label in "reform:" tag, it is not allowed`),
 
 		"bogus_ignore.go": nil,
 	} {
@@ -208,7 +207,6 @@ func TestObjectBogus(t *testing.T) {
 		new(bogus.Bogus8):  errors.New(`reform: Bogus8 has field Bogus with invalid "reform:" tag value, it is not allowed`),
 		new(bogus.Bogus9):  errors.New(`reform: Bogus9 has field Bogus2 with "reform:" tag with duplicate column name bogus (used by Bogus1), it is not allowed`),
 		new(bogus.Bogus10): errors.New(`reform: Bogus10 has field Bogus2 with with duplicate "pk" label in "reform:" tag (first used by Bogus1), it is not allowed`),
-		new(bogus.Bogus11): errors.New(`reform: Bogus11 has slice field Bogus with with "pk" label in "reform:" tag, it is not allowed`),
 
 		// new(bogus.BogusIgnore): do not test,
 	} {

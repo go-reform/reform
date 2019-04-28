@@ -72,9 +72,6 @@ func Object(obj interface{}, schema, table string) (res *StructInfo, err error) 
 			if strings.HasPrefix(typ, "*") {
 				return nil, fmt.Errorf(`reform: %s has pointer field %s with with "pk" label in "reform:" tag, it is not allowed`, res.Type, f.Name)
 			}
-			if strings.HasPrefix(typ, "[") {
-				return nil, fmt.Errorf(`reform: %s has slice field %s with with "pk" label in "reform:" tag, it is not allowed`, res.Type, f.Name)
-			}
 			if res.PKFieldIndex >= 0 {
 				return nil, fmt.Errorf(`reform: %s has field %s with with duplicate "pk" label in "reform:" tag (first used by %s), it is not allowed`, res.Type, f.Name, res.Fields[res.PKFieldIndex].Name)
 			}

@@ -1,6 +1,8 @@
 dist: xenial
-sudo: required
 language: go
+
+services:
+  - docker
 
 go:
   - 1.10.x
@@ -20,7 +22,6 @@ before_cache:
 cache:
   directories:
     - /home/travis/.cache/go-build
-    - /home/travis/gopath/pkg
 
 install:
   - make deps

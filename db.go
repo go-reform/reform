@@ -65,14 +65,12 @@ func (db *DB) BeginTx(ctx context.Context, opts *sql.TxOptions) (*TX, error) {
 // InTransaction wraps function execution in transaction with Querier's context and default options,
 // rolling back it in case of error or panic, committing otherwise.
 func (db *DB) InTransaction(f func(t *TX) error) error {
-	return db.InTransactionWithOptions(db.Querier.ctx, nil, f)
+	return db.InTransactionContext(db.Querier.ctx, nil, f)
 }
 
-// InTransaction wraps function execution in transaction with given context and options (can be nil),
+// InTransactionContext wraps function execution in transaction with given context and options (can be nil),
 // rolling back it in case of error or panic, committing otherwise.
-//
-// TODO better name?
-func (db *DB) InTransactionWithOptions(ctx context.Context, opts *sql.TxOptions, f func(t *TX) error) error {
+func (db *DB) InTransactionContext(ctx context.Context, opts *sql.TxOptions, f func(t *TX) error) error {
 	tx, err := db.BeginTx(ctx, opts)
 	if err != nil {
 		return err

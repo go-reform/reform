@@ -15,7 +15,7 @@ func ForDriver(driver string) reform.Dialect {
 	switch driver {
 	case "postgres", "pgx":
 		return postgresql.Dialect
-	case "mysql":
+	case "mysql", "mysqlx":
 		return mysql.Dialect
 	case "sqlite3":
 		return sqlite3.Dialect

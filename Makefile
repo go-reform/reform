@@ -12,6 +12,7 @@ deps:                           ## Install dependencies.
 	go get -u github.com/lib/pq
 	go get -u github.com/jackc/pgx/stdlib
 	go get -u github.com/go-sql-driver/mysql
+	go get -u github.com/AlekSi/mysqlx
 	go get -u github.com/mattn/go-sqlite3
 	go get -u github.com/denisenkom/go-mssqldb
 
@@ -99,6 +100,15 @@ mysql-traditional: export REFORM_ROOT_SOURCE = root@/mysql
 mysql-traditional: export REFORM_INIT_SOURCE = root@/reform-database?parseTime=true&clientFoundRows=true&time_zone='UTC'&sql_mode='ANSI'&multiStatements=true
 mysql-traditional: export REFORM_TEST_SOURCE = root@/reform-database?parseTime=true&clientFoundRows=true&time_zone='America%2FNew_York'&sql_mode='TRADITIONAL'&interpolateParams=true
 mysql-traditional: test
+	make test-db
+
+# run unit tests and integration tests for MySQL (mysqlx driver for X Protocol)
+mysqlx: export REFORM_DATABASE = mysql
+mysqlx: export REFORM_DRIVER = mysqlx
+mysqlx: export REFORM_ROOT_SOURCE = mysqlx://root@127.0.0.1:33060/?_auth-method=PLAIN
+mysqlx: export REFORM_INIT_SOURCE = mysqlx://root@127.0.0.1:33060/reform-database?_auth-method=PLAIN&time_zone=UTC&sql_mode=ANSI
+mysqlx: export REFORM_TEST_SOURCE = mysqlx://root@127.0.0.1:33060/reform-database?_auth-method=PLAIN&time_zone=UTC&sql_mode=ANSI
+mysqlx: test
 	make test-db
 
 # run unit tests and integration tests for SQLite3

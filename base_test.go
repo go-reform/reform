@@ -86,7 +86,7 @@ func TestReformSuite(t *testing.T) {
 	suite.Run(t, new(ReformSuite))
 }
 
-func setupTest(t testing.TB) (*reform.TX, *reform.Querier) {
+func setup(t testing.TB) {
 	t.Helper()
 
 	if testing.Short() {
@@ -96,8 +96,13 @@ func setupTest(t testing.TB) (*reform.TX, *reform.Querier) {
 	pl := reform.NewPrintfLogger(t.Logf)
 	pl.LogTypes = true
 	DB.Logger = pl
+}
 
-	var err error
+func setupTest(t testing.TB) (*reform.TX, *reform.Querier) {
+	t.Helper()
+
+	setup(t)
+
 	tx, err := DB.Begin()
 	require.NoError(t, err)
 	return tx, tx.WithTag("test")
@@ -107,20 +112,28 @@ func (s *ReformSuite) SetupTest() {
 	s.tx, s.q = setupTest(s.T())
 }
 
+func tearDown(t testing.TB) {
+	t.Helper()
+
+	checkForeignKeys(t, DB.Querier)
+	DB.Logger = nil
+}
+
 func tearDownTest(t testing.TB, tx *reform.TX, q *reform.Querier) {
 	t.Helper()
 
-	// some transactional tests rollback and nilify q
-	if q != nil {
-		checkForeignKeys(t, q)
-
-		err := tx.Rollback()
-		require.NoError(t, err)
+	if tx == nil {
+		panic(t.Name() + ": tx is nil")
+	}
+	if q == nil {
+		panic(t.Name() + ": q is nil")
 	}
 
-	checkForeignKeys(t, DB.Querier)
+	checkForeignKeys(t, q)
 
-	DB.Logger = nil
+	require.NoError(t, tx.Rollback())
+
+	tearDown(t)
 }
 
 func (s *ReformSuite) TearDownTest() {

@@ -43,9 +43,8 @@ func sleepQuery(t testing.TB, q *reform.Querier, d time.Duration) string {
 }
 
 func TestExecContext(t *testing.T) {
-	tx, _ := setupTest(t)
-	require.NoError(t, tx.Rollback())
-	defer tearDownTest(t, tx, nil)
+	setup(t)
+	defer tearDown(t)
 
 	tx, err := DB.Begin()
 	require.NoError(t, err)

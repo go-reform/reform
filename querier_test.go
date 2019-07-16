@@ -23,6 +23,8 @@ import (
 	"gopkg.in/reform.v1/dialects/sqlserver"
 )
 
+type ctxKey string
+
 func sleepQuery(t testing.TB, q *reform.Querier, d time.Duration) string {
 	switch q.Dialect {
 	case postgresql.Dialect:
@@ -41,21 +43,24 @@ func sleepQuery(t testing.TB, q *reform.Querier, d time.Duration) string {
 	}
 }
 
-func TestExecContext(t *testing.T) {
+func TestExecWithContext(t *testing.T) {
 	db, tx := setupTX(t)
 	defer teardown(t, db)
+
+	assert.Equal(t, context.Background(), db.Context())
+	assert.Equal(t, context.Background(), tx.Context())
 
 	dbDriver := db.DBInterface().(*sql.DB).Driver()
 	const sleep = 200 * time.Millisecond
 	const ctxTimeout = 100 * time.Millisecond
 	query := sleepQuery(t, tx.Querier, sleep)
-	ctx, cancel := context.WithTimeout(context.Background(), ctxTimeout)
+	ctx, cancel := context.WithTimeout(context.WithValue(context.Background(), ctxKey("k"), "exec"), ctxTimeout)
 	defer cancel()
 
-	assert.Equal(t, ctx, tx.WithContext(ctx).Context())
-
+	q := tx.WithContext(ctx)
+	assert.Equal(t, ctx, q.Context())
 	start := time.Now()
-	_, err := tx.WithContext(ctx).Exec(query)
+	_, err := q.Exec(query)
 	dur := time.Since(start)
 	switch dbDriver.(type) {
 	case *sqlite3Driver.SQLiteDriver:
@@ -77,11 +82,33 @@ func TestExecContext(t *testing.T) {
 		case *mssqlDriver.Driver:
 			assert.Equal(t, context.DeadlineExceeded, err)
 		default:
-			t.Fatalf("Exec: unhandled driver %T. err = %s", dbDriver, err)
+			t.Fatalf("q.Exec: unhandled driver %T. err = %s", dbDriver, err)
 		}
 	}
 
+	// context should not be modified
+	assert.Equal(t, context.Background(), db.Context())
+	assert.Equal(t, context.Background(), tx.Context())
+
+	// check q with expired timeout
 	var res int
+	err = q.QueryRow("SELECT 1").Scan(&res)
+	switch dbDriver.(type) {
+	case *pq.Driver:
+		assert.Equal(t, context.DeadlineExceeded, err)
+	case *stdlib.Driver:
+		assert.Equal(t, context.DeadlineExceeded, err)
+	case *mysqlDriver.MySQLDriver:
+		assert.Equal(t, context.DeadlineExceeded, err)
+	case *sqlite3Driver.SQLiteDriver:
+		assert.Equal(t, context.DeadlineExceeded, err)
+	case *mssqlDriver.Driver:
+		assert.Equal(t, context.DeadlineExceeded, err)
+	default:
+		t.Fatalf("q.QueryRow: unhandled driver %T. err = %s", dbDriver, err)
+	}
+
+	// check tx without timeout
 	err = tx.QueryRow("SELECT 1").Scan(&res)
 	switch dbDriver.(type) {
 	case *pq.Driver:
@@ -95,7 +122,7 @@ func TestExecContext(t *testing.T) {
 	case *mssqlDriver.Driver:
 		assert.Equal(t, driver.ErrBadConn, err)
 	default:
-		t.Fatalf("QueryRow: unhandled driver %T. err = %s", dbDriver, err)
+		t.Fatalf("tx.QueryRow: unhandled driver %T. err = %s", dbDriver, err)
 	}
 
 	err = tx.Rollback()
@@ -111,6 +138,6 @@ func TestExecContext(t *testing.T) {
 	case *mssqlDriver.Driver:
 		assert.Equal(t, driver.ErrBadConn, err)
 	default:
-		t.Fatalf("Rollback: unhandled driver %T. err = %s", dbDriver, err)
+		t.Fatalf("tx.Rollback: unhandled driver %T. err = %s", dbDriver, err)
 	}
 }

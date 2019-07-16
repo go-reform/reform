@@ -43,14 +43,14 @@ func sleepQuery(t testing.TB, q *reform.Querier, d time.Duration) string {
 }
 
 func TestExecContext(t *testing.T) {
-	setup(t)
-	defer tearDown(t)
+	db := setupDB(t)
+	defer teardown(t, db)
 
-	tx, err := DB.Begin()
+	tx, err := db.Begin()
 	require.NoError(t, err)
 	defer tx.Rollback()
 
-	dbDriver := DB.DBInterface().(*sql.DB).Driver()
+	dbDriver := db.DBInterface().(*sql.DB).Driver()
 	const sleep = 200 * time.Millisecond
 	const ctxTimeout = 100 * time.Millisecond
 	query := sleepQuery(t, tx.Querier, sleep)

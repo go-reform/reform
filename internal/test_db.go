@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"log"
 	"os"
+	"sync"
 	"time"
 
 	sqlite3Driver "github.com/mattn/go-sqlite3"
@@ -17,6 +18,8 @@ import (
 	"gopkg.in/reform.v1/dialects/sqlserver"
 )
 
+var sqlite3Register sync.Once //nolint:gochecknoglobals
+
 // ConnectToTestDB returns open and prepared connection to test DB.
 func ConnectToTestDB() *reform.DB {
 	driver := os.Getenv("REFORM_DRIVER")
@@ -28,16 +31,19 @@ func ConnectToTestDB() *reform.DB {
 
 	// register custom function "sleep" for context tests
 	if driver == "sqlite3" {
-		sleep := func(nsec int64) (int64, error) {
-			time.Sleep(time.Duration(nsec))
-			return nsec, nil
-		}
-		sql.Register("sqlite3_with_sleep", &sqlite3Driver.SQLiteDriver{
-			ConnectHook: func(conn *sqlite3Driver.SQLiteConn) error {
-				return conn.RegisterFunc("sleep", sleep, false)
-			},
-		})
 		driver = "sqlite3_with_sleep"
+
+		sqlite3Register.Do(func() {
+			sleep := func(nsec int64) (int64, error) {
+				time.Sleep(time.Duration(nsec))
+				return nsec, nil
+			}
+			sql.Register(driver, &sqlite3Driver.SQLiteDriver{
+				ConnectHook: func(conn *sqlite3Driver.SQLiteConn) error {
+					return conn.RegisterFunc("sleep", sleep, false)
+				},
+			})
+		})
 	}
 
 	db, err := sql.Open(driver, source)

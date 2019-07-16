@@ -1,6 +1,7 @@
 package reform_test
 
 import (
+	"database/sql"
 	"fmt"
 	"log"
 	"os"
@@ -26,6 +27,8 @@ import (
 )
 
 var (
+	// DB is a global connection pool shared by tests and examples.
+	// Deprecated: do not add new tests using it.
 	DB *reform.DB
 )
 
@@ -76,6 +79,45 @@ func insertPersonWithID(t testing.TB, q *reform.Querier, str reform.Struct) erro
 	return err
 }
 
+// setupDB creates new database connection pool.
+func setupDB(t testing.TB) *reform.DB {
+	t.Helper()
+
+	if testing.Short() {
+		t.Skip("skipping in short mode")
+	}
+
+	db := internal.ConnectToTestDB()
+	pl := reform.NewPrintfLogger(t.Logf)
+	pl.LogTypes = true
+	db.Logger = pl
+	db.Querier = DB.WithTag(fmt.Sprintf("test:%s", t.Name()))
+
+	checkForeignKeys(t, db.Querier)
+	return db
+}
+
+// setupTX creates new database connection pool and starts a new transaction.
+func setupTX(t testing.TB) (*reform.DB, *reform.TX) {
+	t.Helper()
+
+	db := setupDB(t)
+
+	tx, err := db.Begin()
+	require.NoError(t, err)
+	return db, tx
+}
+
+// teardown closes database connection pool.
+func teardown(t testing.TB, db *reform.DB) {
+	t.Helper()
+
+	err := db.DBInterface().(*sql.DB).Close()
+	require.NoError(t, err)
+}
+
+// Deprecated: do not add new test to this suite, use Go subtests instead.
+// TODO Remove.
 type ReformSuite struct {
 	suite.Suite
 	tx *reform.TX
@@ -86,58 +128,39 @@ func TestReformSuite(t *testing.T) {
 	suite.Run(t, new(ReformSuite))
 }
 
-func setup(t testing.TB) {
-	t.Helper()
-
+// SetupTest configures global connection pool and starts a new transaction.
+func (s *ReformSuite) SetupTest() {
 	if testing.Short() {
-		t.Skip("skipping in short mode")
+		s.T().Skip("skipping in short mode")
 	}
 
-	pl := reform.NewPrintfLogger(t.Logf)
+	pl := reform.NewPrintfLogger(s.T().Logf)
 	pl.LogTypes = true
 	DB.Logger = pl
-}
+	DB.Querier = DB.WithTag(fmt.Sprintf("test:%s", s.T().Name()))
 
-func setupTest(t testing.TB) (*reform.TX, *reform.Querier) {
-	t.Helper()
-
-	setup(t)
+	checkForeignKeys(s.T(), DB.Querier)
 
 	tx, err := DB.Begin()
-	require.NoError(t, err)
-	return tx, tx.WithTag("test")
+	s.Require().NoError(err)
+	s.tx = tx
+	s.q = tx.Querier
 }
 
-func (s *ReformSuite) SetupTest() {
-	s.tx, s.q = setupTest(s.T())
-}
-
-func tearDown(t testing.TB) {
-	t.Helper()
-
-	checkForeignKeys(t, DB.Querier)
-	DB.Logger = nil
-}
-
-func tearDownTest(t testing.TB, tx *reform.TX, q *reform.Querier) {
-	t.Helper()
-
-	if tx == nil {
-		panic(t.Name() + ": tx is nil")
-	}
-	if q == nil {
-		panic(t.Name() + ": q is nil")
-	}
-
-	checkForeignKeys(t, q)
-
-	require.NoError(t, tx.Rollback())
-
-	tearDown(t)
-}
-
+// TearDownTest rollbacks transaction created by SetupTest.
 func (s *ReformSuite) TearDownTest() {
-	tearDownTest(s.T(), s.tx, s.q)
+	if s.tx == nil {
+		panic(s.T().Name() + ": tx is nil")
+	}
+	if s.q == nil {
+		panic(s.T().Name() + ": q is nil")
+	}
+
+	checkForeignKeys(s.T(), s.q)
+	s.Require().NoError(s.tx.Rollback())
+
+	DB.Logger = nil
+	DB.Querier = DB.WithTag("")
 }
 
 func (s *ReformSuite) RestartTransaction() {

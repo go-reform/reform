@@ -51,12 +51,11 @@ func TestBeginRollback(t *testing.T) {
 
 // This behavior is checked for documentation purposes only. reform does not rely on it.
 func TestErrorInTransaction(t *testing.T) {
-	if DB.Dialect == postgresql.Dialect {
-		t.Skip(DB.Dialect.String() + " works differently, see TestAbortedTransaction")
-	}
-
 	db := setupDB(t)
 	defer teardown(t, db)
+	if db.Dialect == postgresql.Dialect {
+		t.Skipf("%s works differently, see TestAbortedTransaction", db.Dialect)
+	}
 
 	person1 := &Person{ID: 42, Email: pointer.ToString(gofakeit.Email())}
 	person2 := &Person{ID: 43, Email: pointer.ToString(gofakeit.Email())}
@@ -91,12 +90,11 @@ func TestErrorInTransaction(t *testing.T) {
 // This behavior is checked for documentation purposes only. reform does not rely on it.
 // http://postgresql.nabble.com/Current-transaction-is-aborted-commands-ignored-until-end-of-transaction-block-td5109252.html
 func TestAbortedTransaction(t *testing.T) {
-	if DB.Dialect != postgresql.Dialect {
-		t.Skip(DB.Dialect.String() + " works differently, see TestErrorInTransaction")
-	}
-
 	db := setupDB(t)
 	defer teardown(t, db)
+	if db.Dialect != postgresql.Dialect {
+		t.Skipf("%s works differently, see TestErrorInTransaction", db.Dialect)
+	}
 
 	person1 := &Person{ID: 42, Email: pointer.ToString(gofakeit.Email())}
 	person2 := &Person{ID: 43, Email: pointer.ToString(gofakeit.Email())}

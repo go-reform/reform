@@ -91,7 +91,7 @@ func setupDB(t testing.TB) *reform.DB {
 	pl := reform.NewPrintfLogger(t.Logf)
 	pl.LogTypes = true
 	db.Logger = pl
-	db.Querier = DB.WithTag(fmt.Sprintf("test:%s", t.Name()))
+	db.Querier = db.WithTag(fmt.Sprintf("test:%s", t.Name()))
 
 	checkForeignKeys(t, db.Querier)
 	return db

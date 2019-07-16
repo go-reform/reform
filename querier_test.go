@@ -14,7 +14,6 @@ import (
 	"github.com/lib/pq"
 	sqlite3Driver "github.com/mattn/go-sqlite3"
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 
 	"gopkg.in/reform.v1"
 	"gopkg.in/reform.v1/dialects/mssql"
@@ -43,12 +42,8 @@ func sleepQuery(t testing.TB, q *reform.Querier, d time.Duration) string {
 }
 
 func TestExecContext(t *testing.T) {
-	db := setupDB(t)
+	db, tx := setupTX(t)
 	defer teardown(t, db)
-
-	tx, err := db.Begin()
-	require.NoError(t, err)
-	defer tx.Rollback()
 
 	dbDriver := db.DBInterface().(*sql.DB).Driver()
 	const sleep = 200 * time.Millisecond
@@ -57,29 +52,42 @@ func TestExecContext(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), ctxTimeout)
 	defer cancel()
 
+	assert.Equal(t, ctx, tx.WithContext(ctx).Context())
+
 	start := time.Now()
-	_, err = tx.WithContext(ctx).Exec(query)
+	_, err := tx.WithContext(ctx).Exec(query)
 	dur := time.Since(start)
 	switch dbDriver.(type) {
 	case *sqlite3Driver.SQLiteDriver:
 		assert.NoError(t, err)
-		assert.True(t, dur >= sleep, "sqlite3: dur < sleep")
-		assert.True(t, dur >= ctxTimeout, "sqlite3: dur < ctxTimeout")
+		assert.True(t, dur >= sleep, "sqlite3: failed comparison: dur >= sleep")
+		assert.True(t, dur >= ctxTimeout, "sqlite3: failed comparison: dur >= ctxTimeout")
 	default:
 		assert.Error(t, err)
-		assert.True(t, dur < sleep, "dur >= sleep")
-		assert.True(t, dur > ctxTimeout, "dur <= ctxTimeout")
+		assert.True(t, dur < sleep, "failed comparison: dur < sleep")
+		assert.True(t, dur > ctxTimeout, "failed comparison: dur > ctxTimeout")
+
+		switch dbDriver.(type) {
+		case *pq.Driver:
+			assert.EqualError(t, err, "pq: canceling statement due to user request")
+		case *stdlib.Driver:
+			assert.Equal(t, context.DeadlineExceeded, err)
+		case *mysqlDriver.MySQLDriver:
+			assert.Equal(t, context.DeadlineExceeded, err)
+		case *mssqlDriver.Driver:
+			assert.Equal(t, context.DeadlineExceeded, err)
+		default:
+			t.Fatalf("Exec: unhandled driver %T. err = %s", dbDriver, err)
+		}
 	}
 
 	var res int
 	err = tx.QueryRow("SELECT 1").Scan(&res)
 	switch dbDriver.(type) {
 	case *pq.Driver:
-		require.Error(t, err)
-		assert.Contains(t, err.Error(), `current transaction is aborted, commands ignored until end of transaction block`)
+		assert.EqualError(t, err, "pq: current transaction is aborted, commands ignored until end of transaction block")
 	case *stdlib.Driver:
-		require.Error(t, err)
-		assert.Contains(t, err.Error(), `current transaction is aborted, commands ignored until end of transaction block`)
+		assert.EqualError(t, err, "ERROR: current transaction is aborted, commands ignored until end of transaction block (SQLSTATE 25P02)")
 	case *mysqlDriver.MySQLDriver:
 		assert.Equal(t, driver.ErrBadConn, err)
 	case *sqlite3Driver.SQLiteDriver:

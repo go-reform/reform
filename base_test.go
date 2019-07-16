@@ -91,7 +91,7 @@ func setupDB(t testing.TB) *reform.DB {
 	pl := reform.NewPrintfLogger(t.Logf)
 	pl.LogTypes = true
 	db.Logger = pl
-	db.Querier = db.WithTag(fmt.Sprintf("test:%s", t.Name()))
+	db.Querier = db.WithTag("test:%s", t.Name())
 
 	checkForeignKeys(t, db.Querier)
 	return db
@@ -137,7 +137,7 @@ func (s *ReformSuite) SetupTest() {
 	pl := reform.NewPrintfLogger(s.T().Logf)
 	pl.LogTypes = true
 	DB.Logger = pl
-	DB.Querier = DB.WithTag(fmt.Sprintf("test:%s", s.T().Name()))
+	DB.Querier = DB.WithTag("test:%s", s.T().Name())
 
 	checkForeignKeys(s.T(), DB.Querier)
 

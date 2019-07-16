@@ -19,13 +19,11 @@ import (
 )
 
 func TestBeginCommit(t *testing.T) {
-	db := setupDB(t)
+	db, tx := setupTX(t)
 	defer teardown(t, db)
 
 	person := &Person{ID: 42, Email: pointer.ToString(gofakeit.Email())}
 
-	tx, err := db.Begin()
-	require.NoError(t, err)
 	assert.NoError(t, insertPersonWithID(t, tx.Querier, person))
 	assert.NoError(t, tx.Commit())
 	assert.Equal(t, tx.Commit(), reform.ErrTxDone)
@@ -35,13 +33,11 @@ func TestBeginCommit(t *testing.T) {
 }
 
 func TestBeginRollback(t *testing.T) {
-	db := setupDB(t)
+	db, tx := setupTX(t)
 	defer teardown(t, db)
 
 	person := &Person{ID: 42, Email: pointer.ToString(gofakeit.Email())}
 
-	tx, err := db.Begin()
-	require.NoError(t, err)
 	assert.NoError(t, insertPersonWithID(t, tx.Querier, person))
 	assert.NoError(t, tx.Rollback())
 	assert.Equal(t, tx.Commit(), reform.ErrTxDone)

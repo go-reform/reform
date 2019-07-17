@@ -10,10 +10,12 @@ import (
 
 	mssqlDriver "github.com/denisenkom/go-mssqldb"
 	mysqlDriver "github.com/go-sql-driver/mysql"
+	"github.com/jackc/pgx"
 	"github.com/jackc/pgx/stdlib"
 	"github.com/lib/pq"
 	sqlite3Driver "github.com/mattn/go-sqlite3"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 
 	"gopkg.in/reform.v1"
 	"gopkg.in/reform.v1/dialects/mssql"
@@ -74,7 +76,11 @@ func TestExecWithContext(t *testing.T) {
 
 		switch dbDriver.(type) {
 		case *pq.Driver:
-			assert.EqualError(t, err, "pq: canceling statement due to user request")
+			require.EqualError(t, err, "pq: canceling statement due to user request")
+			pgErr := err.(*pq.Error)
+			assert.Equal(t, "ERROR", pgErr.Severity)
+			assert.Equal(t, pq.ErrorCode("57014"), pgErr.Code)
+			assert.Equal(t, "ProcessInterrupts", pgErr.Routine)
 		case *stdlib.Driver:
 			assert.Equal(t, context.DeadlineExceeded, err)
 		case *mysqlDriver.MySQLDriver:
@@ -93,28 +99,23 @@ func TestExecWithContext(t *testing.T) {
 	// check q with expired timeout
 	var res int
 	err = q.QueryRow("SELECT 1").Scan(&res)
-	switch dbDriver.(type) {
-	case *pq.Driver:
-		assert.Equal(t, context.DeadlineExceeded, err)
-	case *stdlib.Driver:
-		assert.Equal(t, context.DeadlineExceeded, err)
-	case *mysqlDriver.MySQLDriver:
-		assert.Equal(t, context.DeadlineExceeded, err)
-	case *sqlite3Driver.SQLiteDriver:
-		assert.Equal(t, context.DeadlineExceeded, err)
-	case *mssqlDriver.Driver:
-		assert.Equal(t, context.DeadlineExceeded, err)
-	default:
-		t.Fatalf("q.QueryRow: unhandled driver %T. err = %s", dbDriver, err)
-	}
+	assert.Equal(t, context.DeadlineExceeded, err)
 
 	// check tx without timeout
 	err = tx.QueryRow("SELECT 1").Scan(&res)
 	switch dbDriver.(type) {
 	case *pq.Driver:
-		assert.EqualError(t, err, "pq: current transaction is aborted, commands ignored until end of transaction block")
+		require.EqualError(t, err, "pq: current transaction is aborted, commands ignored until end of transaction block")
+		pgErr := err.(*pq.Error)
+		assert.Equal(t, "ERROR", pgErr.Severity)
+		assert.Equal(t, pq.ErrorCode("25P02"), pgErr.Code)
+		assert.Equal(t, "exec_simple_query", pgErr.Routine)
 	case *stdlib.Driver:
 		assert.EqualError(t, err, "ERROR: current transaction is aborted, commands ignored until end of transaction block (SQLSTATE 25P02)")
+		pgErr := err.(pgx.PgError)
+		assert.Equal(t, "ERROR", pgErr.Severity)
+		assert.Equal(t, "25P02", pgErr.Code)
+		assert.Equal(t, "exec_parse_message", pgErr.Routine)
 	case *mysqlDriver.MySQLDriver:
 		assert.Equal(t, driver.ErrBadConn, err)
 	case *sqlite3Driver.SQLiteDriver:

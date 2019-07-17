@@ -94,5 +94,8 @@ func (db *DB) InTransactionContext(ctx context.Context, opts *sql.TxOptions, f f
 	return err
 }
 
-// check interface
-var _ DBTX = (*DB)(nil)
+// check interfaces
+var (
+	_ DBTX        = (*DB)(nil)
+	_ DBTXContext = (*DB)(nil)
+)

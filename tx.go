@@ -63,5 +63,8 @@ func (tx *TX) Rollback() error {
 	return err
 }
 
-// check interface
-var _ DBTX = (*TX)(nil)
+// check interfaces
+var (
+	_ DBTX        = (*TX)(nil)
+	_ DBTXContext = (*TX)(nil)
+)

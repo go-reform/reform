@@ -108,6 +108,12 @@ func (q *Querier) Exec(query string, args ...interface{}) (sql.Result, error) {
 	return res, err
 }
 
+// ExecContext just calls q.WithContext(ctx).Exec(query, args...), and that form should be used instead.
+// This method exists to satisfy various standard interfaces for advanced use-cases.
+func (q *Querier) ExecContext(ctx context.Context, query string, args ...interface{}) (sql.Result, error) {
+	return q.WithContext(ctx).Exec(query, args...)
+}
+
 // Query executes a query that returns rows, typically a SELECT.
 // The args are for any placeholder parameters in the query.
 func (q *Querier) Query(query string, args ...interface{}) (*sql.Rows, error) {
@@ -116,6 +122,12 @@ func (q *Querier) Query(query string, args ...interface{}) (*sql.Rows, error) {
 	rows, err := q.dbtxCtx.QueryContext(q.ctx, query, args...)
 	q.logAfter(query, args, time.Since(start), err)
 	return rows, err
+}
+
+// QueryContext just calls q.WithContext(ctx).Query(query, args...), and that form should be used instead.
+// This method exists to satisfy various standard interfaces for advanced use-cases.
+func (q *Querier) QueryContext(ctx context.Context, query string, args ...interface{}) (*sql.Rows, error) {
+	return q.WithContext(ctx).Query(query, args...)
 }
 
 // QueryRow executes a query that is expected to return at most one row.
@@ -128,5 +140,14 @@ func (q *Querier) QueryRow(query string, args ...interface{}) *sql.Row {
 	return row
 }
 
-// check interface
-var _ DBTX = (*Querier)(nil)
+// QueryRowContext just calls q.WithContext(ctx).QueryRow(query, args...), and that form should be used instead.
+// This method exists to satisfy various standard interfaces for advanced use-cases.
+func (q *Querier) QueryRowContext(ctx context.Context, query string, args ...interface{}) *sql.Row {
+	return q.WithContext(ctx).QueryRow(query, args...)
+}
+
+// check interfaces
+var (
+	_ DBTX        = (*Querier)(nil)
+	_ DBTXContext = (*Querier)(nil)
+)

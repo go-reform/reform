@@ -124,7 +124,7 @@ type DBTX interface {
 }
 
 // DBTXContext is an interface for database connection or transaction with context support.
-// It's implemented by *sql.DB, *sql.Tx, and *sql.Conn.
+// It's implemented by *sql.DB, *sql.Tx, *sql.Conn, *DB, *TX, and *Querier.
 type DBTXContext interface {
 	// ExecContext executes a query without returning any rows.
 	// The args are for any placeholder parameters in the query.

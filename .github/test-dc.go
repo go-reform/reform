@@ -106,7 +106,7 @@ func gen() {
 func testTargets() {
 	v := os.Getenv("REFORM_IMAGE_VERSION")
 	for _, t := range strings.Split(os.Getenv("REFORM_TARGETS"), ",") {
-		log.Printf("REFORM_IMAGE_VERSION=%s target=%s ", v, t)
+		log.Printf("REFORM_IMAGE_VERSION=%s REFORM_TARGETS=%s ", v, t)
 
 		var commands []string
 		if skipPull, _ := strconv.ParseBool(os.Getenv("REFORM_SKIP_PULL")); !skipPull {

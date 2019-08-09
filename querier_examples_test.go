@@ -87,7 +87,7 @@ func ExampleQuerier_WithTag() {
 func ExampleQuerier_WithContext() {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Nanosecond)
 	defer cancel()
-	_, err := DB.WithContext(ctx).FindByPrimaryKeyFrom(ProjectTable, "baron")
+	_, err := DB.WithContext(ctx).SelectAllFrom(ProjectTable, "")
 	if err != nil {
 		fmt.Println(err)
 	}

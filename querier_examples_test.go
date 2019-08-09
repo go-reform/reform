@@ -75,11 +75,11 @@ func ExampleNewDB() {
 
 func ExampleQuerier_WithTag() {
 	id := "baron"
-	person, err := DB.WithTag("GetProject:%v", id).FindByPrimaryKeyFrom(ProjectTable, id)
+	project, err := DB.WithTag("GetProject:%v", id).FindByPrimaryKeyFrom(ProjectTable, id)
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Println(person)
+	fmt.Println(project)
 	// Output:
 	// Name: `Vicious Baron` (string), ID: `baron` (string), Start: 2014-06-01 00:00:00 +0000 UTC (time.Time), End: 2016-02-21 00:00:00 +0000 UTC (*time.Time)
 }
@@ -87,7 +87,10 @@ func ExampleQuerier_WithTag() {
 func ExampleQuerier_WithContext() {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Nanosecond)
 	defer cancel()
-	_, err := DB.WithContext(ctx).SelectAllFrom(ProjectTable, "")
+	projects, err := DB.WithContext(ctx).SelectAllFrom(ProjectTable, "")
+	if len(projects) > 0 {
+		fmt.Println(projects)
+	}
 	if err != nil {
 		fmt.Println(err)
 	}

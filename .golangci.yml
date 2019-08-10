@@ -1,0 +1,27 @@
+---
+# https://github.com/golangci/golangci-lint#config-file
+
+run:
+  skip-dirs:
+    - bogus
+  # TODO for modules: modules-download-mode
+
+linters-settings:
+  govet:
+    check-shadowing: true
+  goimports:
+    local-prefixes: gopkg.in/reform.v1
+
+linters:
+  enable-all: true
+  disable:
+    - lll
+
+issues:
+  exclude-use-default: false
+  exclude:
+    # gosec
+    - "G201: SQL string formatting"
+    - "G202: SQL string concatenation"
+    - "G204: Subprocess launched with variable"
+    - "G304: Potential file inclusion via variable"

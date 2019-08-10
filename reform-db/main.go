@@ -75,6 +75,7 @@ func getDB() *reform.DB {
 		time.Sleep(time.Second)
 	}
 
+	logger.Debugf("Connected to database.")
 	dialect := dialects.ForDriver(*driverF)
 	return reform.NewDB(sqlDB, dialect, reform.NewPrintfLogger(logger.Debugf))
 }

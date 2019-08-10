@@ -219,3 +219,13 @@ func (q *Querier) FindByPrimaryKeyFrom(table Table, pk interface{}) (Record, err
 func (q *Querier) Reload(record Record) error {
 	return q.FindByPrimaryKeyTo(record, record.PKValue())
 }
+
+// Count queries view with tail and args and returns a number (COUNT(*)) of matching rows.
+func (q *Querier) Count(view View, tail string, args ...interface{}) (int, error) {
+	query := fmt.Sprintf("%s COUNT(*) FROM %s %s", q.startQuery("SELECT"), q.QualifiedView(view), tail)
+	var count int
+	if err := q.QueryRow(query, args...).Scan(&count); err != nil {
+		return 0, err
+	}
+	return count, nil
+}

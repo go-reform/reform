@@ -1,32 +1,32 @@
-all: test-dc check
+help:                           ## Display this help message.
+	@echo "Please use \`make <target>\` where <target> is one of:"
+	@grep '^[a-zA-Z]' $(MAKEFILE_LIST) | \
+		awk -F ':.*?## ' 'NF==2 {printf "  %-26s%s\n", $$1, $$2}'
 
 # extra flags like -v
 REFORM_TEST_FLAGS ?=
 
 # SHELL = go run .github/shell.go
 
-# install dependencies
-deps:
+deps:                           ## Install dependencies.
 	go get -u github.com/lib/pq
 	go get -u github.com/jackc/pgx/stdlib
 	go get -u github.com/go-sql-driver/mysql
 	go get -u github.com/mattn/go-sqlite3
 	go get -u github.com/denisenkom/go-mssqldb
 
-	go get -u github.com/AlekSi/pointer
-	go get -u github.com/stretchr/testify/...
-	go get -u syreclabs.com/go/faker
-	go get -u gopkg.in/alecthomas/gometalinter.v2
 	go get -u github.com/AlekSi/gocoverutil
+	go get -u github.com/AlekSi/pointer
+	go get -u github.com/brianvoe/gofakeit
+	go get -u github.com/stretchr/testify/...
 
-	gometalinter.v2 --install
+deps-check:                     ## Install linters.
+	curl -sfL https://install.goreleaser.com/github.com/golangci/golangci-lint.sh | sh -s -- -b $(shell go env GOPATH)/bin
 
-# run all linters
-check:
-	-gometalinter.v2 ./... --tests --deadline=180s --severity=vet:error
+check:                          ## Run linters.
+	$(shell go env GOPATH)/bin/golangci-lint run ./...
 
-# run unit tests, generate models, install tools
-test:
+test:                           ## Run unit tests, generate models, install tools.
 	rm -f *.cover coverage.txt
 	rm -f internal/test/models/*_reform.go
 	rm -f reform-db/*_reform.go
@@ -39,8 +39,7 @@ test:
 	go generate -v -x gopkg.in/reform.v1/reform-db
 	go install -v gopkg.in/reform.v1/reform-db
 
-# initialize database and run integration tests
-test-db:
+test-db:                        ## Initialize database and run integration tests.
 	-reform-db -db-driver="$(REFORM_DRIVER)" -db-source="$(REFORM_ROOT_SOURCE)" -db-wait=15s exec \
 		internal/test/sql/$(REFORM_DATABASE)_drop.sql
 	reform-db -db-driver="$(REFORM_DRIVER)" -db-source="$(REFORM_ROOT_SOURCE)" exec \
@@ -63,8 +62,7 @@ test-db:
 	gocoverutil -coverprofile=coverage.txt merge *.cover
 	rm -f *.cover
 
-# run all integration tests with Docker Compose
-test-dc:
+test-dc:                        ## Run all integration tests with Docker Compose.
 	go run .github/test-dc.go test
 
 # run unit tests and integration tests for PostgreSQL (postgres driver)

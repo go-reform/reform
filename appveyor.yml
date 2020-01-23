@@ -4,6 +4,9 @@ clone_folder: c:\gopath\src\gopkg.in\reform.v1
 
 environment:
   GOPATH: c:\gopath
+  GO111MODULE: on
+  GORACE: halt_on_error=1
+
   matrix:
     - REFORM_TARGETS: sqlite3
 
@@ -35,9 +38,15 @@ install:
   - go version
 
 build_script:
-  - true
+  # check that it is still possible to install everything without modules
+  - env GO111MODULE=off go get -v ./...
+  - reform -version
+  - reform-db -version
+
+  - make init
 
 test_script:
+  - make test-unit
   - make %REFORM_TARGETS%
 
 on_success:

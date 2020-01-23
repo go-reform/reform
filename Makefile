@@ -29,6 +29,7 @@ test-unit:                      ## Run unit tests, generate models, install refo
 	rm -f reform-db/*_reform.go
 
 	go install -v gopkg.in/reform.v1/reform
+	go test -race gopkg.in/reform.v1/parse
 	go test -count=1 -covermode=count -coverprofile=parse.cover gopkg.in/reform.v1/parse
 	go generate -v -x gopkg.in/reform.v1/internal/test/models
 	go install -v gopkg.in/reform.v1/internal/test/models
@@ -59,7 +60,9 @@ test-db:
 	rm test/sql/$(REFORM_TEST_DATABASE)_combined.tmp.sql
 
 	# run tests
+	go test -count=1 -race gopkg.in/reform.v1/reform-db
 	go test -count=1 -covermode=count -coverprofile=reform-db.cover gopkg.in/reform.v1/reform-db
+	go test -count=1 -race
 	go test -count=1 -covermode=count -coverprofile=reform.cover
 	gocoverutil -coverprofile=coverage.txt merge *.cover
 	rm -f *.cover

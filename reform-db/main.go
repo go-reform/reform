@@ -82,13 +82,15 @@ func getDB() *reform.DB {
 
 func main() {
 	flag.Parse()
-
-	logger = internal.NewLogger("reform-db: ", *debugF)
-
 	if flag.NArg() == 0 {
 		flag.Usage()
 		os.Exit(1)
 	}
+
+	*driverF = strings.TrimSpace(*driverF)
+	*sourceF = strings.TrimSpace(*sourceF)
+
+	logger = internal.NewLogger("reform-db: ", *debugF)
 
 	switch flag.Arg(0) {
 	case "exec":

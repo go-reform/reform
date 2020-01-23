@@ -10,7 +10,7 @@ import (
 
 	mssqlDriver "github.com/denisenkom/go-mssqldb"
 	mysqlDriver "github.com/go-sql-driver/mysql"
-	"github.com/jackc/pgconn"
+	"github.com/jackc/pgx"
 	"github.com/jackc/pgx/stdlib"
 	"github.com/lib/pq"
 	sqlite3Driver "github.com/mattn/go-sqlite3"
@@ -112,7 +112,7 @@ func TestExecWithContext(t *testing.T) {
 		assert.Equal(t, "exec_simple_query", pgErr.Routine)
 	case *stdlib.Driver:
 		assert.EqualError(t, err, "ERROR: current transaction is aborted, commands ignored until end of transaction block (SQLSTATE 25P02)")
-		pgErr := err.(*pgconn.PgError)
+		pgErr := err.(pgx.PgError)
 		assert.Equal(t, "ERROR", pgErr.Severity)
 		assert.Equal(t, "25P02", pgErr.Code)
 		assert.Equal(t, "exec_parse_message", pgErr.Routine)

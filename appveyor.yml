@@ -35,7 +35,7 @@ install:
   - go version
 
 build_script:
-  - make deps
+  - true
 
 test_script:
   - make %REFORM_TARGETS%

@@ -59,6 +59,7 @@ test-db:
 		> test/sql/$(REFORM_TEST_DATABASE)_combined.tmp.sql
 	reform-db -db-driver="$(REFORM_TEST_DRIVER)" -db-source="$(REFORM_TEST_INIT_SOURCE)" exec \
 		test/sql/$(REFORM_TEST_DATABASE)_combined.tmp.sql
+	rm test/sql/$(REFORM_TEST_DATABASE)_combined.tmp.sql
 
 	# run tests
 	go test -count=1 -covermode=count -coverprofile=reform-db.cover gopkg.in/reform.v1/reform-db

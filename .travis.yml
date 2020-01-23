@@ -39,7 +39,7 @@ before_install:
   - docker --version
   - docker-compose --version
 
-  - docker-compose pull --parallel --quiet
+  - docker-compose pull
   - docker-compose up --detach
 
 install:

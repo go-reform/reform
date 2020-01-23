@@ -24,10 +24,11 @@ import (
 var (
 	logger *internal.Logger
 
-	debugF  = flag.Bool("debug", false, "Enable debug logging")
-	driverF = flag.String("db-driver", "", "Database driver (required)")
-	sourceF = flag.String("db-source", "", "Database connection string (required)")
-	waitF   = flag.Duration("db-wait", 0, "Wait for database connection to be established, retrying every second")
+	debugF   = flag.Bool("debug", false, "Enable debug logging")
+	driverF  = flag.String("db-driver", "", "Database driver (required)")
+	sourceF  = flag.String("db-source", "", "Database connection string (required)")
+	waitF    = flag.Duration("db-wait", 0, "Wait for database connection to be established, retrying every second")
+	versionF = flag.Bool("version", false, "Print version and exit")
 )
 
 func init() {
@@ -82,6 +83,12 @@ func getDB() *reform.DB {
 
 func main() {
 	flag.Parse()
+
+	if *versionF {
+		fmt.Println(reform.Version)
+		os.Exit(0)
+	}
+
 	if flag.NArg() == 0 {
 		flag.Usage()
 		os.Exit(1)

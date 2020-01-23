@@ -1,0 +1,30 @@
+---
+version: '3.7'
+
+services:
+  postgres:
+    image: ${REFORM_POSTGRES_IMAGE:-postgres:11}
+    container_name: reform_postgres
+    environment:
+      - TZ=Europe/Moscow
+    ports:
+      - 127.0.0.1:5432:5432
+
+  mysql:
+    image: ${REFORM_MYSQL_IMAGE:-mysql:5.7}
+    container_name: reform_mysql
+    environment:
+      - TZ=Europe/Moscow
+      - MYSQL_ALLOW_EMPTY_PASSWORD=1
+      - MYSQL_ROOT_HOST=%
+    ports:
+      - 127.0.0.1:3306:3306
+
+  mssql:
+    image: ${REFORM_MSSQL_IMAGE:-microsoft/mssql-server-linux:latest}
+    container_name: reform_mssql
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=reform-password123
+    ports:
+      - 127.0.0.1:1433:1433

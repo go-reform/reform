@@ -3,6 +3,7 @@ module gopkg.in/reform.v1
 go 1.11
 
 require (
+	github.com/AlekSi/gocoverutil v0.2.0
 	github.com/AlekSi/pointer v1.1.0
 	github.com/brianvoe/gofakeit v3.18.0+incompatible
 	github.com/cockroachdb/apd v1.1.0 // indirect

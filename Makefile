@@ -5,11 +5,8 @@ help:                           ## Display this help message.
 
 # SHELL = go run .github/shell.go
 
-lint-install:                   ## Install golangci-lint.
-	curl -sfL https://install.goreleaser.com/github.com/golangci/golangci-lint.sh | sh -s -- -b bin
-
-lint:                           ## Run golangci-lint.
-	bin/golangci-lint run
+init:                           ## Install development tools.
+	go install -v github.com/AlekSi/gocoverutil
 
 env-up:                         ## Start development environment.
 	docker-compose up --force-recreate --abort-on-container-exit --renew-anon-volumes --remove-orphans
@@ -17,7 +14,7 @@ env-up:                         ## Start development environment.
 env-down:                       ## Stop development environment.
 	docker-compose down --volumes --remove-orphans
 
-test: test-unit                 ## Run all tests in development environment.
+test: test-unit                 ## Run all tests (including test-unit) in development environment.
 	make postgres
 	make pgx
 	make mysql
@@ -152,5 +149,11 @@ win-sqlserver: export REFORM_TEST_INIT_SOURCE = sqlserver://$(REFORM_SQL_HOST)/$
 win-sqlserver: export REFORM_TEST_SOURCE = sqlserver://$(REFORM_SQL_HOST)/$(REFORM_SQL_INSTANCE)?database=reform-database
 win-sqlserver: test
 	make test-db
+
+bin/golangci-lint:
+	curl -sfL https://install.goreleaser.com/github.com/golangci/golangci-lint.sh | sh -s -- -b bin
+
+lint: bin/golangci-lint         ## Run golangci-lint.
+	bin/golangci-lint run
 
 .PHONY: docs parse reform reform-db test

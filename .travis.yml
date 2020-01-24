@@ -22,10 +22,12 @@ before_cache:
 cache:
   directories:
     - /home/travis/.cache/go-build
+    - /home/travis/gopath/pkg/mod
 
 env:
   global:
     - GO111MODULE=on
+    - GOPROXY=proxy.golang.org
     - GOFLAGS="-mod=readonly"
     - GORACE="halt_on_error=1"
     - REFORM_MSSQL_IMAGE=microsoft/mssql-server-linux:latest

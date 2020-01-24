@@ -27,7 +27,7 @@ cache:
 env:
   global:
     - GO111MODULE=on
-    - GOPROXY=proxy.golang.org
+    - GOPROXY=https://proxy.golang.org
     - GOFLAGS="-mod=readonly"
     - GORACE="halt_on_error=1"
     - REFORM_MSSQL_IMAGE=microsoft/mssql-server-linux:latest

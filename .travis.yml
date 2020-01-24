@@ -49,6 +49,8 @@ install:
   - reform -version
   - reform-db -version
 
+  - go mod download
+
   - make init
 
 script:

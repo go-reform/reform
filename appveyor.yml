@@ -44,6 +44,8 @@ build_script:
   - reform -version
   - reform-db -version
 
+  - go mod download
+
   - make init
 
 test_script:

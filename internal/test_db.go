@@ -29,7 +29,6 @@ var (
 func ConnectToTestDB() *reform.DB {
 	driver := strings.TrimSpace(os.Getenv("REFORM_TEST_DRIVER"))
 	source := strings.TrimSpace(os.Getenv("REFORM_TEST_SOURCE"))
-	log.Printf("driver = %q, source = %q", driver, source)
 	if driver == "" || source == "" {
 		log.Fatal("no driver or source, set REFORM_TEST_DRIVER and REFORM_TEST_SOURCE")
 	}
@@ -73,6 +72,8 @@ func ConnectToTestDB() *reform.DB {
 	switch dialect {
 	case postgresql.Dialect:
 		inspectOnce.Do(func() {
+			log.Printf("driver = %q, source = %q", driver, source)
+
 			log.Printf("time.Now()          = %s", now)
 			log.Printf("time.Now().UTC()    = %s", now.UTC())
 
@@ -89,6 +90,8 @@ func ConnectToTestDB() *reform.DB {
 
 	case mysql.Dialect:
 		inspectOnce.Do(func() {
+			log.Printf("driver = %q, source = %q", driver, source)
+
 			log.Printf("time.Now()          = %s", now)
 			log.Printf("time.Now().UTC()    = %s", now.UTC())
 
@@ -109,6 +112,8 @@ func ConnectToTestDB() *reform.DB {
 		}
 
 		inspectOnce.Do(func() {
+			log.Printf("driver = %q, source = %q", driver, source)
+
 			log.Printf("time.Now()          = %s", now)
 			log.Printf("time.Now().UTC()    = %s", now.UTC())
 
@@ -122,6 +127,8 @@ func ConnectToTestDB() *reform.DB {
 
 	case mssql.Dialect, sqlserver.Dialect:
 		inspectOnce.Do(func() {
+			log.Printf("driver = %q, source = %q", driver, source)
+
 			log.Printf("time.Now()       = %s", now)
 			log.Printf("time.Now().UTC() = %s", now.UTC())
 

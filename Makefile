@@ -29,7 +29,7 @@ test-unit:                      ## Run unit tests, generate models, install refo
 	rm -f reform-db/*_reform.go
 
 	go install -v gopkg.in/reform.v1/reform
-	go test -race gopkg.in/reform.v1/parse
+	go test -count=1 -race gopkg.in/reform.v1/parse
 	go test -count=1 -covermode=count -coverprofile=parse.cover gopkg.in/reform.v1/parse
 	go generate -v -x gopkg.in/reform.v1/internal/test/models
 	go install -v gopkg.in/reform.v1/internal/test/models
@@ -37,15 +37,18 @@ test-unit:                      ## Run unit tests, generate models, install refo
 	go generate -v -x gopkg.in/reform.v1/reform-db
 	go install -v gopkg.in/reform.v1/reform-db
 
-# run integration tests
-test-db:
-	# recreate database
+test-db-init:
+	# recreate and initialize database
+	rm -f $(CURDIR)/reform-database.sqlite3
 	-reform-db -db-driver="$(REFORM_TEST_DRIVER)" -db-source="$(REFORM_TEST_ADMIN_SOURCE)" -db-wait=15s exec \
 		test/sql/$(REFORM_TEST_DATABASE)_drop.sql
 	reform-db -db-driver="$(REFORM_TEST_DRIVER)" -db-source="$(REFORM_TEST_ADMIN_SOURCE)" exec \
 		test/sql/$(REFORM_TEST_DATABASE)_create.sql
+	reform-db -db-driver="$(REFORM_TEST_DRIVER)" -db-source="$(REFORM_TEST_INIT_SOURCE)" exec \
+		test/sql/$(REFORM_TEST_DATABASE)_combined.tmp.sql
 
-    # initialize database
+# run integration tests
+test-db:
 	# TODO remove that hack in reform 1.4
 	# https://github.com/go-reform/reform/issues/151
 	# https://github.com/go-reform/reform/issues/157
@@ -55,15 +58,22 @@ test-db:
 		test/sql/$(REFORM_TEST_DATABASE)_data.sql \
 		test/sql/$(REFORM_TEST_DATABASE)_set.sql \
 		> test/sql/$(REFORM_TEST_DATABASE)_combined.tmp.sql
-	reform-db -db-driver="$(REFORM_TEST_DRIVER)" -db-source="$(REFORM_TEST_INIT_SOURCE)" exec \
-		test/sql/$(REFORM_TEST_DATABASE)_combined.tmp.sql
-	rm test/sql/$(REFORM_TEST_DATABASE)_combined.tmp.sql
 
-	# run tests
+	make test-db-init
+
+	# run reform-db tests
 	go test -count=1 -race gopkg.in/reform.v1/reform-db
 	go test -count=1 -covermode=count -coverprofile=reform-db.cover gopkg.in/reform.v1/reform-db
-	go test -count=1 -race
+
+	# run main tests with -race
+	# FIXME
+	-go test -count=1 -race
+
+	make test-db-init
+
+	# run main tests with -cover
 	go test -count=1 -covermode=count -coverprofile=reform.cover
+
 	gocoverutil -coverprofile=coverage.txt merge *.cover
 	rm -f *.cover
 
@@ -110,7 +120,6 @@ sqlite3: export REFORM_TEST_ADMIN_SOURCE = $(CURDIR)/reform-database.sqlite3
 sqlite3: export REFORM_TEST_INIT_SOURCE = $(CURDIR)/reform-database.sqlite3
 sqlite3: export REFORM_TEST_SOURCE = $(CURDIR)/reform-database.sqlite3
 sqlite3:
-	rm -f $(CURDIR)/reform-database.sqlite3
 	make test-db
 
 # run integration tests for SQL Server (mssql driver)

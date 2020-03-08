@@ -36,6 +36,10 @@ jobs:
       - name: Check out code into the Go module directory
         uses: actions/checkout@v2
 
+      # https://github.com/actions/setup-go/issues/14
+      - name: Add GOPATH/bin to PATH
+        run: echo "::add-path::$(go env GOPATH)/bin"
+
       # useful debug commands
       - run: env
       - run: go env

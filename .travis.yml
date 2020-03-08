@@ -9,9 +9,6 @@ go:
 
 go_import_path: gopkg.in/reform.v1
 
-before_cache:
-  - go clean -testcache
-
 cache:
   directories:
     - /home/travis/.cache/go-build
@@ -32,12 +29,12 @@ env:
     - REFORM_POSTGRES_IMAGE=postgres:12  REFORM_MYSQL_IMAGE=mysql:8.0
 
 before_install:
-  # - env
-  # - go env
-  # - go version
-  # - pwd
-  # - docker --version
-  # - docker-compose --version
+  - env
+  - go env
+  - go version
+  - pwd
+  - docker --version
+  - docker-compose --version
 
   - make env-up-detach
 

@@ -61,6 +61,9 @@ jobs:
       - name: Download Go modules
         run: go mod download
 
+      - name: Stop Ubuntu services
+        run: sudo systemctl stop mysql
+
       - name: Start development environment
         run: make env-up-detach
 

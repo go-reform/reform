@@ -2,8 +2,7 @@
 
 ## Golden rule
 
-Speak up _before_ writing code. Comment on existing issue or create a new one. Join
-[Gitter chat](https://gitter.im/go-reform/reform?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge). Discuss what
+Speak up _before_ writing code. Comment on existing issue or create a new one. Discuss what
 you want to implement _before_ implementing it.
 
 

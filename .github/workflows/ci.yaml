@@ -50,10 +50,13 @@ jobs:
       - name: Add GOPATH/bin to PATH
         run: echo "::add-path::$(go env GOPATH)/bin"
 
+      - name: Add GOPATH/bin to PATH
+        run: echo "::set-env name=GO_VERSION::$(go version)"
+
       # useful debug commands
-      # - run: env
-      # - run: go env
-      # - run: pwd
+      - run: env
+      - run: go env
+      - run: pwd
 
       - name: Enable Go modules cache
         uses: actions/cache@v1
@@ -90,4 +93,4 @@ jobs:
       # TODO test again with updated deps
 
       - name: Upload coverage information
-        run: bash <(curl -s https://codecov.io/bash) -f coverage.txt -X fix -e REFORM_POSTGRES_IMAGE,REFORM_MYSQL_IMAGE,REFORM_MSSQL_IMAGE
+        run: bash <(curl -s https://codecov.io/bash) -f coverage.txt -X fix -e GO_VERSION,REFORM_POSTGRES_IMAGE,REFORM_MYSQL_IMAGE,REFORM_MSSQL_IMAGE

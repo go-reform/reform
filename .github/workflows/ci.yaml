@@ -37,9 +37,9 @@ jobs:
         uses: actions/checkout@v2
 
       # useful debug commands
-      # - run: env
-      # - run: go env
-      # - run: pwd
+      - run: env
+      - run: go env
+      - run: pwd
 
       - name: Enable Go modules cache
         uses: actions/cache@v1

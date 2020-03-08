@@ -19,7 +19,7 @@ env-up-detach:                  ## Start development environment in the backgrou
 env-down:                       ## Stop development environment.
 	docker-compose down --volumes --remove-orphans
 
-test: test-unit                 ## Run all tests (including test-unit) in development environment.
+test: test-unit                 ## Run all tests.
 	make postgres
 	make pgx
 	make mysql
@@ -28,7 +28,7 @@ test: test-unit                 ## Run all tests (including test-unit) in develo
 	make mssql
 	make sqlserver
 
-test-unit:                      ## Run unit tests, generate models, install reform tools.
+test-unit:
 	rm -f *.cover coverage.txt
 	rm -f internal/test/models/*_reform.go
 	rm -f reform-db/*_reform.go
@@ -54,7 +54,7 @@ test-db-init:
 
 # run integration tests
 test-db:
-	# TODO remove that hack in reform 1.4
+	# TODO remove that hack in reform 1.5
 	# https://github.com/go-reform/reform/issues/151
 	# https://github.com/go-reform/reform/issues/157
 	cat \

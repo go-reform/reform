@@ -7,8 +7,14 @@ services:
     container_name: reform_postgres
     environment:
       - TZ=Europe/Moscow
+      - POSTGRES_HOST_AUTH_METHOD=trust
     ports:
       - 127.0.0.1:5432:5432
+    healthcheck:
+      test: psql -U postgres --command='SELECT 1'
+      interval: 1s
+      timeout: 1s
+      retries: 1
 
   mysql:
     image: ${REFORM_MYSQL_IMAGE:-mysql:5.7}
@@ -19,6 +25,11 @@ services:
       - MYSQL_ROOT_HOST=%
     ports:
       - 127.0.0.1:3306:3306
+    healthcheck:
+      test: echo 'SELECT 1' | mysql
+      interval: 1s
+      timeout: 1s
+      retries: 1
 
   mssql:
     image: ${REFORM_MSSQL_IMAGE:-microsoft/mssql-server-linux:latest}

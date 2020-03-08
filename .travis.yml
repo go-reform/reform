@@ -43,7 +43,7 @@ before_install:
   - docker-compose --version
 
   - docker-compose pull
-  - docker-compose up --detach
+  - make env-up-detach
 
 install:
   # check that it is still possible to install everything without modules

@@ -62,7 +62,10 @@ jobs:
         run: go mod download
 
       - name: Start development environment
-        run: make env-up &
+        run: make env-up-detach
+
+      - name: Run init target
+        run: make init
 
       - name: Run test target
         run: make test

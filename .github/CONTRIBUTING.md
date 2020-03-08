@@ -8,6 +8,8 @@ you want to implement _before_ implementing it.
 
 ## Running tests
 
-First of all, run `env GO111MODULE=on go get -v ./...` to install versioned dependencies.
-
-Then run all tests with Docker Compose: `make test`.
+1. Reform uses Go modules to version dependencies. Make sure they are not disabled in your environment.
+2. Run `make` without arguments to see all Makefile targets.
+3. Run `make env-up` or `make env-up-detach` to start databases with Docker Compose.
+4. Run `make init` to install development tools.
+5. Run `make test` to run all tests.

@@ -1,6 +1,6 @@
 module gopkg.in/reform.v1
 
-go 1.11
+go 1.12
 
 require (
 	github.com/AlekSi/gocoverutil v0.2.0

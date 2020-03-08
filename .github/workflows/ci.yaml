@@ -1,0 +1,68 @@
+---
+name: CI
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+
+jobs:
+  test:
+    name: Test
+    timeout-minutes: 5
+
+    strategy:
+      matrix:
+        go-version:
+          - 1.12.x
+          - 1.13.x
+          - 1.14.x
+        platform: [ubuntu-latest]
+
+    runs-on: ${{ matrix.platform }}
+
+    env:
+      GO111MODULE: "on"
+      GOPROXY: https://proxy.golang.org
+      GOFLAGS: -mod=readonly
+      GORACE: halt_on_error=1
+
+    steps:
+      - name: Set up Go ${{ matrix.go-version }}
+        uses: actions/setup-go@v1
+        with:
+          go-version: ${{ matrix.go-version }}
+
+      - name: Check out code into the Go module directory
+        uses: actions/checkout@v2
+
+      # useful debug commands
+      # - run: env
+      # - run: go env
+      # - run: pwd
+
+      - name: Enable Go modules cache
+        uses: actions/cache@v1
+        with:
+          path: ~/go/pkg/mod
+          key: ${{ matrix.platform }}-go-${{ matrix.go-version }}-modules-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ matrix.platform }}-go-${{ matrix.go-version }}-modules-
+
+      - name: Enable Go build cache
+        uses: actions/cache@v1
+        with:
+          path: ~/.cache/go-build
+          key: ${{ matrix.platform }}-go-${{ matrix.go-version }}-build-${{ github.ref }}-${{ hashFiles('**') }}
+          restore-keys: |
+            ${{ matrix.platform }}-go-${{ matrix.go-version }}-build-${{ github.ref }}-
+            ${{ matrix.platform }}-go-${{ matrix.go-version }}-build-
+
+      - name: Download Go modules
+        run: go mod download
+
+      - name: Start development environment
+        run: make env-up &
+
+      - name: Run test target
+        run: make test

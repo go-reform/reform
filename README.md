@@ -32,7 +32,7 @@ Notes:
 
 ## Quickstart
 
-1. Make sure you are using Go 1.11+. Install or update `reform` package, `reform` and `reform-db` commands
+1. Make sure you are using Go 1.12+. Install or update `reform` package, `reform` and `reform-db` commands
    (see about versioning below):
     ```
     go get -u gopkg.in/reform.v1/...

@@ -51,9 +51,9 @@ jobs:
         run: echo "::add-path::$(go env GOPATH)/bin"
 
       # useful debug commands
-      - run: env
-      - run: go env
-      - run: pwd
+      # - run: env
+      # - run: go env
+      # - run: pwd
 
       - name: Enable Go modules cache
         uses: actions/cache@v1
@@ -72,17 +72,22 @@ jobs:
             ${{ matrix.platform }}-go-${{ matrix.go-version }}-build-${{ github.ref }}-
             ${{ matrix.platform }}-go-${{ matrix.go-version }}-build-
 
-      - name: Download Go modules
-        run: go mod download
-
       - name: Stop Ubuntu services
         run: sudo systemctl stop mysql
 
       - name: Start development environment
         run: make env-up-detach
 
+      - name: Download Go modules
+        run: go mod download
+
       - name: Run init target
         run: make init
 
       - name: Run test target
         run: make test
+
+      # TODO test again with updated deps
+
+      - name: Upload coverage information
+        run: bash <(curl -s https://codecov.io/bash) -f coverage.txt -X fix -e REFORM_POSTGRES_IMAGE,REFORM_MYSQL_IMAGE,REFORM_MSSQL_IMAGE

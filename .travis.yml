@@ -35,7 +35,6 @@ before_install:
   - docker --version
   - docker-compose --version
 
-  - docker-compose pull
   - make env-up-detach
 
 install:

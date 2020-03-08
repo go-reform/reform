@@ -6,7 +6,7 @@ help:                           ## Display this help message.
 # SHELL = go run .github/shell.go
 
 init:                           ## Install development tools.
-	go install -v github.com/AlekSi/gocoverutil
+	go build -v -o bin/gocoverutil github.com/AlekSi/gocoverutil
 
 env-up:                         ## Start development environment.
 	docker-compose up --force-recreate --abort-on-container-exit --renew-anon-volumes --remove-orphans
@@ -79,7 +79,7 @@ test-db:
 	# run main tests with -cover
 	go test -count=1 -covermode=count -coverprofile=reform.cover
 
-	gocoverutil -coverprofile=coverage.txt merge *.cover
+	bin/gocoverutil -coverprofile=coverage.txt merge *.cover
 	rm -f *.cover
 
 # run integration tests for PostgreSQL (postgres driver)

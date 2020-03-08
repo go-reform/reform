@@ -12,20 +12,30 @@ jobs:
     timeout-minutes: 5
 
     strategy:
+      fail-fast: false
       matrix:
+        os:
+          - ubuntu-latest
         go-version:
           - 1.12.x
           - 1.13.x
           - 1.14.x
-        platform: [ubuntu-latest]
+        images:
+          - {postgres: "postgres:9.6", mysql: "mysql:5.5"}
+          - {postgres: "postgres:10",  mysql: "mysql:5.6"}
+          - {postgres: "postgres:11",  mysql: "mysql:5.7"}
+          - {postgres: "postgres:12",  mysql: "mysql:8.0"}
 
-    runs-on: ${{ matrix.platform }}
+    runs-on: ${{ matrix.os }}
 
     env:
       GO111MODULE: "on"
       GOPROXY: https://proxy.golang.org
       GOFLAGS: -mod=readonly
       GORACE: halt_on_error=1
+      REFORM_POSTGRES_IMAGE: ${{ matrix.images.postgres }}
+      REFORM_MYSQL_IMAGE: ${{ matrix.images.mysql }}
+      REFORM_MSSQL_IMAGE: microsoft/mssql-server-linux:latest
 
     steps:
       - name: Set up Go ${{ matrix.go-version }}

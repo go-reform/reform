@@ -4,7 +4,7 @@ clone_folder: c:\gopath\src\gopkg.in\reform.v1
 
 environment:
   GOPATH: c:\gopath
-  GO111MODULE: on
+  GO111MODULE: "on"
   GOPROXY: https://proxy.golang.org
   GOFLAGS: -mod=readonly
   GORACE: halt_on_error=1
@@ -37,15 +37,16 @@ install:
   - set PATH=C:\msys64\usr\bin;C:\msys64\mingw64\bin;%GOPATH%\bin;%PATH%
   - pacman -Rsc --noconfirm gcc
 
+  - go env
   - go version
 
 build_script:
-  # check that it is still possible to install everything without modules
+  - go mod download
+
+  # check that it is still possible to install reform without modules
   - env GO111MODULE=off go get -v ./...
   - reform -version
   - reform-db -version
-
-  - go mod download
 
   - make init
 

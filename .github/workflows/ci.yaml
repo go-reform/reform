@@ -53,10 +53,14 @@ jobs:
       - name: Check out code into the Go module directory
         uses: actions/checkout@v2
 
-      # useful debug commands
-      # - run: env
-      # - run: go env
-      # - run: pwd
+      # - name: Run debug commands
+      #   run: |
+      #     env
+      #     go env
+      #     go version
+      #     pwd
+      #     docker --version
+      #     docker-compose --version
 
       - name: Enable Go modules cache
         uses: actions/cache@v1
@@ -84,6 +88,12 @@ jobs:
       - name: Download Go modules
         run: go mod download
 
+      - name: Check that it is still possible to install reform without modules
+        run: |
+          env GO111MODULE=off go get -v ./...
+          reform -version
+          reform-db -version
+
       - name: Run init target
         run: make init
 
@@ -91,6 +101,11 @@ jobs:
         run: make test
 
       # TODO test again with updated deps
+
+      - name: Check that generated files did not change
+        run: |
+          git status
+          git diff --exit-code
 
       - name: Upload coverage information
         run: bash <(curl -s https://codecov.io/bash) -f coverage.txt -X fix -e GO_VERSION,REFORM_POSTGRES_IMAGE,REFORM_MYSQL_IMAGE,REFORM_MSSQL_IMAGE

@@ -32,18 +32,22 @@ env:
     - REFORM_POSTGRES_IMAGE=postgres:12  REFORM_MYSQL_IMAGE=mysql:8.0
 
 before_install:
-  - docker --version
-  - docker-compose --version
+  # - env
+  # - go env
+  # - go version
+  # - pwd
+  # - docker --version
+  # - docker-compose --version
 
   - make env-up-detach
 
 install:
-  # check that it is still possible to install everything without modules
+  - go mod download
+
+  # check that it is still possible to install reform without modules
   - env GO111MODULE=off go get -v ./...
   - reform -version
   - reform-db -version
-
-  - go mod download
 
   - make init
 

@@ -46,11 +46,11 @@ jobs:
       - name: Check out code into GOPATH
         uses: actions/checkout@v2
         with:
-          path: ../../go/src/gopkg.in/reform.v1
+          path: gopath/src/gopkg.in/reform.v1
 
       - name: Set environment variables
         run: |
-          echo "::set-env name=GOPATH::/home/runner/work/reform/go"
+          echo "::set-env name=GOPATH::$GITHUB_WORKSPACE/gopath"
           echo "::add-path::$(go env GOPATH)/bin"
           echo "::set-env name=GO_VERSION::$(go version)"
 
@@ -61,7 +61,7 @@ jobs:
           go version
           go env
           pwd
-          tree -d /home/runner/work
+          tree -d
           ls -al
           docker --version
           docker-compose --version

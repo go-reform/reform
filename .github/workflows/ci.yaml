@@ -61,7 +61,7 @@ jobs:
           go version
           go env
           pwd
-          tree -d /home/runner
+          tree -d /home/runner/work
           ls -al
           docker --version
           docker-compose --version

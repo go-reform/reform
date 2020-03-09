@@ -43,16 +43,18 @@ jobs:
         with:
           go-version: ${{ matrix.go-version }}
 
-      - name: Check out code into GOPATH
-        uses: actions/checkout@v2
-        with:
-          path: gopath/src/gopkg.in/reform.v1
 
       - name: Set environment variables
         run: |
           echo "::set-env name=GOPATH::$GITHUB_WORKSPACE/gopath"
-          echo "::add-path::$(go env GOPATH)/bin"
+          echo "::add-path::$GITHUB_WORKSPACE/gopath/bin"
+          echo "::set-env name=WORKDIR::$GITHUB_WORKSPACE/gopath/src/gopkg.in/reform.v1"
           echo "::set-env name=GO_VERSION::$(go version)"
+
+      - name: Check out code into GOPATH
+        uses: actions/checkout@v2
+        with:
+          path: ${{ env.WORKDIR }}
 
       - name: Run debug commands
         run: |
@@ -69,7 +71,7 @@ jobs:
       - name: Enable Go modules cache
         uses: actions/cache@v1
         with:
-          path: ~/go/pkg/mod
+          path: ${{ env.GOPATH }}/pkg/mod
           key: ${{ matrix.platform }}-go-${{ matrix.go-version }}-modules-${{ hashFiles('**/go.sum') }}
           restore-keys: |
             ${{ matrix.platform }}-go-${{ matrix.go-version }}-modules-
@@ -88,21 +90,26 @@ jobs:
 
       - name: Start development environment
         run: make env-up-detach
+        working-directory: ${{ env.WORKDIR }}
 
       - name: Download Go modules
         run: go mod download
+        working-directory: ${{ env.WORKDIR }}
 
       - name: Check that it is still possible to install reform without modules
         run: |
           env GO111MODULE=off go get -v ./...
           reform -version
           reform-db -version
+        working-directory: ${{ env.WORKDIR }}
 
       - name: Run init target
         run: make init
+        working-directory: ${{ env.WORKDIR }}
 
       - name: Run test target
         run: make test
+        working-directory: ${{ env.WORKDIR }}
 
       # TODO test again with updated deps
 
@@ -110,6 +117,8 @@ jobs:
         run: |
           git status
           git diff --exit-code
+        working-directory: ${{ env.WORKDIR }}
 
       - name: Upload coverage information
         run: bash <(curl -s https://codecov.io/bash) -f coverage.txt -X fix -e GO_VERSION,REFORM_POSTGRES_IMAGE,REFORM_MYSQL_IMAGE,REFORM_MSSQL_IMAGE
+        working-directory: ${{ env.WORKDIR }}

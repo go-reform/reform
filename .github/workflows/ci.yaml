@@ -43,22 +43,24 @@ jobs:
         with:
           go-version: ${{ matrix.go-version }}
 
-      # https://github.com/actions/setup-go/issues/14
-      - name: Add GOPATH/bin to PATH
-        run: echo "::add-path::$(go env GOPATH)/bin"
-
-      - name: Add GO_VERSION to environment
-        run: echo "::set-env name=GO_VERSION::$(go version)"
-
-      - name: Check out code into the Go module directory
+      - name: Check out code into GOPATH
         uses: actions/checkout@v2
+        with:
+          path: go/src/gopkg.in/reform.v1
+
+      - name: Set environment variables
+        run: |
+          echo "::set-env name=GOPATH::/home/runner/work/reform/go"
+          echo "::add-path::$(go env GOPATH)/bin"
+          echo "::set-env name=GO_VERSION::$(go version)"
 
       - name: Run debug commands
         run: |
           env
-          go env
           go version
+          go env
           pwd
+          ls -al
           docker --version
           docker-compose --version
 

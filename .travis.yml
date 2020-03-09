@@ -30,9 +30,10 @@ env:
 
 before_install:
   - env
-  - go env
   - go version
+  - go env
   - pwd
+  - ls -al
   - docker --version
   - docker-compose --version
 

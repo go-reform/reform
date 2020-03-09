@@ -43,7 +43,6 @@ jobs:
         with:
           go-version: ${{ matrix.go-version }}
 
-
       - name: Set environment variables
         run: |
           echo "::set-env name=GOPATH::$GITHUB_WORKSPACE/gopath"
@@ -56,17 +55,21 @@ jobs:
         with:
           path: ${{ env.WORKDIR }}
 
-      - name: Run debug commands
-        run: |
-          sudo apt-get install -y tree
-          env
-          go version
-          go env
-          pwd
-          tree -d
-          ls -al
-          docker --version
-          docker-compose --version
+      # - name: Run debug commands
+      #   run: |
+      #     sudo apt-get install -y tree
+      #     env
+      #     go version
+      #     go env
+      #     pwd
+      #     tree -d
+      #     ls -al
+      #     docker --version
+      #     docker-compose --version
+
+      - name: Pull Docker images in the background
+        run: docker-compose pull --quiet &
+        working-directory: ${{ env.WORKDIR }}
 
       - name: Enable Go modules cache
         uses: actions/cache@v1
@@ -88,10 +91,6 @@ jobs:
       - name: Stop Ubuntu services
         run: sudo systemctl stop mysql
 
-      - name: Start development environment in the background
-        run: make env-up-detach
-        working-directory: ${{ env.WORKDIR }}
-
       - name: Download Go modules
         run: go mod download
         working-directory: ${{ env.WORKDIR }}
@@ -107,8 +106,8 @@ jobs:
         run: make init
         working-directory: ${{ env.WORKDIR }}
 
-      - name: Wait for development environment to be ready
-        run: make env-up-wait
+      - name: Start development environment
+        run: make env-up-detach
         working-directory: ${{ env.WORKDIR }}
 
       - name: Run test target

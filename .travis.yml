@@ -29,15 +29,16 @@ env:
     - REFORM_POSTGRES_IMAGE=postgres:12  REFORM_MYSQL_IMAGE=mysql:8.0
 
 before_install:
-  - env
-  - go version
-  - go env
-  - pwd
-  - ls -al
-  - docker --version
-  - docker-compose --version
+  # - env
+  # - go version
+  # - go env
+  # - pwd
+  # - ls -al
+  # - docker --version
+  # - docker-compose --version
 
-  - make env-up-detach
+  # pull Docker images in the background
+  - docker-compose pull --quiet &
 
 install:
   - go mod download
@@ -49,7 +50,7 @@ install:
 
   - make init
 
-  - make env-up-wait
+  - make env-up-detach
 
 script:
   - make test

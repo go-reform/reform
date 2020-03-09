@@ -13,8 +13,6 @@ env-up:                         ## Start development environment.
 
 env-up-detach:                  ## Start development environment in the backgroud.
 	docker-compose up --detach --force-recreate --renew-anon-volumes --remove-orphans
-
-env-up-wait:
 	until [ "`docker inspect -f {{.State.Health.Status}} reform_postgres`" = "healthy" ]; do sleep 1; done
 	until [ "`docker inspect -f {{.State.Health.Status}} reform_mysql`" = "healthy" ]; do sleep 1; done
 

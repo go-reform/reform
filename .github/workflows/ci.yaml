@@ -46,7 +46,7 @@ jobs:
       - name: Check out code into GOPATH
         uses: actions/checkout@v2
         with:
-          path: go/src/gopkg.in/reform.v1
+          path: ../../go/src/gopkg.in/reform.v1
 
       - name: Set environment variables
         run: |

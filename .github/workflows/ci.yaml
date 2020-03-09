@@ -88,7 +88,7 @@ jobs:
       - name: Stop Ubuntu services
         run: sudo systemctl stop mysql
 
-      - name: Start development environment
+      - name: Start development environment in the background
         run: make env-up-detach
         working-directory: ${{ env.WORKDIR }}
 
@@ -105,6 +105,10 @@ jobs:
 
       - name: Run init target
         run: make init
+        working-directory: ${{ env.WORKDIR }}
+
+      - name: Wait for development environment to be ready
+        run: make env-up-wait
         working-directory: ${{ env.WORKDIR }}
 
       - name: Run test target

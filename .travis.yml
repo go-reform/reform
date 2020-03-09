@@ -49,6 +49,8 @@ install:
 
   - make init
 
+  - make env-up-wait
+
 script:
   - make test
 

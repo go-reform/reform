@@ -46,8 +46,6 @@ func sleepQuery(t testing.TB, q *reform.Querier, d time.Duration) string {
 }
 
 func TestExecWithContext(t *testing.T) {
-	t.Skip("FIXME")
-
 	db, tx := setupTX(t)
 	defer teardown(t, db)
 
@@ -66,16 +64,20 @@ func TestExecWithContext(t *testing.T) {
 	start := time.Now()
 	_, err := q.Exec(query)
 	dur := time.Since(start)
+
 	switch dbDriver.(type) {
 	case *sqlite3Driver.SQLiteDriver:
-		assert.NoError(t, err)
+		// sqlite3 driver does not support query cancelation
+		assert.Equal(t, context.DeadlineExceeded, err)
 		assert.True(t, dur >= sleep, "sqlite3: failed comparison: dur >= sleep")
 		assert.True(t, dur >= ctxTimeout, "sqlite3: failed comparison: dur >= ctxTimeout")
+
 	default:
 		assert.Error(t, err)
 		assert.True(t, dur < sleep, "failed comparison: dur < sleep")
 		assert.True(t, dur > ctxTimeout, "failed comparison: dur > ctxTimeout")
 
+		// check specific error type
 		switch dbDriver.(type) {
 		case *pq.Driver:
 			require.EqualError(t, err, "pq: canceling statement due to user request")
@@ -102,8 +104,9 @@ func TestExecWithContext(t *testing.T) {
 	var res int
 	err = q.QueryRow("SELECT 1").Scan(&res)
 	assert.Equal(t, context.DeadlineExceeded, err)
+	require.Equal(t, 0, res)
 
-	// check tx without timeout
+	// check the same tx without timeout
 	err = tx.QueryRow("SELECT 1").Scan(&res)
 	switch dbDriver.(type) {
 	case *pq.Driver:
@@ -112,18 +115,30 @@ func TestExecWithContext(t *testing.T) {
 		assert.Equal(t, "ERROR", pgErr.Severity)
 		assert.Equal(t, pq.ErrorCode("25P02"), pgErr.Code)
 		assert.Equal(t, "exec_simple_query", pgErr.Routine)
+
+		assert.Equal(t, 0, res)
+
 	case *stdlib.Driver:
 		assert.EqualError(t, err, "ERROR: current transaction is aborted, commands ignored until end of transaction block (SQLSTATE 25P02)")
 		pgErr := err.(pgx.PgError)
 		assert.Equal(t, "ERROR", pgErr.Severity)
 		assert.Equal(t, "25P02", pgErr.Code)
 		assert.Equal(t, "exec_parse_message", pgErr.Routine)
+
+		assert.Equal(t, 0, res)
+
 	case *mysqlDriver.MySQLDriver:
 		assert.Equal(t, driver.ErrBadConn, err)
+		assert.Equal(t, 0, res)
+
 	case *sqlite3Driver.SQLiteDriver:
 		assert.NoError(t, err)
+		assert.Equal(t, 1, res)
+
 	case *mssqlDriver.Driver:
 		assert.Equal(t, driver.ErrBadConn, err)
+		assert.Equal(t, 0, res)
+
 	default:
 		t.Fatalf("tx.QueryRow: unhandled driver %T. err = %s", dbDriver, err)
 	}

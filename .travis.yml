@@ -1,67 +1,64 @@
-dist: xenial
+dist: bionic
 language: go
 
 services:
   - docker
 
 go:
-  - 1.10.x
-  - 1.11.x
-  - 1.12.x
-  # - TODO master
-
-matrix:
-  allow_failures:
-    - go: master
+  - master
 
 go_import_path: gopkg.in/reform.v1
-
-before_cache:
-  - go clean -testcache
 
 cache:
   directories:
     - /home/travis/.cache/go-build
-
-install:
-  - make deps
-
-script:
-  - make test-dc
-
-after_success:
-  - bash <(curl -s https://codecov.io/bash) -f coverage.txt -X fix -e REFORM_TARGETS,REFORM_IMAGE_VERSION
-
-notifications:
-  webhooks:
-    urls:
-      # Gitter
-      - secure: "M5FL6dahsnY6TsU03QptqRoVriulkFPGLoKmbwLWAmPTk+h6SreMKIJHTmSba77snYVWR/gMLMNW01yMBrbV+ZmVgU6Sdp6yYlciA4cQcvIM7pwKuIfzeKhMCE2oeNVB3G2IHeu+FysbFXzI1JV9oU1I453aksyAPi4flf8eVUeMUa3nxWQt84MFC5RFn/pJ0G8lwUgAmHq56FjiOZ+5hF224s++CEEGGSclGZLH0/+T7SVH9sWSpyBuFtB6LZsl78JQ3mdxpFe95VAlpaB/PWdi7BXnZQ8XHgG1U1+1Z5at1uEmMmYjsQ5GzxaTEfjBRdC5AT6bRHjhW5wpI0tFKX77+1eexQXypuKyGIax7/7wFhKoEsU/9IUneqm17H9C5ZecF0xfvgTT4e2sHihm4qmYhQOFhGW+zlZdkp6rKzT17H0+g2q0IH3MJOKghyMO8l/YDy+wt2jdHggobfZLgcWLhyaHkUy0570jVUc+s+Zk/OOHr8kExvUcBuQeE38sQD6KEQoeeevXNlNtwrHvafjTfH1cUrc5JwFzP7go3VBEYxaHu+ctO7+DcUswOUsnTRiTQrp2FgNQP0TdlGgHgFV9cN5C+VcCwiB4NuU4ZM6J2TYmR6Wih4h/NooFKa8DiD++mqdyf6PhBn3tfHHtBFaLuE2GYMJ61MAv4kMNcBk="
+    - /home/travis/gopath/pkg/mod
 
 env:
   global:
+    - GO111MODULE=on
+    - GOPROXY=https://proxy.golang.org
+    - GOFLAGS="-mod=readonly"
     - GORACE="halt_on_error=1"
-    - REFORM_SKIP_PULL=1
+    - REFORM_MSSQL_IMAGE=microsoft/mssql-server-linux:latest
 
-  # Generated with 'go run .github/test-dc.go gen'.
-  # 12 combinations:
-  #   postgres, pgx: 9.4, 9.5, 9.6, 10, 11, 12
-  #   mysql, mysql-traditional: 5.5, 5.6, 5.7, 8.0
-  #   sqlite3: dummy
-  #   mssql, sqlserver: latest
   matrix:
-    - REFORM_IMAGE_VERSION=9.4 REFORM_TARGETS=postgres,pgx
-    - REFORM_IMAGE_VERSION=9.5 REFORM_TARGETS=postgres,pgx
-    - REFORM_IMAGE_VERSION=9.6 REFORM_TARGETS=postgres,pgx
-    - REFORM_IMAGE_VERSION=10 REFORM_TARGETS=postgres,pgx
-    - REFORM_IMAGE_VERSION=11 REFORM_TARGETS=postgres,pgx
-    - REFORM_IMAGE_VERSION=12 REFORM_TARGETS=postgres,pgx
+    - REFORM_POSTGRES_IMAGE=postgres:9.6 REFORM_MYSQL_IMAGE=mysql:5.5
+    - REFORM_POSTGRES_IMAGE=postgres:10  REFORM_MYSQL_IMAGE=mysql:5.6
+    - REFORM_POSTGRES_IMAGE=postgres:11  REFORM_MYSQL_IMAGE=mysql:5.7
+    - REFORM_POSTGRES_IMAGE=postgres:12  REFORM_MYSQL_IMAGE=mysql:8.0
 
-    - REFORM_IMAGE_VERSION=5.5 REFORM_TARGETS=mysql,mysql-traditional
-    - REFORM_IMAGE_VERSION=5.6 REFORM_TARGETS=mysql,mysql-traditional
-    - REFORM_IMAGE_VERSION=5.7 REFORM_TARGETS=mysql,mysql-traditional
-    - REFORM_IMAGE_VERSION=8.0 REFORM_TARGETS=mysql,mysql-traditional
+before_install:
+  # - env
+  # - go version
+  # - go env
+  # - pwd
+  # - ls -al
+  # - docker --version
+  # - docker-compose --version
 
-    - REFORM_IMAGE_VERSION=dummy REFORM_TARGETS=sqlite3
+  # pull Docker images in the background
+  - docker-compose pull --quiet &
 
-    - REFORM_IMAGE_VERSION=latest REFORM_TARGETS=mssql,sqlserver
+install:
+  - go mod download
+
+  # check that it is still possible to install reform without modules
+  - env GO111MODULE=off go get -v ./...
+  - reform -version
+  - reform-db -version
+
+  - make init
+
+  - make env-up-detach
+
+script:
+  - make test
+
+  # TODO test again with updated deps
+
+  - git status
+  - git diff --exit-code
+
+after_success:
+  - bash <(curl -s https://codecov.io/bash) -f coverage.txt -X fix -e REFORM_POSTGRES_IMAGE,REFORM_MYSQL_IMAGE,REFORM_MSSQL_IMAGE

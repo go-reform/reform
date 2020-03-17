@@ -250,6 +250,7 @@ func (s *ReformSuite) TestTimezones() {
 		q = `SELECT created_at, created_at FROM people WHERE id IN (11, 12, 13, 14) ORDER BY id`
 		rows, err := s.q.Query(q)
 		s.NoError(err)
+		defer rows.Close()
 
 		for _, t := range []time.Time{t1, t2, tVLAT, tHST} {
 			var createdS string
@@ -260,8 +261,8 @@ func (s *ReformSuite) TestTimezones() {
 			log.Printf("%s read from database as %q and %s", t, createdS, createdT)
 		}
 
-		err = rows.Close()
-		s.NoError(err)
+		s.NoError(rows.Err())
+		s.NoError(rows.Close())
 	}
 
 	{
@@ -288,8 +289,8 @@ func (s *ReformSuite) TestTimezones() {
 			log.Printf("%s read from database as %q and %s", t, startS, startT)
 		}
 
-		err = rows.Close()
-		s.NoError(err)
+		s.NoError(rows.Err())
+		s.NoError(rows.Close())
 	}
 }
 
@@ -299,6 +300,7 @@ func (s *ReformSuite) TestColumns() {
 	rows, err := s.q.SelectRows(PersonTable, "WHERE name = "+s.q.Placeholder(1)+" ORDER BY id", "Elfrieda Abbott")
 	s.NoError(err)
 	s.Require().NotNil(rows)
+	s.NoError(rows.Err())
 	defer rows.Close()
 
 	columns, err := rows.Columns()

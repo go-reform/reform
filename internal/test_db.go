@@ -117,12 +117,12 @@ func ConnectToTestDB() *reform.DB {
 			log.Printf("time.Now()          = %s", now)
 			log.Printf("time.Now().UTC()    = %s", now.UTC())
 
-			var version, source string
-			if err = db.QueryRow("SELECT sqlite_version(), sqlite_source_id()").Scan(&version, &source); err != nil {
+			var version, sourceID string
+			if err = db.QueryRow("SELECT sqlite_version(), sqlite_source_id()").Scan(&version, &sourceID); err != nil {
 				log.Fatal(err)
 			}
 			log.Printf("SQLite3 version     = %q", version)
-			log.Printf("SQLite3 source      = %q", source)
+			log.Printf("SQLite3 source      = %q", sourceID)
 		})
 
 	case mssql.Dialect, sqlserver.Dialect:

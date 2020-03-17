@@ -4,7 +4,8 @@
 run:
   skip-dirs:
     - bogus
-  # TODO for modules: modules-download-mode
+
+  modules-download-mode: readonly
 
 linters-settings:
   govet:

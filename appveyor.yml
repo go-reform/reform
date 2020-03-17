@@ -52,7 +52,7 @@ build_script:
 
 test_script:
   - make test-unit
-  - make $(REFORM_MAKE_TARGET)
+  - make %REFORM_MAKE_TARGET%
 
   # TODO test again with updated deps
 

@@ -155,7 +155,7 @@ win-mssql: export REFORM_TEST_DRIVER = mssql
 win-mssql: export REFORM_TEST_ADMIN_SOURCE = server=$(REFORM_SQL_HOST)\$(REFORM_SQL_INSTANCE)
 win-mssql: export REFORM_TEST_INIT_SOURCE = server=$(REFORM_SQL_HOST)\$(REFORM_SQL_INSTANCE);database=reform-database
 win-mssql: export REFORM_TEST_SOURCE = server=$(REFORM_SQL_HOST)\$(REFORM_SQL_INSTANCE);database=reform-database
-win-mssql: test
+win-mssql:
 	make test-db
 
 # Windows: run unit tests and integration tests for SQL Server (sqlserver driver)
@@ -166,7 +166,7 @@ win-sqlserver: export REFORM_TEST_DRIVER = sqlserver
 win-sqlserver: export REFORM_TEST_ADMIN_SOURCE = sqlserver://$(REFORM_SQL_HOST)/$(REFORM_SQL_INSTANCE)
 win-sqlserver: export REFORM_TEST_INIT_SOURCE = sqlserver://$(REFORM_SQL_HOST)/$(REFORM_SQL_INSTANCE)?database=reform-database
 win-sqlserver: export REFORM_TEST_SOURCE = sqlserver://$(REFORM_SQL_HOST)/$(REFORM_SQL_INSTANCE)?database=reform-database
-win-sqlserver: test
+win-sqlserver:
 	make test-db
 
 bin/golangci-lint:

@@ -5,21 +5,26 @@ help:                           ## Display this help message.
 
 # SHELL = go run .github/shell.go
 
-init:                           ## Install development tools.
+bin/gocoverutil:
 	go build -v -o bin/gocoverutil github.com/AlekSi/gocoverutil
 
-env-up:                         ## Start development environment.
+bin/golangci-lint:
+	curl -sfL https://install.goreleaser.com/github.com/golangci/golangci-lint.sh | sh -s -- -b bin
+
+init: bin/gocoverutil bin/golangci-lint  ## Install development tools.
+
+env-up:                                  ## Start development environment.
 	docker-compose up --force-recreate --abort-on-container-exit --renew-anon-volumes --remove-orphans
 
-env-up-detach:                  ## Start development environment in the backgroud.
+env-up-detach:                           ## Start development environment in the backgroud.
 	docker-compose up --detach --force-recreate --renew-anon-volumes --remove-orphans
 	until [ "`docker inspect -f {{.State.Health.Status}} reform_postgres`" = "healthy" ]; do sleep 1; done
 	until [ "`docker inspect -f {{.State.Health.Status}} reform_mysql`" = "healthy" ]; do sleep 1; done
 
-env-down:                       ## Stop development environment.
+env-down:                                ## Stop development environment.
 	docker-compose down --volumes --remove-orphans
 
-test: test-unit                 ## Run all tests.
+test: test-unit                          ## Run all tests.
 	make postgres
 	make pgx
 	make mysql
@@ -53,7 +58,7 @@ test-db-init:
 		test/sql/$(REFORM_TEST_DATABASE)_combined.tmp.sql
 
 # run integration tests
-test-db:
+test-db: bin/gocoverutil
 	# TODO remove that hack in reform 1.5
 	# https://github.com/go-reform/reform/issues/151
 	# https://github.com/go-reform/reform/issues/157
@@ -171,10 +176,7 @@ win-sqlserver: export REFORM_TEST_SOURCE = sqlserver://$(REFORM_SQL_HOST)/$(REFO
 win-sqlserver:
 	make test-db
 
-bin/golangci-lint:
-	curl -sfL https://install.goreleaser.com/github.com/golangci/golangci-lint.sh | sh -s -- -b bin
-
-lint: bin/golangci-lint         ## Run golangci-lint.
+lint: bin/golangci-lint                  ## Run linters.
 	bin/golangci-lint run
 
 .PHONY: docs parse reform reform-db test

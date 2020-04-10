@@ -13,3 +13,4 @@ you want to implement _before_ implementing it.
 3. Run `make env-up` or `make env-up-detach` to start databases with Docker Compose.
 4. Run `make init` to install development tools.
 5. Run `make test` to run all tests.
+5. Run `make lint` to run linters.

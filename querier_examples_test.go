@@ -1,6 +1,7 @@
 package reform_test
 
 import (
+	"context"
 	"database/sql"
 	"fmt"
 	"log"
@@ -74,13 +75,13 @@ func ExampleNewDB() {
 
 func ExampleQuerier_WithTag() {
 	id := "baron"
-	person, err := DB.WithTag("GetProject:%v", id).FindByPrimaryKeyFrom(ProjectTable, id)
-	if err != nil {
-		log.Fatal(err)
-	}
-	fmt.Println(person)
-	// Output:
-	// Name: `Vicious Baron` (string), ID: `baron` (string), Start: 2014-06-01 00:00:00 +0000 UTC (time.Time), End: 2016-02-21 00:00:00 +0000 UTC (*time.Time)
+	DB.WithTag("GetProject:%v", id).FindByPrimaryKeyFrom(ProjectTable, id)
+}
+
+func ExampleQuerier_WithContext() {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	defer cancel()
+	DB.WithContext(ctx).SelectAllFrom(ProjectTable, "")
 }
 
 func ExampleQuerier_SelectRows() {

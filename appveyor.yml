@@ -4,42 +4,61 @@ clone_folder: c:\gopath\src\gopkg.in\reform.v1
 
 environment:
   GOPATH: c:\gopath
+  GO111MODULE: "on"
+  GOPROXY: https://proxy.golang.org
+  GOFLAGS: -mod=readonly
+  GORACE: halt_on_error=1
+
   matrix:
-    - REFORM_TARGETS: sqlite3
+    - REFORM_MAKE_TARGET: sqlite3
 
     - REFORM_SQL_INSTANCE: SQL2008R2SP2
-      REFORM_TARGETS: win-mssql
+      REFORM_MAKE_TARGET: win-mssql
     - REFORM_SQL_INSTANCE: SQL2008R2SP2
-      REFORM_TARGETS: win-sqlserver
+      REFORM_MAKE_TARGET: win-sqlserver
 
     - REFORM_SQL_INSTANCE: SQL2012SP1
-      REFORM_TARGETS: win-mssql
+      REFORM_MAKE_TARGET: win-mssql
     - REFORM_SQL_INSTANCE: SQL2012SP1
-      REFORM_TARGETS: win-sqlserver
+      REFORM_MAKE_TARGET: win-sqlserver
 
     - REFORM_SQL_INSTANCE: SQL2014
-      REFORM_TARGETS: win-mssql
+      REFORM_MAKE_TARGET: win-mssql
     - REFORM_SQL_INSTANCE: SQL2014
-      REFORM_TARGETS: win-sqlserver
+      REFORM_MAKE_TARGET: win-sqlserver
 
     - REFORM_SQL_INSTANCE: SQL2016
-      REFORM_TARGETS: win-mssql
+      REFORM_MAKE_TARGET: win-mssql
     - REFORM_SQL_INSTANCE: SQL2016
-      REFORM_TARGETS: win-sqlserver
+      REFORM_MAKE_TARGET: win-sqlserver
 
 install:
   - if defined REFORM_SQL_INSTANCE powershell -file .github\appveyor-prepare-mssql.ps1
   - set PATH=C:\msys64\usr\bin;C:\msys64\mingw64\bin;%GOPATH%\bin;%PATH%
   - pacman -Rsc --noconfirm gcc
 
+  - go env
   - go version
 
 build_script:
-  - make deps
+  - go mod download
+
+  # check that it is still possible to install reform without modules
+  - env GO111MODULE=off go get -v ./...
+  - reform -version
+  - reform-db -version
+
+  - make init
 
 test_script:
-  - make %REFORM_TARGETS%
+  - make test-unit
+  - make %REFORM_MAKE_TARGET%
+
+  # TODO test again with updated deps
+
+  - git status
+  - git diff --exit-code
 
 on_success:
   - curl -s -o codecov https://codecov.io/bash
-  - bash codecov -f coverage.txt -X fix -e REFORM_TARGETS,REFORM_SQL_INSTANCE
+  - bash codecov -f coverage.txt -X fix -e REFORM_MAKE_TARGET,REFORM_SQL_INSTANCE

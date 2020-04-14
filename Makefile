@@ -9,7 +9,7 @@ bin/gocoverutil:
 	go build -v -o bin/gocoverutil github.com/AlekSi/gocoverutil
 
 bin/golangci-lint:
-	curl -sfL https://install.goreleaser.com/github.com/golangci/golangci-lint.sh | sh -s -- -b bin
+	curl -sfL https://install.goreleaser.com/github.com/golangci/golangci-lint.sh | sh -s -- -d -b bin
 
 init: bin/gocoverutil bin/golangci-lint  ## Install development tools.
 

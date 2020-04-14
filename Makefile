@@ -24,7 +24,9 @@ env-up-detach:                           ## Start development environment in the
 env-down:                                ## Stop development environment.
 	docker-compose down --volumes --remove-orphans
 
-test: test-unit                          ## Run all tests.
+test:                                    ## Run all tests and gather coverage.
+	make test-unit
+
 	make postgres
 	make pgx
 	make mysql
@@ -33,8 +35,9 @@ test: test-unit                          ## Run all tests.
 	make mssql
 	make sqlserver
 
+	make merge-cover
+
 test-unit:
-	rm -f *.cover coverage.txt
 	rm -f internal/test/models/*_reform.go
 	rm -f reform-db/*_reform.go
 
@@ -73,7 +76,7 @@ test-db: bin/gocoverutil
 
 	# run reform-db tests
 	go test -count=1 -race gopkg.in/reform.v1/reform-db
-	go test -count=1 -covermode=count -coverprofile=reform-db.cover gopkg.in/reform.v1/reform-db
+	go test -count=1 -covermode=count -coverprofile=$(REFORM_TEST_COVER)_reform-db.cover gopkg.in/reform.v1/reform-db
 
 	# run main tests with -race
 	# FIXME skipped for go-mssqldb driver:
@@ -86,10 +89,7 @@ test-db: bin/gocoverutil
 	make test-db-init
 
 	# run main tests with -cover
-	go test -count=1 -covermode=count -coverprofile=reform.cover
-
-	bin/gocoverutil -coverprofile=coverage.txt merge *.cover
-	rm -f *.cover
+	go test -count=1 -covermode=count -coverprofile=$(REFORM_TEST_COVER)_reform.cover
 
 # run integration tests for PostgreSQL (postgres driver)
 postgres: export REFORM_TEST_DATABASE = postgres
@@ -97,6 +97,7 @@ postgres: export REFORM_TEST_DRIVER = postgres
 postgres: export REFORM_TEST_ADMIN_SOURCE = postgres://postgres@127.0.0.1/template1?sslmode=disable
 postgres: export REFORM_TEST_INIT_SOURCE = postgres://postgres@127.0.0.1/reform-database?sslmode=disable&TimeZone=UTC
 postgres: export REFORM_TEST_SOURCE = postgres://postgres@127.0.0.1/reform-database?sslmode=disable&TimeZone=America/New_York
+postgres: export REFORM_TEST_COVER=postgres
 postgres:
 	make test-db
 
@@ -106,6 +107,7 @@ pgx: export REFORM_TEST_DRIVER = pgx
 pgx: export REFORM_TEST_ADMIN_SOURCE = postgres://postgres@127.0.0.1/template1?sslmode=disable
 pgx: export REFORM_TEST_INIT_SOURCE = postgres://postgres@127.0.0.1/reform-database?sslmode=disable&TimeZone=UTC
 pgx: export REFORM_TEST_SOURCE = postgres://postgres@127.0.0.1/reform-database?sslmode=disable&TimeZone=America/New_York
+pgx: export REFORM_TEST_COVER=pgx
 pgx:
 	make test-db
 
@@ -115,6 +117,7 @@ mysql: export REFORM_TEST_DRIVER = mysql
 mysql: export REFORM_TEST_ADMIN_SOURCE = root@/mysql
 mysql: export REFORM_TEST_INIT_SOURCE = root@/reform-database?parseTime=true&clientFoundRows=true&time_zone='UTC'&sql_mode='ANSI'&multiStatements=true
 mysql: export REFORM_TEST_SOURCE = root@/reform-database?parseTime=true&clientFoundRows=true&time_zone='America%2FNew_York'&sql_mode='ANSI'
+mysql: export REFORM_TEST_COVER=mysql
 mysql:
 	make test-db
 
@@ -124,6 +127,7 @@ mysql-traditional: export REFORM_TEST_DRIVER = mysql
 mysql-traditional: export REFORM_TEST_ADMIN_SOURCE = root@/mysql
 mysql-traditional: export REFORM_TEST_INIT_SOURCE = root@/reform-database?parseTime=true&clientFoundRows=true&time_zone='UTC'&sql_mode='ANSI'&multiStatements=true
 mysql-traditional: export REFORM_TEST_SOURCE = root@/reform-database?parseTime=true&clientFoundRows=true&time_zone='America%2FNew_York'&sql_mode='TRADITIONAL'&interpolateParams=true
+mysql-traditional: export REFORM_TEST_COVER=mysql-traditional
 mysql-traditional:
 	make test-db
 
@@ -133,6 +137,7 @@ sqlite3: export REFORM_TEST_DRIVER = sqlite3
 sqlite3: export REFORM_TEST_ADMIN_SOURCE = $(CURDIR)/reform-database.sqlite3
 sqlite3: export REFORM_TEST_INIT_SOURCE = $(CURDIR)/reform-database.sqlite3
 sqlite3: export REFORM_TEST_SOURCE = $(CURDIR)/reform-database.sqlite3
+sqlite3: export REFORM_TEST_COVER=sqlite3
 sqlite3:
 	make test-db
 
@@ -142,6 +147,7 @@ mssql: export REFORM_TEST_DRIVER = mssql
 mssql: export REFORM_TEST_ADMIN_SOURCE = server=localhost;user id=sa;password=reform-password123
 mssql: export REFORM_TEST_INIT_SOURCE = server=localhost;user id=sa;password=reform-password123;database=reform-database
 mssql: export REFORM_TEST_SOURCE = server=localhost;user id=sa;password=reform-password123;database=reform-database
+mssql: export REFORM_TEST_COVER=mssql
 mssql:
 	make test-db
 
@@ -151,6 +157,7 @@ sqlserver: export REFORM_TEST_DRIVER = sqlserver
 sqlserver: export REFORM_TEST_ADMIN_SOURCE = server=localhost;user id=sa;password=reform-password123
 sqlserver: export REFORM_TEST_INIT_SOURCE = server=localhost;user id=sa;password=reform-password123;database=reform-database
 sqlserver: export REFORM_TEST_SOURCE = server=localhost;user id=sa;password=reform-password123;database=reform-database
+sqlserver: export REFORM_TEST_COVER=sqlserver
 sqlserver:
 	make test-db
 
@@ -162,6 +169,7 @@ win-mssql: export REFORM_TEST_DRIVER = mssql
 win-mssql: export REFORM_TEST_ADMIN_SOURCE = server=$(REFORM_SQL_HOST)\$(REFORM_SQL_INSTANCE)
 win-mssql: export REFORM_TEST_INIT_SOURCE = server=$(REFORM_SQL_HOST)\$(REFORM_SQL_INSTANCE);database=reform-database
 win-mssql: export REFORM_TEST_SOURCE = server=$(REFORM_SQL_HOST)\$(REFORM_SQL_INSTANCE);database=reform-database
+win-mssql: export REFORM_TEST_COVER=win-mssql
 win-mssql:
 	make test-db
 
@@ -173,8 +181,13 @@ win-sqlserver: export REFORM_TEST_DRIVER = sqlserver
 win-sqlserver: export REFORM_TEST_ADMIN_SOURCE = sqlserver://$(REFORM_SQL_HOST)/$(REFORM_SQL_INSTANCE)
 win-sqlserver: export REFORM_TEST_INIT_SOURCE = sqlserver://$(REFORM_SQL_HOST)/$(REFORM_SQL_INSTANCE)?database=reform-database
 win-sqlserver: export REFORM_TEST_SOURCE = sqlserver://$(REFORM_SQL_HOST)/$(REFORM_SQL_INSTANCE)?database=reform-database
+win-sqlserver: export REFORM_TEST_COVER=win-sqlserver
 win-sqlserver:
 	make test-db
+
+merge-cover:
+	bin/gocoverutil -coverprofile=coverage.txt merge *.cover
+	rm -f *.cover
 
 lint: bin/golangci-lint                  ## Run linters.
 	bin/golangci-lint run

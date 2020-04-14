@@ -53,6 +53,7 @@ build_script:
 test_script:
   - make test-unit
   - make %REFORM_MAKE_TARGET%
+  - make merge-cover
 
   # TODO test again with updated deps
 

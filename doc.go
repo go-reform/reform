@@ -5,8 +5,54 @@
 //
 // Context
 //
-// Reform supports context passing using WithContext method:
+// Querier object, embedded into DB and TX types, contains context which is used by all its methods.
+// It defaults to context.Background() and can be changed with WithContext method:
+//
+//  // for a single call
 //  projects, err := DB.WithContext(ctx).SelectAllFrom(ProjectTable, "")
+//
+//  // for several calls
+//  q := DB.WithContext(ctx)
+//  projects, err := q.SelectAllFrom(ProjectTable, "")
+//  persons, err := q.SelectAllFrom(PersonTable, "")
+//
+// Methods Exec, Query, and QueryRow use the same context.
+// Methods ExecContext, QueryContext, and QueryRowContext are just compatibility wrappers for
+// Querier.WithContext(ctx).Exec/Query/QuyeryRow to satisfy various standard interfaces.
+//
+// DB object methods Begin and InTransaction start transaction with the same context.
+// Methods BeginTx and InTransactionContext start transaction with a given context without changing
+// DB's context:
+//
+//  var projects, persons []Struct
+//  err := DB.InTransactionContext(ctx, nil, func(tx *reform.TX) error {
+//      var e error
+//
+//      // uses ctx
+//      if projects, e = tx.SelectAllFrom(ProjectTable, ""); e != nil {
+//          return e
+//      }
+//
+//      // uses ctx too
+//      if persons, e = tx.SelectAllFrom(PersonTable, ""); e != nil {
+//          return e
+//      }
+//
+//      return nil
+//  }
+//
+// Note that several different contexts can be used:
+//
+//  DB.InTransactionContext(ctx1, nil, func(tx *reform.TX) error {
+//      _, _ = tx.SelectAllFrom(PersonTable, "")                    // uses ctx1
+//      _, _ = tx.WithContext(ctx2).SelectAllFrom(PersonTable, "")  // uses ctx2
+//      ...
+//  })
+//
+// In theory, ctx1 and ctx2 can be entirely unrelated. Although that construct is occasionally useful,
+// the behavior on context cancelation is entirely driver-defined; some drivers may just close the whole
+// connection, effectively canceling unrelated ctx2 on ctx1 cancelation. For that reason mixing several
+// contexts is not recommended.
 //
 //
 // Tagging

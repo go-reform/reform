@@ -1,0 +1,69 @@
+---
+name: Cleanup
+on:
+  schedule:
+    # run every Monday
+    - cron: "0 0 * * 1"
+
+jobs:
+  clean:
+    name: Clean caches
+    timeout-minutes: 5
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu-latest
+        go-version:
+          - 1.12.x
+          - 1.13.x
+          - 1.14.x
+
+    runs-on: ${{ matrix.os }}
+
+    env:
+      GO111MODULE: "on"
+      GOPROXY: https://proxy.golang.org
+      GOFLAGS: -mod=readonly
+
+    steps:
+      - name: Set up Go ${{ matrix.go-version }}
+        uses: actions/setup-go@v1
+        with:
+          go-version: ${{ matrix.go-version }}
+
+      - name: Set environment variables
+        run: |
+          echo "::set-env name=GOPATH::$GITHUB_WORKSPACE/gopath"
+          echo "::add-path::$GITHUB_WORKSPACE/gopath/bin"
+          echo "::set-env name=WORKDIR::$GITHUB_WORKSPACE/gopath/src/gopkg.in/reform.v1"
+          echo "::set-env name=GO_VERSION::$(go version)"
+
+      - name: Check out code into GOPATH
+        uses: actions/checkout@v2
+        with:
+          path: ${{ env.WORKDIR }}
+
+      - name: Enable Go modules cache
+        uses: actions/cache@v1
+        with:
+          path: ${{ env.GOPATH }}/pkg/mod
+          key: ${{ matrix.os }}-go-${{ matrix.go-version }}-modules-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ matrix.os }}-go-${{ matrix.go-version }}-modules-
+
+      - name: Enable Go build cache
+        uses: actions/cache@v1
+        with:
+          path: ~/.cache/go-build
+          key: ${{ matrix.os }}-go-${{ matrix.go-version }}-build-${{ github.ref }}-${{ hashFiles('**') }}
+          restore-keys: |
+            ${{ matrix.os }}-go-${{ matrix.go-version }}-build-${{ github.ref }}-
+            ${{ matrix.os }}-go-${{ matrix.go-version }}-build-
+
+      - name: Clean Go modules cache
+        run: go clean -modcache
+
+      - name: Clean Go build cache
+        run: go clean -cache

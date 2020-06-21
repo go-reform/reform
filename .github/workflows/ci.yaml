@@ -55,38 +55,28 @@ jobs:
         with:
           path: ${{ env.WORKDIR }}
 
-      # - name: Run debug commands
-      #   run: |
-      #     sudo apt-get install -y tree
-      #     env
-      #     go version
-      #     go env
-      #     pwd
-      #     tree -d
-      #     ls -al
-      #     docker --version
-      #     docker-compose --version
-
       - name: Pull Docker images in the background
         run: docker-compose pull --quiet &
         working-directory: ${{ env.WORKDIR }}
 
+      # slightly decreases total CI time; see also cleanup.yaml
       - name: Enable Go modules cache
         uses: actions/cache@v1
         with:
           path: ${{ env.GOPATH }}/pkg/mod
-          key: ${{ matrix.platform }}-go-${{ matrix.go-version }}-modules-${{ hashFiles('**/go.sum') }}
+          key: ${{ matrix.os }}-go-${{ matrix.go-version }}-modules-${{ hashFiles('**/go.sum') }}
           restore-keys: |
-            ${{ matrix.platform }}-go-${{ matrix.go-version }}-modules-
+            ${{ matrix.os }}-go-${{ matrix.go-version }}-modules-
 
+      # significantly decreases total CI time; see also cleanup.yaml
       - name: Enable Go build cache
         uses: actions/cache@v1
         with:
           path: ~/.cache/go-build
-          key: ${{ matrix.platform }}-go-${{ matrix.go-version }}-build-${{ github.ref }}-${{ hashFiles('**') }}
+          key: ${{ matrix.os }}-go-${{ matrix.go-version }}-build-${{ github.ref }}-${{ hashFiles('**') }}
           restore-keys: |
-            ${{ matrix.platform }}-go-${{ matrix.go-version }}-build-${{ github.ref }}-
-            ${{ matrix.platform }}-go-${{ matrix.go-version }}-build-
+            ${{ matrix.os }}-go-${{ matrix.go-version }}-build-${{ github.ref }}-
+            ${{ matrix.os }}-go-${{ matrix.go-version }}-build-
 
       - name: Stop Ubuntu services
         run: sudo systemctl stop mysql
@@ -125,3 +115,16 @@ jobs:
       - name: Upload coverage information
         run: bash <(curl -s https://codecov.io/bash) -f coverage.txt -X fix -e GO_VERSION,REFORM_POSTGRES_IMAGE,REFORM_MYSQL_IMAGE,REFORM_MSSQL_IMAGE
         working-directory: ${{ env.WORKDIR }}
+
+      - name: Run debug commands on failure
+        if: ${{ failure() }}
+        run: |
+          sudo apt-get install -y tree
+          env
+          go version
+          go env
+          pwd
+          tree -d
+          ls -al
+          docker --version
+          docker-compose --version

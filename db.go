@@ -9,10 +9,16 @@ import (
 // DBInterface is a subset of *sql.DB used by reform.
 // Can be used together with NewDBFromInterface for easier integration with existing code or for passing test doubles.
 //
-// It may grow and shrink over time to include only needed *sql.DB methods.
+// It may grow and shrink over time to include only needed *sql.DB methods,
+// and is excluded from SemVer compatibility guarantees.
 type DBInterface interface {
 	DBTXContext
 	BeginTx(ctx context.Context, opts *sql.TxOptions) (*sql.Tx, error)
+
+	// Deprecated: do not use, it will be removed in v1.5.
+	DBTX
+	// Deprecated: do not use, it will be removed in v1.5.
+	Begin() (*sql.Tx, error)
 }
 
 // check interface

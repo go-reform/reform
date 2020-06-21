@@ -9,11 +9,15 @@ import (
 // TXInterface is a subset of *sql.Tx used by reform.
 // Can be used together with NewTXFromInterface for easier integration with existing code or for passing test doubles.
 //
-// It may grow and shrink over time to include only needed *sql.Tx methods.
+// It may grow and shrink over time to include only needed *sql.Tx methods,
+// and is excluded from SemVer compatibility guarantees.
 type TXInterface interface {
 	DBTXContext
 	Commit() error
 	Rollback() error
+
+	// Deprecated: do not use, it will be removed in v1.5.
+	DBTX
 }
 
 // check interface

@@ -28,7 +28,7 @@ import (
 
 var (
 	// DB is a global connection pool shared by tests and examples.
-	// Deprecated: do not add new tests using it.
+	// Deprecated: do not add new tests using it as using a global pool makes tests more brittle.
 	DB *reform.DB
 )
 

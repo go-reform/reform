@@ -106,6 +106,7 @@ jobs:
 
       # TODO test again with updated deps
 
+      # to ensure that all generators still work the same way
       - name: Check that generated files did not change
         run: |
           git status

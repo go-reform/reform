@@ -20,6 +20,7 @@ jobs:
           - 1.12.x
           - 1.13.x
           - 1.14.x
+          - tip
         images:
           - {postgres: "postgres:9.6", mysql: "mysql:5.5"}
           - {postgres: "postgres:10",  mysql: "mysql:5.6"}
@@ -39,9 +40,19 @@ jobs:
 
     steps:
       - name: Set up Go ${{ matrix.go-version }}
+        if: matrix.go != 'tip'
         uses: actions/setup-go@v1
         with:
           go-version: ${{ matrix.go-version }}
+
+      - name: Set up Go tip
+        if: matrix.go == 'tip'
+        run: |
+          git clone --depth=1 https://go.googlesource.com/go $HOME/gotip
+          cd $HOME/gotip/src
+          ./make.bash
+          echo "::set-env name=GOROOT::$HOME/gotip"
+          echo "::add-path::$HOME/gotip/bin"
 
       - name: Set environment variables
         run: |

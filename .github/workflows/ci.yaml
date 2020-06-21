@@ -40,13 +40,13 @@ jobs:
 
     steps:
       - name: Set up Go ${{ matrix.go-version }}
-        if: matrix.go != 'tip'
+        if: matrix.go-version != 'tip'
         uses: actions/setup-go@v1
         with:
           go-version: ${{ matrix.go-version }}
 
       - name: Set up Go tip
-        if: matrix.go == 'tip'
+        if: matrix.go-version == 'tip'
         run: |
           git clone --depth=1 https://go.googlesource.com/go $HOME/gotip
           cd $HOME/gotip/src

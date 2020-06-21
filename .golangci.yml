@@ -17,6 +17,8 @@ linters:
   enable-all: true
   disable:
     - lll
+    - testpackage
+    - wsl
 
 issues:
   exclude-use-default: false

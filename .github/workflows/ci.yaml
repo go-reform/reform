@@ -39,7 +39,7 @@ jobs:
       REFORM_MSSQL_IMAGE: microsoft/mssql-server-linux:latest
 
     steps:
-      - name: Set up Go ${{ matrix.go-version }}
+      - name: Set up Go version ${{ matrix.go-version }}
         if: matrix.go-version != 'tip'
         uses: actions/setup-go@v1
         with:
@@ -131,7 +131,7 @@ jobs:
       - name: Run debug commands on failure
         if: ${{ failure() }}
         run: |
-          sudo apt-get install -y tree
+          sudo apt-get install -qy tree
           env
           go version
           go env

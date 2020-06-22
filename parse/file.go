@@ -35,6 +35,10 @@ func fileGoType(x ast.Expr) string {
 	}
 }
 
+func parseDoc(g *ast.CommentGroup) string {
+	return g.Text()
+}
+
 func parseStructTypeSpec(ts *ast.TypeSpec, str *ast.StructType) (*StructInfo, error) {
 	res := &StructInfo{
 		Type:         ts.Name.Name,
@@ -129,12 +133,11 @@ func File(path string) ([]StructInfo, error) {
 			continue
 		}
 		for _, spec := range gd.Specs {
-			// ast.Print(fset, spec)
-
 			ts, ok := spec.(*ast.TypeSpec)
 			if !ok {
 				continue
 			}
+			// ast.Print(fset, ts)
 
 			// magic comment may be attached to "type Foo struct" (TypeSpec)
 			// or to "type (" (GenDecl)
@@ -145,9 +148,9 @@ func File(path string) ([]StructInfo, error) {
 			if doc == nil {
 				continue
 			}
-
 			// ast.Print(fset, doc)
-			sm := magicReformComment.FindStringSubmatch(doc.Text())
+
+			sm := magicReformComment.FindStringSubmatch(parseDoc(doc))
 			if len(sm) < 2 {
 				continue
 			}
@@ -165,8 +168,8 @@ func File(path string) ([]StructInfo, error) {
 			if str.Incomplete {
 				continue
 			}
+			// ast.Print(fset, str)
 
-			// ast.Print(fset, ts)
 			s, err := parseStructTypeSpec(ts, str)
 			if err != nil {
 				return nil, err

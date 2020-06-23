@@ -35,8 +35,14 @@ func fileGoType(x ast.Expr) string {
 	}
 }
 
-func parseDoc(g *ast.CommentGroup) string {
-	return g.Text()
+func commentText(g *ast.CommentGroup) string {
+	// this code used to just call g.Text(), but the behavior of this method changed in Go 1.15:
+	// https://go-review.googlesource.com/c/go/+/224737
+	res := make([]string, len(g.List))
+	for i, c := range g.List {
+		res[i] = c.Text
+	}
+	return strings.Join(res, "\n")
 }
 
 func parseStructTypeSpec(ts *ast.TypeSpec, str *ast.StructType) (*StructInfo, error) {
@@ -150,7 +156,7 @@ func File(path string) ([]StructInfo, error) {
 			}
 			// ast.Print(fset, doc)
 
-			sm := magicReformComment.FindStringSubmatch(parseDoc(doc))
+			sm := magicReformComment.FindStringSubmatch(commentText(doc))
 			if len(sm) < 2 {
 				continue
 			}

@@ -42,7 +42,7 @@ func commentText(g *ast.CommentGroup) string {
 	for i, c := range g.List {
 		res[i] = c.Text
 	}
-	return strings.Join(res, "\n")
+	return strings.Join(res, " ")
 }
 
 func parseStructTypeSpec(ts *ast.TypeSpec, str *ast.StructType) (*StructInfo, error) {

@@ -1,4 +1,4 @@
-// +build !go1.10
+// +build !go1.12
 
 package main
 
@@ -8,5 +8,5 @@ import (
 )
 
 func init() {
-	log.Fatalf("reform requires Go 1.10+, but was compiled with %s.", runtime.Version())
+	log.Fatalf("reform requires Go 1.12+, but was compiled with %s.", runtime.Version())
 }

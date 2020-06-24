@@ -9,7 +9,7 @@ import (
 // NextRow scans next result row from rows to str. If str implements AfterFinder, it also calls AfterFind().
 // It is caller's responsibility to call rows.Close().
 //
-// If there is no next result row, it returns ErrNoRows. It also may return rows.Next(), rows.Scan()
+// If there is no next result row, it returns ErrNoRows. It also may return rows.Err(), rows.Scan()
 // and AfterFinder errors.
 //
 // See SelectRows example for idiomatic usage.

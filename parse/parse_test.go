@@ -1,4 +1,4 @@
-package parse
+package parse_test
 
 import (
 	"errors"
@@ -10,6 +10,7 @@ import (
 
 	"gopkg.in/reform.v1/internal/test/models"
 	"gopkg.in/reform.v1/internal/test/models/bogus"
+	. "gopkg.in/reform.v1/parse"
 )
 
 var (

@@ -2,30 +2,15 @@
 
 ## Golden rule
 
-Speak up _before_ writing code. Comment on existing issue or create a new one. Join
-[Gitter chat](https://gitter.im/go-reform/reform?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge). Discuss what
+Speak up _before_ writing code. Comment on existing issue or create a new one. Discuss what
 you want to implement _before_ implementing it.
 
 
 ## Running tests
 
-First of all, run `make deps deps-check` to install all dependencies. After that, you have two options: use Docker Compose (recommended), or installing database systems directly.
-
-
-### Docker Compose
-
-If you have Go, Docker and Docker Compose installed, you can run all tests and linters simply by running `make test-dc check`.
-
-You can also set `REFORM_IMAGE_VERSION` and `REFORM_TARGETS` environment variables to test specific combinations.
-See [`.travis.yml`](../.travis.yml) for possible values.
-You can also set `REFORM_SKIP_PULL` to `1` to avoid running `docker-compose pull` if image is already present.
-
-### Direct
-
-Run `make test` to run basic unit tests. Run `make check` to run linters.
-See [`Makefile`](../Makefile) for Make targets for running integration tests and connection parameters.
-
-
-### Background information
-
-See [#5](https://github.com/go-reform/reform/issues/5), [#63](https://github.com/go-reform/reform/issues/63), and [#135](https://github.com/go-reform/reform/issues/135) for reasons for that design.
+1. Reform uses Go modules to version dependencies. Make sure they are not disabled in your environment.
+2. Run `make` without arguments to see all Makefile targets.
+3. Run `make env-up` or `make env-up-detach` to start databases with Docker Compose.
+4. Run `make init` to install development tools.
+5. Run `make test` to run all tests.
+5. Run `make lint` to run linters.

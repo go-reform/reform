@@ -3,12 +3,18 @@
 ## v1.4.0 (not released yet, https://github.com/go-reform/reform/milestones/v1.4.0)
 
 * Go 1.12+ is now required.
-* Converted to Go module. [Non modules-aware tools like `dep`](https://github.com/golang/dep/issues/1962)
+* Converted to Go module. [Non modules-aware tools like `dep`](https://github.com/golangf/dep/issues/1962)
   are still supported until reform v2 (dependencies with Semantic Import Versioning paths are not used in v1).
+* Added [`context` support](https://pkg.go.dev/gopkg.in/reform.v1@v1.4.0-beta1?tab=doc#hdr-Context).
 * Added [`Querier.Count`](https://godoc.org/gopkg.in/reform.v1#Querier.Count).
   Thanks to [Simon Kamenetskiy](https://github.com/skamenetskiy).
 * Added support for [github.com/jackc/pgx](https://github.com/jackc/pgx) v3 driver.
 * CI now uses GitHub Actions.
+
+## v1.3.4 (2020-06-25, https://github.com/go-reform/reform/milestones/v1.3.4)
+
+* Make reform generator work with Go 1.15.
+* Replace syreclabs.com/go/faker with github.com/brianvoe/gofakeit.
 
 ## v1.3.3 (2018-12-11, https://github.com/go-reform/reform/milestones/v1.3.3)
 

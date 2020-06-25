@@ -5,13 +5,12 @@ help:                           ## Display this help message.
 
 # SHELL = go run .github/shell.go
 
-bin/gocoverutil:
-	go build -v -o bin/gocoverutil github.com/AlekSi/gocoverutil
-
-bin/golangci-lint:
-	curl -sfL https://install.goreleaser.com/github.com/golangci/golangci-lint.sh | sh -s -- -d -b bin
-
-init: bin/gocoverutil bin/golangci-lint  ## Install development tools.
+init:                                    ## Install development tools.
+	go build -modfile=tools/go.mod -o bin/gocoverutil github.com/AlekSi/gocoverutil
+	go build -modfile=tools/go.mod -o bin/golangci-lint github.com/golangci/golangci-lint/cmd/golangci-lint
+	go build -modfile=tools/go.mod -o bin/go-consistent github.com/quasilyte/go-consistent
+	go build -modfile=tools/go.mod -o bin/reviewdog github.com/reviewdog/reviewdog/cmd/reviewdog
+	go build -modfile=tools/go.mod -o bin/goimports golang.org/x/tools/cmd/goimports
 
 env-up:                                  ## Start development environment.
 	docker-compose up --force-recreate --abort-on-container-exit --renew-anon-volumes --remove-orphans
@@ -61,7 +60,7 @@ test-db-init:
 		test/sql/$(REFORM_TEST_DATABASE)_combined.tmp.sql
 
 # run integration tests
-test-db: bin/gocoverutil
+test-db:
 	# TODO remove that hack in reform 1.5
 	# https://github.com/go-reform/reform/issues/151
 	# https://github.com/go-reform/reform/issues/157
@@ -189,7 +188,7 @@ merge-cover:
 	bin/gocoverutil -coverprofile=coverage.txt merge *.cover
 	rm -f *.cover
 
-lint: bin/golangci-lint                  ## Run linters.
+lint:                                    ## Run linters.
 	bin/golangci-lint run
 
 .PHONY: docs parse reform reform-db test

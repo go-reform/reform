@@ -1,7 +1,8 @@
 # Changelog
 
-## v1.3.4 (2020-06-XX, https://github.com/go-reform/reform/milestones/v1.3.4)
+## v1.3.4 (2020-06-25, https://github.com/go-reform/reform/milestones/v1.3.4)
 
+* Make reform generator work with Go 1.15.
 * Replace syreclabs.com/go/faker with github.com/brianvoe/gofakeit.
 
 ## v1.3.3 (2018-12-11, https://github.com/go-reform/reform/milestones/v1.3.3)

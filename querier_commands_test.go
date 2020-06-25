@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/AlekSi/pointer"
-	"syreclabs.com/go/faker"
+	"github.com/brianvoe/gofakeit"
 
 	"gopkg.in/reform.v1"
 	"gopkg.in/reform.v1/dialects/postgresql"
@@ -14,7 +14,7 @@ import (
 )
 
 func (s *ReformSuite) TestInsert() {
-	newEmail := faker.Internet().Email()
+	newEmail := gofakeit.Email()
 	person := &Person{Email: &newEmail}
 	err := s.q.Insert(person)
 	s.NoError(err)
@@ -34,7 +34,7 @@ func (s *ReformSuite) TestInsert() {
 
 func (s *ReformSuite) TestInsertWithValues() {
 	t := time.Now()
-	newEmail := faker.Internet().Email()
+	newEmail := gofakeit.Email()
 	person := &Person{Email: &newEmail, CreatedAt: t, UpdatedAt: &t}
 	err := s.q.Insert(person)
 	s.NoError(err)
@@ -53,7 +53,7 @@ func (s *ReformSuite) TestInsertWithValues() {
 }
 
 func (s *ReformSuite) TestInsertWithPrimaryKey() {
-	newEmail := faker.Internet().Email()
+	newEmail := gofakeit.Email()
 	person := &Person{ID: 50, Email: &newEmail}
 	err := insertPersonWithID(s.T(), s.q, person)
 	s.NoError(err)
@@ -103,7 +103,7 @@ func (s *ReformSuite) TestInsertIntoView() {
 
 func (s *ReformSuite) TestInsertColumns() {
 	t := time.Now()
-	newEmail := faker.Internet().Email()
+	newEmail := gofakeit.Email()
 	person := &Person{Email: &newEmail, CreatedAt: t, UpdatedAt: &t}
 	columns := []string{"name", "email", "created_at", "updated_at"}
 	err := s.q.InsertColumns(person, columns...)
@@ -141,8 +141,8 @@ func (s *ReformSuite) TestInsertColumnsIntoView() {
 }
 
 func (s *ReformSuite) TestInsertMulti() {
-	newEmail := faker.Internet().Email()
-	newName := faker.Name().Name()
+	newEmail := gofakeit.Email()
+	newName := gofakeit.Name()
 	person1, person2 := &Person{Email: &newEmail}, &Person{Name: newName}
 	err := s.q.InsertMulti(person1, person2)
 	s.NoError(err)
@@ -161,8 +161,8 @@ func (s *ReformSuite) TestInsertMulti() {
 }
 
 func (s *ReformSuite) TestInsertMultiWithPrimaryKeys() {
-	newEmail := faker.Internet().Email()
-	newName := faker.Name().Name()
+	newEmail := gofakeit.Email()
+	newName := gofakeit.Name()
 	person1, person2 := &Person{ID: 50, Email: &newEmail}, &Person{ID: 51, Name: newName}
 
 	withIdentityInsert(s.T(), s.q, "people", func() {
@@ -221,7 +221,7 @@ func (s *ReformSuite) TestUpdate() {
 	err = s.q.FindByPrimaryKeyTo(&person, 102)
 	s.NoError(err)
 
-	person.Email = pointer.ToString(faker.Internet().Email())
+	person.Email = pointer.ToString(gofakeit.Email())
 	err = s.q.Update(&person)
 	s.NoError(err)
 	s.Equal(personCreated, person.CreatedAt)
@@ -234,7 +234,7 @@ func (s *ReformSuite) TestUpdate() {
 }
 
 func (s *ReformSuite) TestUpdateOverwrite() {
-	newEmail := faker.Internet().Email()
+	newEmail := gofakeit.Email()
 	person := Person{ID: 102, Email: pointer.ToString(newEmail)}
 	err := s.q.Update(&person)
 	s.NoError(err)
@@ -250,8 +250,8 @@ func (s *ReformSuite) TestUpdateOverwrite() {
 }
 
 func (s *ReformSuite) TestUpdateColumns() {
-	newName := faker.Name().Name()
-	newEmail := faker.Internet().Email()
+	newName := gofakeit.Name()
+	newEmail := gofakeit.Email()
 
 	for p, columns := range map[*Person][]string{
 		&Person{Name: "Elfrieda Abbott", Email: &newEmail}:                             {"email", "updated_at"},
@@ -294,8 +294,8 @@ func (s *ReformSuite) TestUpdateColumns() {
 }
 
 func (s *ReformSuite) TestUpdateView() {
-	newName := faker.Name().Name()
-	newEmail := faker.Internet().Email()
+	newName := gofakeit.Name()
+	newEmail := gofakeit.Email()
 
 	for p, columns := range map[*Person][]string{
 		&Person{Name: "Elfrieda Abbott", Email: &newEmail}:                             {"email", "updated_at"},
@@ -340,7 +340,7 @@ func (s *ReformSuite) TestUpdateView() {
 }
 
 func (s *ReformSuite) TestSave() {
-	newName := faker.Name().Name()
+	newName := gofakeit.Name()
 	person := &Person{Name: newName}
 	err := s.q.Save(person)
 	s.NoError(err)
@@ -351,7 +351,7 @@ func (s *ReformSuite) TestSave() {
 	s.Nil(person2.(*Person).Email)
 	s.Equal(person, person2)
 
-	newEmail := faker.Internet().Email()
+	newEmail := gofakeit.Email()
 	person.Email = &newEmail
 	err = s.q.Save(person)
 	s.NoError(err)
@@ -364,7 +364,7 @@ func (s *ReformSuite) TestSave() {
 }
 
 func (s *ReformSuite) TestSaveWithPrimaryKey() {
-	newName := faker.Name().Name()
+	newName := gofakeit.Name()
 	person := &Person{ID: 99, Name: newName}
 
 	withIdentityInsert(s.T(), s.q, "people", func() {
@@ -427,7 +427,7 @@ func (s *ReformSuite) TestCommandsSchema() {
 		s.T().Skip("only PostgreSQL supports schemas")
 	}
 
-	legacyPerson := &LegacyPerson{Name: pointer.ToString(faker.Name().Name())}
+	legacyPerson := &LegacyPerson{Name: pointer.ToString(gofakeit.Name())}
 	err := s.q.Save(legacyPerson)
 	s.NoError(err)
 	err = s.q.Save(legacyPerson)

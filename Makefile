@@ -6,11 +6,8 @@ help:                           ## Display this help message.
 # SHELL = go run .github/shell.go
 
 init:                                    ## Install development tools.
-	go build -modfile=tools/go.mod -o bin/gocoverutil github.com/AlekSi/gocoverutil
-	go build -modfile=tools/go.mod -o bin/golangci-lint github.com/golangci/golangci-lint/cmd/golangci-lint
-	go build -modfile=tools/go.mod -o bin/go-consistent github.com/quasilyte/go-consistent
-	go build -modfile=tools/go.mod -o bin/reviewdog github.com/reviewdog/reviewdog/cmd/reviewdog
-	go build -modfile=tools/go.mod -o bin/goimports golang.org/x/tools/cmd/goimports
+	# emulate -modfile flag for older Go
+	make -C tools
 
 env-up:                                  ## Start development environment.
 	docker-compose up --force-recreate --abort-on-container-exit --renew-anon-volumes --remove-orphans

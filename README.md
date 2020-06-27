@@ -70,10 +70,11 @@ Notes:
 
     ```go
 	// Get *sql.DB as usual. PostgreSQL example:
-	conn, err := sql.Open("postgres", "postgres://localhost:5432/database?sslmode=disable")
+	sqlDB, err := sql.Open("postgres", "postgres://127.0.0.1:5432/database")
 	if err != nil {
-	    log.Fatal(err)
+		log.Fatal(err)
 	}
+	defer sqlDB.Close()
 
 	// Use new *log.Logger for logging.
 	logger := log.New(os.Stderr, "SQL: ", log.Flags())
@@ -81,7 +82,7 @@ Notes:
 	// Create *reform.DB instance with simple logger.
 	// Any Printf-like function (fmt.Printf, log.Printf, testing.T.Logf, etc) can be used with NewPrintfLogger.
 	// Change dialect for other databases.
-	DB = reform.NewDB(conn, postgresql.Dialect, reform.NewPrintfLogger(logger.Printf))
+	DB = reform.NewDB(sqlDB, postgresql.Dialect, reform.NewPrintfLogger(logger.Printf))
 
 	// Save record (performs INSERT or UPDATE).
 	person := &Person{

@@ -69,7 +69,19 @@ Notes:
 5. See [documentation](https://godoc.org/gopkg.in/reform.v1) how to use it. Simple example:
 
     ```go
-	// Use reform.NewDB to create DB.
+	// Get *sql.DB as usual. PostgreSQL example:
+	conn, err := sql.Open("postgres", "postgres://localhost:5432/database?sslmode=disable")
+	if err != nil {
+	    log.Fatal(err)
+	}
+
+	// Use new *log.Logger for logging.
+	logger := log.New(os.Stderr, "SQL: ", log.Flags())
+
+	// Create *reform.DB instance with simple logger.
+	// Any Printf-like function (fmt.Printf, log.Printf, testing.T.Logf, etc) can be used with NewPrintfLogger.
+	// Change dialect for other databases.
+	DB = reform.NewDB(conn, postgresql.Dialect, reform.NewPrintfLogger(logger.Printf))
 
 	// Save record (performs INSERT or UPDATE).
 	person := &Person{

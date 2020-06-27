@@ -218,16 +218,11 @@ jobs:
         working-directory: ${{ env.WORKDIR }}
         run: |
           # use GITHUB_TOKEN because only it has access to GitHub Checks API
-          bin/golangci-lint run --config=.golangci-required.yml --out-format=line-number | env REVIEWDOG_GITHUB_API_TOKEN=${{ secrets.GITHUB_TOKEN }} bin/reviewdog -f=golangci-lint -name='Required checks' -reporter=github-pr-check
+          bin/golangci-lint run --config=.golangci-required.yml --out-format=line-number | env REVIEWDOG_GITHUB_API_TOKEN=${{ secrets.GITHUB_TOKEN }} bin/reviewdog -f=golangci-lint -name='Required linters' -reporter=github-check
 
           # use GO_REFORM_BOT_TOKEN for better reviewer's name
-          bin/golangci-lint run --out-format=line-number | env REVIEWDOG_GITHUB_API_TOKEN=${{ secrets.GO_REFORM_BOT_TOKEN }} bin/reviewdog -f=golangci-lint -name='Linters' -reporter=github-pr-review
-
-          # run it like that until some of those issues/PRs are resolved:
-          # * https://github.com/quasilyte/go-consistent/issues/33
-          # * https://github.com/golangci/golangci-lint/issues/288
-          # * https://github.com/reviewdog/errorformat/pull/47 (once it is atually used by reviewdog)
-          bin/go-consistent -pedantic ./...
+          bin/golangci-lint run --out-format=line-number | env REVIEWDOG_GITHUB_API_TOKEN=${{ secrets.GO_REFORM_BOT_TOKEN }} bin/reviewdog -f=golangci-lint -name='Optional linters' -reporter=github-pr-review
+          bin/go-consistent -pedantic ./...              | env REVIEWDOG_GITHUB_API_TOKEN=${{ secrets.GO_REFORM_BOT_TOKEN }} bin/reviewdog -f=go-consistent -name='go-consistent'    -reporter=github-pr-review
 
       - name: Run debug commands on failure
         if: ${{ failure() }}

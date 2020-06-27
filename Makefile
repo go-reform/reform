@@ -185,8 +185,12 @@ merge-cover:
 	bin/gocoverutil -coverprofile=coverage.txt merge *.cover
 	rm -f *.cover
 
-lint:                                    ## Run linters for new code.
+lint:                                    ## Run linters.
+	# run required linters for all code
 	bin/golangci-lint run --config=.golangci-required.yml
+
+	# run optional linters for new code only
 	bin/golangci-lint run --new
+	bin/go-consistent -pedantic ./... | bin/reviewdog -f=go-consistent -diff='git diff HEAD^'
 
 .PHONY: docs parse reform reform-db test

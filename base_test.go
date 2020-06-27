@@ -18,7 +18,7 @@ import (
 	"github.com/stretchr/testify/suite"
 
 	"gopkg.in/reform.v1"
-	"gopkg.in/reform.v1/dialects/mssql"
+	"gopkg.in/reform.v1/dialects/mssql" //nolint:staticcheck
 	"gopkg.in/reform.v1/dialects/postgresql"
 	"gopkg.in/reform.v1/dialects/sqlite3"
 	"gopkg.in/reform.v1/dialects/sqlserver"
@@ -55,7 +55,7 @@ func checkForeignKeys(t testing.TB, q *reform.Querier) {
 func withIdentityInsert(t testing.TB, q *reform.Querier, table string, action func()) {
 	t.Helper()
 
-	if q.Dialect != mssql.Dialect && q.Dialect != sqlserver.Dialect {
+	if q.Dialect != mssql.Dialect && q.Dialect != sqlserver.Dialect { //nolint:staticcheck
 		action()
 		return
 	}

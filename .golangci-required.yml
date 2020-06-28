@@ -35,3 +35,8 @@ issues:
     # gosec - we are making an ORM after all
     - "G201: SQL string formatting"
     - "G202: SQL string concatenation"
+    # golint - matches database/sql.Result.LastInsertId()
+    # > method LastInsertIdMethod should be LastInsertIDMethod
+    # > type `LastInsertIdMethod` should be `LastInsertIDMethod`
+    # > var `lastInsertIdMethod` should be `lastInsertIDMethod`
+    - "`?LastInsertIdMethod`? should be `?LastInsertIDMethod`?"

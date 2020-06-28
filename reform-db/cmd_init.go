@@ -43,7 +43,7 @@ and edited manually.
 
 func gofmt(path string) {
 	if *gofmtF {
-		cmd := exec.Command("gofmt", "-s", "-w", path)
+		cmd := exec.Command("gofmt", "-s", "-w", path) //nolint:gosec
 		logger.Debugf(strings.Join(cmd.Args, " "))
 		b, err := cmd.CombinedOutput()
 		if err != nil {

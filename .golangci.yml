@@ -24,11 +24,9 @@ linters:
 issues:
   exclude-use-default: false
   exclude:
-    # gosec
+    # gosec - we are making an ORM after all
     - "G201: SQL string formatting"
     - "G202: SQL string concatenation"
-    - "G204: Subprocess launched with variable"
-    - "G304: Potential file inclusion via variable"
   exclude-rules:
     - path: _test\.go
       linters:

@@ -16,12 +16,18 @@ linters-settings:
 linters:
   disable-all: true
   enable:
+    - deadcode
     - depguard
+    - errcheck
     - goimports
+    - golint
+    - gosec
     - govet
     - ineffassign
+    - misspell
     - nolintlint
     - staticcheck
+    - unused
 
 issues:
   exclude-use-default: false

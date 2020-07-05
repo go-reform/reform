@@ -59,10 +59,11 @@ func Example() {
 
 func ExampleNewDB() {
 	// Get *sql.DB as usual. PostgreSQL example:
-	conn, err := sql.Open("postgres", "postgres://127.0.0.1:5432/database")
+	sqlDB, err := sql.Open("postgres", "postgres://127.0.0.1:5432/database")
 	if err != nil {
 		log.Fatal(err)
 	}
+	defer sqlDB.Close()
 
 	// Use new *log.Logger for logging.
 	logger := log.New(os.Stderr, "SQL: ", log.Flags())
@@ -70,7 +71,7 @@ func ExampleNewDB() {
 	// Create *reform.DB instance with simple logger.
 	// Any Printf-like function (fmt.Printf, log.Printf, testing.T.Logf, etc) can be used with NewPrintfLogger.
 	// Change dialect for other databases.
-	_ = reform.NewDB(conn, postgresql.Dialect, reform.NewPrintfLogger(logger.Printf))
+	_ = reform.NewDB(sqlDB, postgresql.Dialect, reform.NewPrintfLogger(logger.Printf))
 }
 
 func ExampleQuerier_WithTag() {

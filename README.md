@@ -82,31 +82,31 @@ Notes:
 	// Create *reform.DB instance with simple logger.
 	// Any Printf-like function (fmt.Printf, log.Printf, testing.T.Logf, etc) can be used with NewPrintfLogger.
 	// Change dialect for other databases.
-	DB = reform.NewDB(sqlDB, postgresql.Dialect, reform.NewPrintfLogger(logger.Printf))
+	db := reform.NewDB(sqlDB, postgresql.Dialect, reform.NewPrintfLogger(logger.Printf))
 
 	// Save record (performs INSERT or UPDATE).
 	person := &Person{
 		Name:  "Alexey Palazhchenko",
 		Email: pointer.ToString("alexey.palazhchenko@gmail.com"),
 	}
-	if err := DB.Save(person); err != nil {
+	if err := db.Save(person); err != nil {
 		log.Fatal(err)
 	}
 
 	// ID is filled by Save.
-	person2, err := DB.FindByPrimaryKeyFrom(PersonTable, person.ID)
+	person2, err := db.FindByPrimaryKeyFrom(PersonTable, person.ID)
 	if err != nil {
 		log.Fatal(err)
 	}
 	fmt.Println(person2.(*Person).Name)
 
 	// Delete record.
-	if err = DB.Delete(person); err != nil {
+	if err = db.Delete(person); err != nil {
 		log.Fatal(err)
 	}
 
 	// Find records by IDs.
-	persons, err := DB.FindAllFrom(PersonTable, "id", 1, 2)
+	persons, err := db.FindAllFrom(PersonTable, "id", 1, 2)
 	if err != nil {
 		log.Fatal(err)
 	}

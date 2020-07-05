@@ -18,7 +18,6 @@ linters:
   enable:
     - deadcode
     - depguard
-    - errcheck
     - goimports
     - golint
     - gosec

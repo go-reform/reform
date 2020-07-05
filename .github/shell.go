@@ -1,3 +1,5 @@
+// +build ignore
+
 package main
 
 // Custom shell for GNU Make to measure command execution time.

@@ -21,8 +21,9 @@ import (
 var (
 	logger *internal.Logger
 
-	debugF = flag.Bool("debug", false, "Enable debug logging")
-	gofmtF = flag.Bool("gofmt", true, "Format with gofmt")
+	debugF   = flag.Bool("debug", false, "Enable debug logging")
+	gofmtF   = flag.Bool("gofmt", true, "Format with gofmt")
+	versionF = flag.Bool("version", false, "Print version and exit")
 )
 
 func processFile(path, file, pack string) error {
@@ -124,6 +125,11 @@ func main() {
 		flag.PrintDefaults()
 	}
 	flag.Parse()
+
+	if *versionF {
+		fmt.Println(reform.Version)
+		os.Exit(0)
+	}
 
 	logger = internal.NewLogger("reform: ", *debugF)
 

@@ -1,0 +1,146 @@
+---
+name: CI
+on:
+  push:
+    branches:
+      - main
+      - master
+      - v1-stable
+      - hotfix/**
+      - release/**
+  pull_request:
+
+jobs:
+  test:
+    name: Test
+    timeout-minutes: 10
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu-latest
+        go-version:
+          - 1.12.x
+          - 1.13.x
+          - 1.14.x
+          - tip
+        images:
+          - {postgres: "postgres:9.6", mysql: "mysql:5.5"}
+          - {postgres: "postgres:10",  mysql: "mysql:5.6"}
+          - {postgres: "postgres:11",  mysql: "mysql:5.7"}
+          - {postgres: "postgres:12",  mysql: "mysql:8.0"}
+
+    runs-on: ${{ matrix.os }}
+
+    env:
+      GO111MODULE: "on"
+      GOPROXY: https://proxy.golang.org
+      GOFLAGS: -mod=readonly
+      GORACE: halt_on_error=1
+      REFORM_POSTGRES_IMAGE: ${{ matrix.images.postgres }}
+      REFORM_MYSQL_IMAGE: ${{ matrix.images.mysql }}
+      REFORM_MSSQL_IMAGE: microsoft/mssql-server-linux:latest
+
+    steps:
+      - name: Set up Go version ${{ matrix.go-version }}
+        if: matrix.go-version != 'tip'
+        uses: actions/setup-go@v1
+        with:
+          go-version: ${{ matrix.go-version }}
+
+      - name: Set up Go tip
+        if: matrix.go-version == 'tip'
+        run: |
+          git clone --depth=1 https://go.googlesource.com/go $HOME/gotip
+          cd $HOME/gotip/src
+          ./make.bash
+          echo "::set-env name=GOROOT::$HOME/gotip"
+          echo "::add-path::$HOME/gotip/bin"
+
+      - name: Set environment variables
+        run: |
+          echo "::set-env name=GOPATH::$GITHUB_WORKSPACE/gopath"
+          echo "::add-path::$GITHUB_WORKSPACE/gopath/bin"
+          echo "::set-env name=WORKDIR::$GITHUB_WORKSPACE/gopath/src/gopkg.in/reform.v1"
+          echo "::set-env name=GO_VERSION::$(go version)"
+
+      - name: Check out code into GOPATH
+        uses: actions/checkout@v2
+        with:
+          path: ${{ env.WORKDIR }}
+
+      - name: Pull Docker images in the background
+        run: docker-compose pull --quiet &
+        working-directory: ${{ env.WORKDIR }}
+
+      # slightly decreases total CI time; see also cleanup.yaml
+      - name: Enable Go modules cache
+        uses: actions/cache@v1
+        with:
+          path: ${{ env.GOPATH }}/pkg/mod
+          key: ${{ matrix.os }}-go-${{ matrix.go-version }}-modules-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ matrix.os }}-go-${{ matrix.go-version }}-modules-
+
+      # significantly decreases total CI time; see also cleanup.yaml
+      - name: Enable Go build cache
+        uses: actions/cache@v1
+        with:
+          path: ~/.cache/go-build
+          key: ${{ matrix.os }}-go-${{ matrix.go-version }}-build-${{ github.ref }}-${{ hashFiles('**') }}
+          restore-keys: |
+            ${{ matrix.os }}-go-${{ matrix.go-version }}-build-${{ github.ref }}-
+            ${{ matrix.os }}-go-${{ matrix.go-version }}-build-
+
+      - name: Stop Ubuntu services
+        run: sudo systemctl stop mysql
+
+      - name: Download Go modules
+        run: go mod download
+        working-directory: ${{ env.WORKDIR }}
+
+      - name: Check that it is still possible to install reform without modules
+        run: |
+          env GO111MODULE=off go get -v ./...
+          reform -version
+          reform-db -version
+        working-directory: ${{ env.WORKDIR }}
+
+      - name: Run init target
+        run: make init
+        working-directory: ${{ env.WORKDIR }}
+
+      - name: Start development environment
+        run: make env-up-detach
+        working-directory: ${{ env.WORKDIR }}
+
+      - name: Run test target
+        run: make test
+        working-directory: ${{ env.WORKDIR }}
+
+      # TODO test again with updated deps
+
+      # to ensure that all generators still work the same way
+      - name: Check that generated files did not change
+        run: |
+          git status
+          git diff --exit-code
+        working-directory: ${{ env.WORKDIR }}
+
+      - name: Upload coverage information
+        run: bash <(curl -s https://codecov.io/bash) -f coverage.txt -X fix -e GO_VERSION,REFORM_POSTGRES_IMAGE,REFORM_MYSQL_IMAGE,REFORM_MSSQL_IMAGE
+        working-directory: ${{ env.WORKDIR }}
+
+      - name: Run debug commands on failure
+        if: ${{ failure() }}
+        run: |
+          sudo apt-get install -qy tree
+          env
+          go version
+          go env
+          pwd
+          tree -d
+          ls -al
+          docker --version
+          docker-compose --version

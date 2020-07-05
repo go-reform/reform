@@ -35,8 +35,17 @@ issues:
     # gosec - we are making an ORM after all
     - "G201: SQL string formatting"
     - "G202: SQL string concatenation"
+
     # golint - matches database/sql.Result.LastInsertId()
     # > method LastInsertIdMethod should be LastInsertIDMethod
     # > type `LastInsertIdMethod` should be `LastInsertIDMethod`
     # > var `lastInsertIdMethod` should be `lastInsertIDMethod`
     - "`?LastInsertIdMethod`? should be `?LastInsertIDMethod`?"
+
+  exclude-rules:
+    - path: internal/test/models/
+      linters:
+        - golint
+    - path: _test\.go
+      linters:
+        - unused       # very annoying false positive: https://github.com/golangci/golangci-lint/issues/791

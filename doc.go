@@ -76,4 +76,4 @@
 package reform // import "gopkg.in/reform.v1"
 
 // Version defines reform version.
-const Version = "v1.4.0-beta2"
+const Version = "v1.4.0"

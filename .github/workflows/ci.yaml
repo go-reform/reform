@@ -78,7 +78,7 @@ jobs:
 
       # slightly decreases total CI time; see also cleanup.yaml
       - name: Enable Go modules cache
-        uses: actions/cache@v1
+        uses: actions/cache@v2
         with:
           path: ${{ env.GOPATH }}/pkg/mod
           key: ${{ matrix.os }}-go-${{ matrix.go-version }}-modules-${{ hashFiles('**/go.sum') }}
@@ -87,7 +87,7 @@ jobs:
 
       # significantly decreases total CI time; see also cleanup.yaml
       - name: Enable Go build cache
-        uses: actions/cache@v1
+        uses: actions/cache@v2
         with:
           path: ~/.cache/go-build
           key: ${{ matrix.os }}-go-${{ matrix.go-version }}-build-${{ github.ref }}-${{ hashFiles('**') }}
@@ -189,7 +189,7 @@ jobs:
 
       # slightly decreases total CI time; see also cleanup.yaml
       - name: Enable Go modules cache
-        uses: actions/cache@v1
+        uses: actions/cache@v2
         with:
           path: ${{ env.GOPATH }}/pkg/mod
           key: ${{ matrix.os }}-go-${{ matrix.go-version }}-modules-${{ hashFiles('**/go.sum') }}
@@ -198,7 +198,7 @@ jobs:
 
       # significantly decreases total CI time; see also cleanup.yaml
       - name: Enable Go build cache
-        uses: actions/cache@v1
+        uses: actions/cache@v2
         with:
           path: ~/.cache/go-build
           key: ${{ matrix.os }}-go-${{ matrix.go-version }}-build-${{ github.ref }}-${{ hashFiles('**') }}

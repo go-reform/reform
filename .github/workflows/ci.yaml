@@ -48,7 +48,7 @@ jobs:
     steps:
       - name: Set up Go version ${{ matrix.go-version }}
         if: matrix.go-version != 'tip'
-        uses: actions/setup-go@v1
+        uses: actions/setup-go@v2.1.0
         with:
           go-version: ${{ matrix.go-version }}
 
@@ -178,7 +178,7 @@ jobs:
 
     steps:
       - name: Set up Go version ${{ matrix.go-version }}
-        uses: actions/setup-go@v1
+        uses: actions/setup-go@v2.1.0
         with:
           go-version: ${{ matrix.go-version }}
 

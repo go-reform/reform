@@ -82,7 +82,9 @@ func initModelsSQLite3(db *reform.DB) (structs []StructData) {
 
 		rows, err := db.Query("PRAGMA table_info(" + tableName + ")") // no placeholders for PRAGMA
 		if err != nil {
-			logger.Fatalf("%s", err)
+			// https://github.com/go-reform/reform/issues/180
+			logger.Printf("Skipping %s: %s.", tableName, err)
+			continue
 		}
 		for {
 			var column sqliteTableInfo

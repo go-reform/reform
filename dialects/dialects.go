@@ -5,7 +5,7 @@ import (
 	"strings"
 
 	"gopkg.in/reform.v1"
-	"gopkg.in/reform.v1/dialects/mssql"
+	"gopkg.in/reform.v1/dialects/mssql" //nolint:staticcheck
 	"gopkg.in/reform.v1/dialects/mysql"
 	"gopkg.in/reform.v1/dialects/postgresql"
 	"gopkg.in/reform.v1/dialects/sqlite3"
@@ -25,7 +25,7 @@ func ForDriver(driver string) reform.Dialect {
 	case "mysql":
 		return mysql.Dialect
 	case "mssql":
-		return mssql.Dialect
+		return mssql.Dialect //nolint:staticcheck
 	case "sqlserver":
 		return sqlserver.Dialect
 	default:

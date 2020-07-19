@@ -18,7 +18,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"gopkg.in/reform.v1"
-	"gopkg.in/reform.v1/dialects/mssql"
+	"gopkg.in/reform.v1/dialects/mssql" //nolint:staticcheck
 	"gopkg.in/reform.v1/dialects/mysql"
 	"gopkg.in/reform.v1/dialects/postgresql"
 	"gopkg.in/reform.v1/dialects/sqlite3"
@@ -35,7 +35,9 @@ func sleepQuery(t testing.TB, q *reform.Querier, d time.Duration) string {
 		return fmt.Sprintf("SELECT SLEEP(%f)", d.Seconds())
 	case sqlite3.Dialect:
 		return fmt.Sprintf("SELECT sleep(%d)", d.Nanoseconds())
-	case mssql.Dialect, sqlserver.Dialect:
+	case mssql.Dialect: //nolint:staticcheck
+		fallthrough
+	case sqlserver.Dialect:
 		sec := int(d.Seconds())
 		msec := (d - time.Duration(sec)*time.Second) / time.Millisecond
 		return fmt.Sprintf("WAITFOR DELAY '00:00:%02d.%03d'", sec, msec)

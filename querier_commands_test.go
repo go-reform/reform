@@ -195,16 +195,16 @@ func (s *ReformSuite) TestInsertMultiMixes() {
 	err := s.q.InsertMulti()
 	s.NoError(err)
 
-	err = s.q.InsertMulti(&Person{}, &Project{})
+	err = s.q.InsertMulti(new(Person), new(Project))
 	s.Error(err)
 
-	err = s.q.InsertMulti(&Person{ID: 1}, &Person{})
+	err = s.q.InsertMulti(&Person{ID: 1}, new(Person))
 	s.Error(err)
 }
 
 func (s *ReformSuite) TestInsertIDOnly() {
-	id := &IDOnly{}
-	err := s.q.Insert(id)
+	var id IDOnly
+	err := s.q.Insert(&id)
 	s.NoError(err)
 	s.Equal(int32(1), id.ID)
 }
@@ -390,7 +390,7 @@ func (s *ReformSuite) TestDelete() {
 	err = s.q.Reload(project)
 	s.Equal(reform.ErrNoRows, err)
 
-	project = &Project{}
+	project = new(Project)
 	err = s.q.Delete(project)
 	s.Equal(reform.ErrNoPK, err)
 

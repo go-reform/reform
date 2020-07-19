@@ -1,5 +1,6 @@
+---
 codecov:
-  branch: "v1-stable"
+  branch: "main"
 
 coverage:
   range: "50...80"

@@ -3,8 +3,8 @@
 [![Release](https://img.shields.io/github/release/go-reform/reform.svg)](https://github.com/go-reform/reform/releases/latest)
 [![PkgGoDev](https://pkg.go.dev/badge/gopkg.in/reform.v1)](https://pkg.go.dev/gopkg.in/reform.v1)
 [![CI](https://github.com/go-reform/reform/workflows/CI/badge.svg?branch=main&event=push)](https://github.com/go-reform/reform/actions)
-[![AppVeyor Build status](https://ci.appveyor.com/api/projects/status/kbkyjmic461xa7b3/branch/v1-stable?svg=true)](https://ci.appveyor.com/project/AlekSi/reform/branch/v1-stable)
-[![Coverage Report](https://codecov.io/gh/go-reform/reform/branch/v1-stable/graph/badge.svg)](https://codecov.io/gh/go-reform/reform)
+[![AppVeyor Build status](https://ci.appveyor.com/api/projects/status/srwa0cuwf91qpjge/branch/main?svg=true)](https://ci.appveyor.com/project/AlekSi/reform/branch/main)
+[![Coverage Report](https://codecov.io/gh/go-reform/reform/branch/main/graph/badge.svg)](https://codecov.io/gh/go-reform/reform)
 [![Go Report Card](https://goreportcard.com/badge/gopkg.in/reform.v1)](https://goreportcard.com/report/gopkg.in/reform.v1)
 
 <a href="https://en.wikipedia.org/wiki/Peter_the_Great"><img align="right" alt="Reform gopher logo" title="Peter the Reformer" src=".github/reform.png"></a>
@@ -144,7 +144,7 @@ This free and open-source version is the fourth milestone on the road to better 
 We are following [Semantic Versioning](http://semver.org/spec/v2.0.0.html),
 using [gopkg.in](https://gopkg.in) and filling a [changelog](CHANGELOG.md).
 
-We use branch `v1-stable` (default on Github) for v1 development and tags `v1.Y.Z` for releases.
+We use branch `main` (default on Github) for v1 development and tags `v1.Y.Z` for releases.
 All v1 releases are SemVer-compatible, breaking changes will not be applied.
 Canonical import path is `gopkg.in/reform.v1`.
 `go get -u gopkg.in/reform.v1/...` will install the latest released version.
@@ -152,7 +152,7 @@ To install not yet released v1 version one can do checkout manually while preser
 ```
 cd $GOPATH/src/gopkg.in/reform.v1
 git fetch
-git checkout origin/v1-stable
+git checkout origin/main
 go install -v gopkg.in/reform.v1/reform
 ```
 

@@ -2,7 +2,7 @@
 
 ## v1.4.0 (not released yet, https://github.com/go-reform/reform/milestones/v1.4.0)
 
-* Go 1.12+ is now required.
+* Go 1.13+ is now required.
 * Converted to Go module. [Non modules-aware tools like `dep`](https://github.com/golangf/dep/issues/1962)
   are still supported until reform v2 (dependencies with Semantic Import Versioning paths are not used in v1).
 * Added [`context` support](https://pkg.go.dev/gopkg.in/reform.v1?tab=doc#hdr-Context).

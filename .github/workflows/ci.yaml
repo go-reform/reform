@@ -34,9 +34,10 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     env:
+      # no `-mod=readonly` to test PRs made by @dependabot;
+      # `git diff --exit-code` step below still checks what we need
       GO111MODULE: "on"
       GOPROXY: https://proxy.golang.org
-      GOFLAGS: -mod=readonly
       GORACE: halt_on_error=1
       REFORM_POSTGRES_IMAGE: ${{ matrix.images.postgres }}
       REFORM_MYSQL_IMAGE: ${{ matrix.images.mysql }}
@@ -122,10 +123,15 @@ jobs:
       # TODO test again with updated deps
 
       # to ensure that all generators still work the same way
-      - name: Check that generated files did not change
+      - name: Check that there are no source code changes
         working-directory: ${{ env.WORKDIR }}
         run: |
-          git status
+          # Break job if any files were changed during its run (code generation, etc), except go.sum.
+          # `go mod tidy` could remove old checksums from that file, and that's okay on CI,
+          # and actually expected for PRs made by @dependabot.
+          # Checksums of actually used modules are checked by previous `go` subcommands.
+          pushd tools && go mod tidy && git checkout go.sum
+          popd        && go mod tidy && git checkout go.sum
           git diff --exit-code
 
       - name: Upload coverage information
@@ -162,9 +168,10 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     env:
+      # no `-mod=readonly` to test PRs made by @dependabot
+      # `git diff --exit-code` step below still checks what we need
       GO111MODULE: "on"
       GOPROXY: https://proxy.golang.org
-      GOFLAGS: -mod=readonly
       GORACE: halt_on_error=1
 
     steps:
@@ -221,6 +228,18 @@ jobs:
           # use GO_REFORM_BOT_TOKEN for better reviewer's name
           bin/golangci-lint run --out-format=line-number | env REVIEWDOG_GITHUB_API_TOKEN=${{ secrets.GO_REFORM_BOT_TOKEN }} bin/reviewdog -f=golangci-lint -name='Optional linters' -reporter=github-pr-review
           bin/go-consistent -pedantic ./...              | env REVIEWDOG_GITHUB_API_TOKEN=${{ secrets.GO_REFORM_BOT_TOKEN }} bin/reviewdog -f=go-consistent -name='go-consistent'    -reporter=github-pr-review
+
+      # to ensure that all generators still work the same way
+      - name: Check that there are no source code changes
+        working-directory: ${{ env.WORKDIR }}
+        run: |
+          # Break job if any files were changed during its run (code generation, etc), except go.sum.
+          # `go mod tidy` could remove old checksums from that file, and that's okay on CI,
+          # and actually expected for PRs made by @dependabot.
+          # Checksums of actually used modules are checked by previous `go` subcommands.
+          pushd tools && go mod tidy && git checkout go.sum
+          popd        && go mod tidy && git checkout go.sum
+          git diff --exit-code
 
       - name: Run debug commands on failure
         if: ${{ failure() }}

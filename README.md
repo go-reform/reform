@@ -31,11 +31,28 @@ Notes:
 
 ## Quickstart
 
-1. Make sure you are using Go 1.13+. Install or update `reform` package, `reform` and `reform-db` commands
-   (see about versioning below):
+1. Make sure you are using Go 1.13+, and Go modules support is enabled.
+   Install or update `reform` package, `reform` and `reform-db` commands with:
     ```
-    go get -u gopkg.in/reform.v1/...
+    go get -v gopkg.in/reform.v1/...
     ```
+
+   If you are not using Go modules yet, you can use dep to vendor desired version of reform,
+   and then install commands with:
+    ```
+    go install -v ./vendor/gopkg.in/reform.v1/...
+    ```
+
+   You can also install the latest stable version of reform without using Go modules thanks to
+   [gopkg.in redirection](https://gopkg.in/reform.v1), but please note that this will not use the stable
+   versions of the database drivers:
+    ```
+    env GO111MODULE=off go get -u -v gopkg.in/reform.v1/...
+    ```
+
+   Canonical import path is `gopkg.in/reform.v1`; using `github.com/go-reform/reform` will not work.
+
+   See note about versioning and branches below.
 
 2. Use `reform-db` command to generate models for your existing database schema. For example:
     ```
@@ -139,22 +156,16 @@ First proprietary version of reform was used in production even before `go gener
 This free and open-source version is the fourth milestone on the road to better and idiomatic API.
 
 
-## Versioning policy
+## Versioning and branching policy
 
 We are following [Semantic Versioning](http://semver.org/spec/v2.0.0.html),
 using [gopkg.in](https://gopkg.in) and filling a [changelog](CHANGELOG.md).
+All v1 releases are SemVer-compatible; breaking changes will not be applied.
 
-We use branch `main` (default on Github) for v1 development and tags `v1.Y.Z` for releases.
-All v1 releases are SemVer-compatible, breaking changes will not be applied.
-Canonical import path is `gopkg.in/reform.v1`.
-`go get -u gopkg.in/reform.v1/...` will install the latest released version.
-To install not yet released v1 version one can do checkout manually while preserving import path:
-```
-cd $GOPATH/src/gopkg.in/reform.v1
-git fetch
-git checkout origin/main
-go install -v gopkg.in/reform.v1/reform
-```
+We use tags `v1.M.m` for releases, branch `main` (default on GitHub) for the next minor release development,
+and `release/1.M` branches for patch release development. (It was more complicated before 1.4.0 release.)
+
+Major version 2 is currently not planned.
 
 
 ## Additional packages
@@ -172,7 +183,7 @@ go install -v gopkg.in/reform.v1/reform
 
 ## License
 
-Code is covered by standard MIT-style license. Copyright (c) 2016-2018 Alexey Palazhchenko.
+Code is covered by standard MIT-style license. Copyright (c) 2016-2020 Alexey Palazhchenko.
 See [LICENSE](LICENSE) for details. Note that generated code is covered by the terms of your choice.
 
 The reform gopher was drawn by Natalya Glebova. Please use it only as reform logo.

@@ -14,3 +14,9 @@ you want to implement _before_ implementing it.
 4. Run `make init` to install development tools.
 5. Run `make test` to run all tests.
 5. Run `make lint` to run linters.
+
+
+## Branches
+
+Please read the "Versioning and branching policy" section in README,
+and send pull requests to the right branch.

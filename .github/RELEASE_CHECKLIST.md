@@ -7,4 +7,7 @@
 5. Make tag.
 6. Push it!
 7. Make [release](https://github.com/go-reform/reform/releases).
-8. Refresh [godoc.org](https://godoc.org/gopkg.in/reform.v1), [Go Report Card](https://goreportcard.com/report/gopkg.in/reform.v1).
+8. Refresh
+   * [pkg.go.dev](https://pkg.go.dev/gopkg.in/reform.v1?)
+   * [godoc.org](https://godoc.org/gopkg.in/reform.v1)
+   * [Go Report Card](https://goreportcard.com/report/gopkg.in/reform.v1).

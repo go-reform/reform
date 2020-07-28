@@ -6,17 +6,26 @@ Speak up _before_ writing code. Comment on existing issue or create a new one. D
 you want to implement _before_ implementing it.
 
 
-## Running tests
+## Getting code
 
-1. Reform uses Go modules to version dependencies. Make sure they are not disabled in your environment.
-2. Run `make` without arguments to see all Makefile targets.
-3. Run `make env-up` or `make env-up-detach` to start databases with Docker Compose.
-4. Run `make init` to install development tools.
-5. Run `make test` to run all tests.
-5. Run `make lint` to run linters.
+Fork repository on GitHub and clone the source code:
 
+```
+git clone git@github.com:<your name>/reform.git
+cd reform
+make init
+```
 
-## Branches
+Thanks to Go modules, that will work in any directory. Make sure they are not disabled in your environment.
 
 Please read the "Versioning and branching policy" section in README,
 and send pull requests to the right branch.
+
+
+## Makefile targets
+
+* Run `make` without arguments to see all Makefile targets.
+* Run `make env-up` or `make env-up-detach` to start databases with Docker Compose.
+* Run `make init` to install development tools.
+* Run `make test` to run all tests.
+* Run `make lint` to run linters.

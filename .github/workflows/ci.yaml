@@ -4,13 +4,13 @@ on:
   push:
     branches:
       - main
-      - master
-      - v1-stable
       - hotfix/**
       - release/**
   pull_request:
 
 jobs:
+
+  # test job
   test:
     name: Test
     timeout-minutes: 10
@@ -21,7 +21,6 @@ jobs:
         os:
           - ubuntu-latest
         go-version:
-          - 1.12.x
           - 1.13.x
           - 1.14.x
           - tip
@@ -34,9 +33,10 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     env:
+      # no `-mod=readonly` to test PRs made by @dependabot;
+      # `git diff --exit-code` step below still checks what we need
       GO111MODULE: "on"
       GOPROXY: https://proxy.golang.org
-      GOFLAGS: -mod=readonly
       GORACE: halt_on_error=1
       REFORM_POSTGRES_IMAGE: ${{ matrix.images.postgres }}
       REFORM_MYSQL_IMAGE: ${{ matrix.images.mysql }}
@@ -45,7 +45,7 @@ jobs:
     steps:
       - name: Set up Go version ${{ matrix.go-version }}
         if: matrix.go-version != 'tip'
-        uses: actions/setup-go@v1
+        uses: actions/setup-go@v2.1.1
         with:
           go-version: ${{ matrix.go-version }}
 
@@ -71,12 +71,12 @@ jobs:
           path: ${{ env.WORKDIR }}
 
       - name: Pull Docker images in the background
-        run: docker-compose pull --quiet &
         working-directory: ${{ env.WORKDIR }}
+        run: docker-compose pull --quiet &
 
       # slightly decreases total CI time; see also cleanup.yaml
       - name: Enable Go modules cache
-        uses: actions/cache@v1
+        uses: actions/cache@v2
         with:
           path: ${{ env.GOPATH }}/pkg/mod
           key: ${{ matrix.os }}-go-${{ matrix.go-version }}-modules-${{ hashFiles('**/go.sum') }}
@@ -85,7 +85,7 @@ jobs:
 
       # significantly decreases total CI time; see also cleanup.yaml
       - name: Enable Go build cache
-        uses: actions/cache@v1
+        uses: actions/cache@v2
         with:
           path: ~/.cache/go-build
           key: ${{ matrix.os }}-go-${{ matrix.go-version }}-build-${{ github.ref }}-${{ hashFiles('**') }}
@@ -97,40 +97,148 @@ jobs:
         run: sudo systemctl stop mysql
 
       - name: Download Go modules
-        run: go mod download
         working-directory: ${{ env.WORKDIR }}
+        run: go mod download
 
       - name: Check that it is still possible to install reform without modules
+        working-directory: ${{ env.WORKDIR }}
         run: |
           env GO111MODULE=off go get -v ./...
           reform -version
           reform-db -version
-        working-directory: ${{ env.WORKDIR }}
 
       - name: Run init target
-        run: make init
         working-directory: ${{ env.WORKDIR }}
+        run: make init
 
       - name: Start development environment
-        run: make env-up-detach
         working-directory: ${{ env.WORKDIR }}
+        run: make env-up-detach
 
       - name: Run test target
-        run: make test
         working-directory: ${{ env.WORKDIR }}
+        run: make test
 
       # TODO test again with updated deps
 
       # to ensure that all generators still work the same way
-      - name: Check that generated files did not change
-        run: |
-          git status
-          git diff --exit-code
+      - name: Check that there are no source code changes
         working-directory: ${{ env.WORKDIR }}
+        run: |
+          # Break job if any files were changed during its run (code generation, etc), except go.sum.
+          # `go mod tidy` could remove old checksums from that file, and that's okay on CI,
+          # and actually expected for PRs made by @dependabot.
+          # Checksums of actually used modules are checked by previous `go` subcommands.
+          pushd tools && go mod tidy && git checkout go.sum
+          popd        && go mod tidy && git checkout go.sum
+          git diff --exit-code
 
       - name: Upload coverage information
-        run: bash <(curl -s https://codecov.io/bash) -f coverage.txt -X fix -e GO_VERSION,REFORM_POSTGRES_IMAGE,REFORM_MYSQL_IMAGE,REFORM_MSSQL_IMAGE
         working-directory: ${{ env.WORKDIR }}
+        run: bash <(curl -s https://codecov.io/bash) -f coverage.txt -X fix -e GO_VERSION,REFORM_POSTGRES_IMAGE,REFORM_MYSQL_IMAGE,REFORM_MSSQL_IMAGE
+
+      - name: Run debug commands on failure
+        if: ${{ failure() }}
+        run: |
+          sudo apt-get install -qy tree
+          env
+          go version
+          go env
+          pwd
+          tree -d
+          ls -al
+          docker --version
+          docker-compose --version
+
+
+  # lint job
+  lint:
+    name: Lint
+    timeout-minutes: 10
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu-latest
+        go-version:
+          - 1.14.x
+
+    runs-on: ${{ matrix.os }}
+
+    env:
+      # no `-mod=readonly` to test PRs made by @dependabot
+      # `git diff --exit-code` step below still checks what we need
+      GO111MODULE: "on"
+      GOPROXY: https://proxy.golang.org
+      GORACE: halt_on_error=1
+
+    steps:
+      - name: Set up Go version ${{ matrix.go-version }}
+        uses: actions/setup-go@v2.1.1
+        with:
+          go-version: ${{ matrix.go-version }}
+
+      - name: Set environment variables
+        run: |
+          echo "::set-env name=GOPATH::$GITHUB_WORKSPACE/gopath"
+          echo "::add-path::$GITHUB_WORKSPACE/gopath/bin"
+          echo "::set-env name=WORKDIR::$GITHUB_WORKSPACE/gopath/src/gopkg.in/reform.v1"
+          echo "::set-env name=GO_VERSION::$(go version)"
+
+      - name: Check out code into GOPATH
+        uses: actions/checkout@v2
+        with:
+          path: ${{ env.WORKDIR }}
+
+      # slightly decreases total CI time; see also cleanup.yaml
+      - name: Enable Go modules cache
+        uses: actions/cache@v2
+        with:
+          path: ${{ env.GOPATH }}/pkg/mod
+          key: ${{ matrix.os }}-go-${{ matrix.go-version }}-modules-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ matrix.os }}-go-${{ matrix.go-version }}-modules-
+
+      # significantly decreases total CI time; see also cleanup.yaml
+      - name: Enable Go build cache
+        uses: actions/cache@v2
+        with:
+          path: ~/.cache/go-build
+          key: ${{ matrix.os }}-go-${{ matrix.go-version }}-build-${{ github.ref }}-${{ hashFiles('**') }}
+          restore-keys: |
+            ${{ matrix.os }}-go-${{ matrix.go-version }}-build-${{ github.ref }}-
+            ${{ matrix.os }}-go-${{ matrix.go-version }}-build-
+
+      - name: Download Go modules
+        working-directory: ${{ env.WORKDIR }}
+        run: go mod download
+
+      - name: Run init target
+        working-directory: ${{ env.WORKDIR }}
+        run: make init
+
+      - name: Run checks/linters
+        working-directory: ${{ env.WORKDIR }}
+        run: |
+          # use GITHUB_TOKEN because only it has access to GitHub Checks API
+          bin/golangci-lint run --config=.golangci-required.yml --out-format=line-number | env REVIEWDOG_GITHUB_API_TOKEN=${{ secrets.GITHUB_TOKEN }} bin/reviewdog -f=golangci-lint -name='Required linters' -reporter=github-check
+
+          # use GO_REFORM_BOT_TOKEN for better reviewer's name
+          bin/golangci-lint run --out-format=line-number | env REVIEWDOG_GITHUB_API_TOKEN=${{ secrets.GO_REFORM_BOT_TOKEN }} bin/reviewdog -f=golangci-lint -name='Optional linters' -reporter=github-pr-review
+          bin/go-consistent -pedantic ./...              | env REVIEWDOG_GITHUB_API_TOKEN=${{ secrets.GO_REFORM_BOT_TOKEN }} bin/reviewdog -f=go-consistent -name='go-consistent'    -reporter=github-pr-review
+
+      # to ensure that all generators still work the same way
+      - name: Check that there are no source code changes
+        working-directory: ${{ env.WORKDIR }}
+        run: |
+          # Break job if any files were changed during its run (code generation, etc), except go.sum.
+          # `go mod tidy` could remove old checksums from that file, and that's okay on CI,
+          # and actually expected for PRs made by @dependabot.
+          # Checksums of actually used modules are checked by previous `go` subcommands.
+          pushd tools && go mod tidy && git checkout go.sum
+          popd        && go mod tidy && git checkout go.sum
+          git diff --exit-code
 
       - name: Run debug commands on failure
         if: ${{ failure() }}

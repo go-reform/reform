@@ -76,13 +76,13 @@ func ExampleNewDB() {
 
 func ExampleQuerier_WithTag() {
 	id := "baron"
-	DB.WithTag("GetProject:%v", id).FindByPrimaryKeyFrom(ProjectTable, id)
+	_, _ = DB.WithTag("GetProject:%v", id).FindByPrimaryKeyFrom(ProjectTable, id)
 }
 
 func ExampleQuerier_WithContext() {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
-	DB.WithContext(ctx).SelectAllFrom(ProjectTable, "")
+	_, _ = DB.WithContext(ctx).SelectAllFrom(ProjectTable, "")
 }
 
 func ExampleQuerier_WithQualifiedViewName() {

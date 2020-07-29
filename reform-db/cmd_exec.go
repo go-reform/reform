@@ -64,7 +64,7 @@ func readFiles(files []string, split bool) (queries []string) {
 	// read files
 	for _, f := range files {
 		logger.Debugf("reading file %s", f)
-		b, err := ioutil.ReadFile(f)
+		b, err := ioutil.ReadFile(f) //nolint:gosec
 		if err != nil {
 			logger.Fatalf("failed to read file %s: %s", f, err)
 		}

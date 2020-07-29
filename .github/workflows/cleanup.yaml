@@ -16,7 +16,6 @@ jobs:
         os:
           - ubuntu-latest
         go-version:
-          - 1.12.x
           - 1.13.x
           - 1.14.x
 
@@ -29,7 +28,7 @@ jobs:
 
     steps:
       - name: Set up Go ${{ matrix.go-version }}
-        uses: actions/setup-go@v1
+        uses: actions/setup-go@v2.1.1
         with:
           go-version: ${{ matrix.go-version }}
 
@@ -46,7 +45,7 @@ jobs:
           path: ${{ env.WORKDIR }}
 
       - name: Enable Go modules cache
-        uses: actions/cache@v1
+        uses: actions/cache@v2
         with:
           path: ${{ env.GOPATH }}/pkg/mod
           key: ${{ matrix.os }}-go-${{ matrix.go-version }}-modules-${{ hashFiles('**/go.sum') }}
@@ -54,7 +53,7 @@ jobs:
             ${{ matrix.os }}-go-${{ matrix.go-version }}-modules-
 
       - name: Enable Go build cache
-        uses: actions/cache@v1
+        uses: actions/cache@v2
         with:
           path: ~/.cache/go-build
           key: ${{ matrix.os }}-go-${{ matrix.go-version }}-build-${{ github.ref }}-${{ hashFiles('**') }}

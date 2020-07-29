@@ -29,20 +29,32 @@ func goTypeSQLite3(sqlType string, nullable bool) (typ string, pack string, comm
 	case strings.Contains(sqlType, "int"):
 		return maybePointer("int64", nullable), "", ""
 
-	case strings.Contains(sqlType, "char") || strings.Contains(sqlType, "clob") || strings.Contains(sqlType, "text"):
+	case strings.Contains(sqlType, "char"):
+		fallthrough
+	case strings.Contains(sqlType, "clob"):
+		fallthrough
+	case strings.Contains(sqlType, "text"):
 		return maybePointer("string", nullable), "", ""
 
-	case strings.Contains(sqlType, "blob") || sqlType == "":
+	case strings.Contains(sqlType, "blob"):
+		fallthrough
+	case sqlType == "":
 		return "[]byte", "", "" // never a pointer
 
-	case strings.Contains(sqlType, "real") || strings.Contains(sqlType, "floa") || strings.Contains(sqlType, "doub"):
+	case strings.Contains(sqlType, "real"):
+		fallthrough
+	case strings.Contains(sqlType, "floa"):
+		fallthrough
+	case strings.Contains(sqlType, "doub"): //nolint:misspell
 		return maybePointer("float64", nullable), "", ""
 	}
 
 	// common SQL data types
 	switch {
 	// numeric, decimal, etc.
-	case strings.Contains(sqlType, "num") || strings.Contains(sqlType, "dec"):
+	case strings.Contains(sqlType, "num"):
+		fallthrough
+	case strings.Contains(sqlType, "dec"):
 		return maybePointer("string", nullable), "", ""
 
 	// bool, boolean, etc.
@@ -50,7 +62,9 @@ func goTypeSQLite3(sqlType string, nullable bool) (typ string, pack string, comm
 		return maybePointer("bool", nullable), "", ""
 
 	// date, datetime, timestamp, etc.
-	case strings.Contains(sqlType, "date") || strings.Contains(sqlType, "time"):
+	case strings.Contains(sqlType, "date"):
+		fallthrough
+	case strings.Contains(sqlType, "time"):
 		return maybePointer("time.Time", nullable), "time", ""
 
 	default:

@@ -1,3 +1,4 @@
+---
 version: '{build}'
 
 clone_folder: c:\gopath\src\gopkg.in\reform.v1

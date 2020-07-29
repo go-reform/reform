@@ -1,5 +1,5 @@
 ---
-# Almost all linters; some of them are optional.
+# The most valuable linters; they are required to pass for PR to be merged.
 
 run:
   skip-dirs:
@@ -14,12 +14,19 @@ linters-settings:
     local-prefixes: gopkg.in/reform.v1
 
 linters:
-  enable-all: true
-  disable:
-    - gomnd        # too annoying
-    - lll          # too annoying
-    - testpackage  # too annoying
-    - wsl          # too annoying
+  disable-all: true
+  enable:
+    - deadcode
+    - depguard
+    - goimports
+    - golint
+    - gosec
+    - govet
+    - ineffassign
+    - misspell
+    - nolintlint
+    - staticcheck
+    - unused
 
 issues:
   exclude-use-default: false
@@ -40,6 +47,4 @@ issues:
         - golint
     - path: _test\.go
       linters:
-        - funlen       # tests may be long
-        - testpackage  # senseless
         - unused       # very annoying false positive: https://github.com/golangci/golangci-lint/issues/791

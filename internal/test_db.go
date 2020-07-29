@@ -12,7 +12,7 @@ import (
 
 	"gopkg.in/reform.v1"
 	"gopkg.in/reform.v1/dialects"
-	"gopkg.in/reform.v1/dialects/mssql"
+	"gopkg.in/reform.v1/dialects/mssql" //nolint:staticcheck
 	"gopkg.in/reform.v1/dialects/mysql"
 	"gopkg.in/reform.v1/dialects/postgresql"
 	"gopkg.in/reform.v1/dialects/sqlite3"
@@ -125,7 +125,9 @@ func ConnectToTestDB() *reform.DB {
 			log.Printf("SQLite3 source      = %q", sourceID)
 		})
 
-	case mssql.Dialect, sqlserver.Dialect:
+	case mssql.Dialect: //nolint:staticcheck
+		fallthrough
+	case sqlserver.Dialect:
 		inspectOnce.Do(func() {
 			log.Printf("driver = %q, source = %q", driver, source)
 

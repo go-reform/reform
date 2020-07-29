@@ -99,17 +99,24 @@ func main() {
 
 	logger = internal.NewLogger("reform-db: ", *debugF)
 
+	// flagsets used below are created with ExitOnError, so Parse() is not expected to return errors
 	switch flag.Arg(0) {
 	case "exec":
-		execFlags.Parse(flag.Args()[1:])
+		if err := execFlags.Parse(flag.Args()[1:]); err != nil {
+			panic(err)
+		}
 		cmdExec(getDB(), execFlags.Args())
 
 	case "query":
-		queryFlags.Parse(flag.Args()[1:])
+		if err := queryFlags.Parse(flag.Args()[1:]); err != nil {
+			panic(err)
+		}
 		cmdQuery(getDB(), queryFlags.Args())
 
 	case "init":
-		initFlags.Parse(flag.Args()[1:])
+		if err := initFlags.Parse(flag.Args()[1:]); err != nil {
+			panic(err)
+		}
 
 		if initFlags.NArg() > 1 {
 			logger.Fatalf("Expected zero or one argument for %q, got %d", "init", initFlags.NArg())

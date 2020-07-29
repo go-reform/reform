@@ -6,6 +6,7 @@ import (
 	"gopkg.in/reform.v1/parse"
 )
 
+// StructData contains struct information for template.
 type StructData struct {
 	Imports map[string]struct{}
 	parse.StructInfo

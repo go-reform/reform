@@ -1,6 +1,6 @@
 // Package reform is a better ORM for Go, based on non-empty interfaces and code generation.
 //
-// See README (https://github.com/go-reform/reform/blob/v1-stable/README.md) for quickstart information.
+// See README (https://github.com/go-reform/reform/blob/main/README.md) for quickstart information.
 //
 //
 // Context
@@ -76,4 +76,4 @@
 package reform // import "gopkg.in/reform.v1"
 
 // Version defines reform version.
-const Version = "v1.4.0-beta2"
+const Version = "v1.4.0"

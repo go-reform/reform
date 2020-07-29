@@ -44,7 +44,7 @@ func NewTXFromInterface(tx TXInterface, dialect Dialect, logger Logger) *TX {
 
 func newTX(ctx context.Context, tx TXInterface, dialect Dialect, logger Logger) *TX {
 	return &TX{
-		Querier: newQuerier(ctx, tx, "", dialect, logger),
+		Querier: newQuerier(ctx, tx, "", "", dialect, logger),
 		tx:      tx,
 	}
 }

@@ -85,6 +85,20 @@ func ExampleQuerier_WithContext() {
 	_, _ = DB.WithContext(ctx).SelectAllFrom(ProjectTable, "")
 }
 
+func ExampleQuerier_WithQualifiedViewName() {
+	_, err := DB.WithQualifiedViewName("people_0").FindByPrimaryKeyFrom(PersonTable, 1)
+	if err != reform.ErrNoRows {
+		log.Fatal(err)
+	}
+	person, err := DB.WithQualifiedViewName("people_1").FindByPrimaryKeyFrom(PersonTable, 1)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(person)
+	// Output:
+	// ID: 1 (int32), GroupID: 65534 (*int32), Name: `Denis Mills` (string), Email: <nil> (*string), CreatedAt: 2009-11-10 23:00:00 +0000 UTC (time.Time), UpdatedAt: <nil> (*time.Time)
+}
+
 func ExampleQuerier_SelectRows() {
 	tail := fmt.Sprintf("WHERE created_at < %s ORDER BY id", DB.Placeholder(1))
 	y2010 := time.Date(2010, 1, 1, 0, 0, 0, 0, time.UTC)

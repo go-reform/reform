@@ -9,25 +9,27 @@ import (
 
 // Querier performs queries and commands.
 type Querier struct {
-	ctx     context.Context
-	dbtxCtx DBTXContext
-	tag     string
+	ctx               context.Context
+	dbtxCtx           DBTXContext
+	tag               string
+	qualifiedViewName string
 	Dialect
 	Logger Logger
 }
 
-func newQuerier(ctx context.Context, dbtxCtx DBTXContext, tag string, dialect Dialect, logger Logger) *Querier {
+func newQuerier(ctx context.Context, dbtxCtx DBTXContext, tag, qualifiedViewName string, dialect Dialect, logger Logger) *Querier {
 	return &Querier{
-		ctx:     ctx,
-		dbtxCtx: dbtxCtx,
-		tag:     tag,
-		Dialect: dialect,
-		Logger:  logger,
+		ctx:               ctx,
+		dbtxCtx:           dbtxCtx,
+		tag:               tag,
+		qualifiedViewName: qualifiedViewName,
+		Dialect:           dialect,
+		Logger:            logger,
 	}
 }
 
 func (q *Querier) clone() *Querier {
-	return newQuerier(q.ctx, q.dbtxCtx, q.tag, q.Dialect, q.Logger)
+	return newQuerier(q.ctx, q.dbtxCtx, q.tag, q.qualifiedViewName, q.Dialect, q.Logger)
 }
 
 func (q *Querier) logBefore(query string, args []interface{}) {
@@ -66,11 +68,20 @@ func (q *Querier) WithTag(format string, args ...interface{}) *Querier {
 	return newQ
 }
 
-// QualifiedView returns quoted qualified view name.
+// WithQualifiedViewName returns a copy of Querier with set qualified view name.
+// Returned Querier is tied to the same DB or TX.
+// TODO Support INSERT/UPDATE/DELETE. More test.
+func (q *Querier) WithQualifiedViewName(qualifiedViewName string) *Querier {
+	newQ := q.clone()
+	newQ.qualifiedViewName = qualifiedViewName
+	return newQ
+}
+
+// QualifiedView returns quoted qualified view name of given view.
 func (q *Querier) QualifiedView(view View) string {
 	v := q.QuoteIdentifier(view.Name())
-	if view.Schema() != "" {
-		v = q.QuoteIdentifier(view.Schema()) + "." + v
+	if s := view.Schema(); s != "" {
+		v = q.QuoteIdentifier(s) + "." + v
 	}
 	return v
 }

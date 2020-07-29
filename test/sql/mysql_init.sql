@@ -11,6 +11,10 @@ CREATE TABLE people (
   PRIMARY KEY (id)
 );
 
+CREATE VIEW people_0 AS SELECT * FROM people WHERE (id % 3) = 0;
+CREATE VIEW people_1 AS SELECT * FROM people WHERE (id % 3) = 1;
+CREATE VIEW people_2 AS SELECT * FROM people WHERE (id % 3) = 2;
+
 CREATE TABLE projects (
   name varchar(255) NOT NULL,
   id varchar(255) NOT NULL,

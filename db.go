@@ -41,7 +41,7 @@ func NewDB(db *sql.DB, dialect Dialect, logger Logger) *DB {
 // Logger can be nil.
 func NewDBFromInterface(db DBInterface, dialect Dialect, logger Logger) *DB {
 	return &DB{
-		Querier: newQuerier(context.Background(), db, "", dialect, logger),
+		Querier: newQuerier(context.Background(), db, "", "", dialect, logger),
 		db:      db,
 	}
 }

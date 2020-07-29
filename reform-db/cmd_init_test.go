@@ -38,7 +38,7 @@ func (s *ReformDBSuite) TestInit() {
 
 	fis, err := ioutil.ReadDir(dir)
 	s.Require().NoError(err)
-	s.Require().Len(fis, 4)
+	s.Require().Len(fis, 7) // 4 tables + views people_0, people_1, people_2
 
 	ff := filepath.Join(dir, "people.go")
 	actual, err := parse.File(ff)

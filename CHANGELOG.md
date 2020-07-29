@@ -1,6 +1,6 @@
 # Changelog
 
-## v1.4.0 (not released yet, https://github.com/go-reform/reform/milestones/v1.4.0)
+## v1.4.0 (2020-07-29, https://github.com/go-reform/reform/milestones/v1.4.0)
 
 * Go 1.13+ is now required.
 * Converted to Go module. [Non modules-aware tools like `dep`](https://github.com/golangf/dep/issues/1962)

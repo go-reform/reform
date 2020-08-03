@@ -58,8 +58,7 @@ test_script:
 
   # TODO test again with updated deps
 
-  - git status
-  - git diff --exit-code
+  - make ci-check-changes
 
 on_success:
   - curl -s -o codecov https://codecov.io/bash

@@ -12,11 +12,13 @@ CREATE TABLE people (
 );
 
 CREATE TABLE projects (
+  i int NOT NULL AUTO_INCREMENT,
   name varchar(255) NOT NULL,
   id varchar(255) NOT NULL,
   start date NOT NULL,
   end date,
-  PRIMARY KEY (id)
+  PRIMARY KEY (id),
+  UNIQUE (i)
 );
 
 -- https://dev.mysql.com/doc/refman/5.7/en/create-table.html

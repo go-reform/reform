@@ -151,7 +151,7 @@ func (v *projectTableType) Name() string {
 
 // Columns returns a new slice of column names for that view or table in SQL database.
 func (v *projectTableType) Columns() []string {
-	return []string{"name", "id", "start", "end"}
+	return []string{"i", "name", "id", "start", "end"}
 }
 
 // NewStruct makes a new struct for that view or table.
@@ -171,17 +171,18 @@ func (v *projectTableType) PKColumnIndex() uint {
 
 // ProjectTable represents projects view or table in SQL database.
 var ProjectTable = &projectTableType{
-	s: parse.StructInfo{Type: "Project", SQLSchema: "", SQLName: "projects", Fields: []parse.FieldInfo{{Name: "Name", Type: "string", Column: "name"}, {Name: "ID", Type: "string", Column: "id"}, {Name: "Start", Type: "time.Time", Column: "start"}, {Name: "End", Type: "*time.Time", Column: "end"}}, PKFieldIndex: 1},
+	s: parse.StructInfo{Type: "Project", SQLSchema: "", SQLName: "projects", Fields: []parse.FieldInfo{{Name: "I", Type: "int32", Column: "i"}, {Name: "Name", Type: "string", Column: "name"}, {Name: "ID", Type: "string", Column: "id"}, {Name: "Start", Type: "time.Time", Column: "start"}, {Name: "End", Type: "*time.Time", Column: "end"}}, PKFieldIndex: 2},
 	z: new(Project).Values(),
 }
 
 // String returns a string representation of this struct or record.
 func (s Project) String() string {
-	res := make([]string, 4)
-	res[0] = "Name: " + reform.Inspect(s.Name, true)
-	res[1] = "ID: " + reform.Inspect(s.ID, true)
-	res[2] = "Start: " + reform.Inspect(s.Start, true)
-	res[3] = "End: " + reform.Inspect(s.End, true)
+	res := make([]string, 5)
+	res[0] = "I: " + reform.Inspect(s.I, true)
+	res[1] = "Name: " + reform.Inspect(s.Name, true)
+	res[2] = "ID: " + reform.Inspect(s.ID, true)
+	res[3] = "Start: " + reform.Inspect(s.Start, true)
+	res[4] = "End: " + reform.Inspect(s.End, true)
 	return strings.Join(res, ", ")
 }
 
@@ -189,6 +190,7 @@ func (s Project) String() string {
 // Returned interface{} values are never untyped nils.
 func (s *Project) Values() []interface{} {
 	return []interface{}{
+		s.I,
 		s.Name,
 		s.ID,
 		s.Start,
@@ -200,6 +202,7 @@ func (s *Project) Values() []interface{} {
 // Returned interface{} values are never untyped nils.
 func (s *Project) Pointers() []interface{} {
 	return []interface{}{
+		&s.I,
 		&s.Name,
 		&s.ID,
 		&s.Start,

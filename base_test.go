@@ -176,7 +176,7 @@ func (s *ReformSuite) TestStringer() {
 
 	project, err := s.q.FindByPrimaryKeyFrom(ProjectTable, "baron")
 	s.NoError(err)
-	expected = "Name: `Vicious Baron` (string), ID: `baron` (string), Start: 2014-06-01 00:00:00 +0000 UTC (time.Time), End: 2016-02-21 00:00:00 +0000 UTC (*time.Time)"
+	expected = "I: 1 (int32), Name: `Vicious Baron` (string), ID: `baron` (string), Start: 2014-06-01 00:00:00 +0000 UTC (time.Time), End: 2016-02-21 00:00:00 +0000 UTC (*time.Time)"
 	s.Equal(expected, project.String())
 }
 

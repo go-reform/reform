@@ -8,10 +8,12 @@ CREATE TABLE [people] (
 );
 
 CREATE TABLE [projects] (
+  [i] int identity(1, 1) NOT NULL,
   [name] varchar(255) NOT NULL,
   [id] varchar(255) PRIMARY KEY,
   [start] date NOT NULL,
-  [end] date
+  [end] date,
+  UNIQUE ([i])
 );
 
 CREATE TABLE [person_project] (

@@ -32,12 +32,13 @@ var (
 		Type:    "Project",
 		SQLName: "projects",
 		Fields: []FieldInfo{
+			{Name: "I", Type: "int32", Column: "i"},
 			{Name: "Name", Type: "string", Column: "name"},
 			{Name: "ID", Type: "string", Column: "id"},
 			{Name: "Start", Type: "time.Time", Column: "start"},
 			{Name: "End", Type: "*time.Time", Column: "end"},
 		},
-		PKFieldIndex: 1,
+		PKFieldIndex: 2,
 	}
 
 	personProject = StructInfo{
@@ -203,7 +204,7 @@ func TestHelpersGood(t *testing.T) {
 	assert.True(t, person.IsTable())
 	assert.Equal(t, FieldInfo{Name: "ID", Type: "int32", Column: "id"}, person.PKField())
 
-	assert.Equal(t, []string{"name", "id", "start", "end"}, project.Columns())
+	assert.Equal(t, []string{"i", "name", "id", "start", "end"}, project.Columns())
 	assert.True(t, project.IsTable())
 	assert.Equal(t, FieldInfo{Name: "ID", Type: "string", Column: "id"}, project.PKField())
 

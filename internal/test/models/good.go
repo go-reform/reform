@@ -67,6 +67,7 @@ func (p *Person) AfterFind() error {
 // Project represents row in table projects
 // (reform:projects).
 type Project struct {
+	I     int32      `reform:"i"`
 	Name  string     `reform:"name"`
 	ID    string     `reform:"id,pk"`
 	Start time.Time  `reform:"start"`

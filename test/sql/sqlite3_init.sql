@@ -8,10 +8,12 @@ CREATE TABLE people (
 );
 
 CREATE TABLE projects (
+  i integer NOT NULL AUTOINCREMENT,
   name varchar NOT NULL,
   id varchar NOT NULL PRIMARY KEY,
   start date NOT NULL,
-  end date
+  end date,
+  UNIQUE (i)
 );
 
 CREATE TABLE person_project (

@@ -18,6 +18,7 @@ linters:
   disable:
     - gomnd        # too annoying
     - lll          # too annoying
+    - nlreturn     # too annoying
     - testpackage  # too annoying
     - wsl          # too annoying
 

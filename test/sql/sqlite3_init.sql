@@ -8,7 +8,7 @@ CREATE TABLE people (
 );
 
 CREATE TABLE projects (
-  i integer NOT NULL AUTOINCREMENT,
+  i integer NOT NULL, -- no AUTOINCREMENT - it works only for PRIMARY KEY: https://www.sqlite.org/autoinc.html
   name varchar NOT NULL,
   id varchar NOT NULL PRIMARY KEY,
   start date NOT NULL,

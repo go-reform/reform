@@ -26,6 +26,7 @@ func (s *ReformDBSuite) TestInit() {
 	if s.db.Dialect == sqlite3.Dialect {
 		people.Fields[0].Type = strings.Replace(people.Fields[0].Type, "int32", "int64", -1)
 		people.Fields[1].Type = strings.Replace(people.Fields[1].Type, "int32", "int64", -1)
+		projects.Fields[0].Type = strings.Replace(projects.Fields[0].Type, "int32", "int64", -1)
 		personProject.Fields[0].Type = strings.Replace(personProject.Fields[0].Type, "int32", "int64", -1)
 		idOnly.Fields[0].Type = strings.Replace(idOnly.Fields[0].Type, "int32", "int64", -1)
 	}

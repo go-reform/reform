@@ -1,7 +1,6 @@
 package main
 
 import (
-	"errors"
 	"flag"
 	"fmt"
 	"go/build"
@@ -117,7 +116,7 @@ func getPrimaryKeyColumn(db *reform.DB, catalog, schema, tableName string) *keyC
 		count++
 		logger.Debugf("%s", key)
 	}
-	if !errors.Is(err, reform.ErrNoRows) {
+	if err != reform.ErrNoRows {
 		logger.Fatalf("%s", err)
 	}
 	switch count {
@@ -133,7 +132,7 @@ func getPrimaryKeyColumn(db *reform.DB, catalog, schema, tableName string) *keyC
 		}
 		return &key
 	default:
-		logger.Fatalf("Too many rows.")
+		logger.Fatalf("Too many rows found. Please report this bug.")
 		return nil
 	}
 }

@@ -54,7 +54,6 @@ type column struct {
 
 //reform:information_schema.key_column_usage
 type keyColumnUsage struct {
-	// ConstraintName  string `reform:"constraint_name"`
 	ColumnName      string `reform:"column_name"`
 	OrdinalPosition int    `reform:"ordinal_position"`
 }

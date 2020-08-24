@@ -8,12 +8,10 @@ CREATE TABLE people (
 );
 
 CREATE TABLE projects (
-  i integer NOT NULL, -- no AUTOINCREMENT - it works only for PRIMARY KEY: https://www.sqlite.org/autoinc.html
   name varchar NOT NULL,
   id varchar NOT NULL PRIMARY KEY,
   start date NOT NULL,
-  end date,
-  UNIQUE (i)
+  end date
 );
 
 CREATE TABLE person_project (
@@ -24,4 +22,10 @@ CREATE TABLE person_project (
 
 CREATE TABLE id_only (
   id integer NOT NULL PRIMARY KEY AUTOINCREMENT
+);
+
+CREATE TABLE constraints (
+  i integer NOT NULL, -- no AUTOINCREMENT - it works only for PRIMARY KEY: https://www.sqlite.org/autoinc.html
+  id varchar NOT NULL PRIMARY KEY,
+  UNIQUE (i)
 );

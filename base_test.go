@@ -176,7 +176,7 @@ func (s *ReformSuite) TestStringer() {
 
 	project, err := s.q.FindByPrimaryKeyFrom(ProjectTable, "baron")
 	s.NoError(err)
-	expected = "I: 1 (int32), Name: `Vicious Baron` (string), ID: `baron` (string), Start: 2014-06-01 00:00:00 +0000 UTC (time.Time), End: 2016-02-21 00:00:00 +0000 UTC (*time.Time)"
+	expected = "Name: `Vicious Baron` (string), ID: `baron` (string), Start: 2014-06-01 00:00:00 +0000 UTC (time.Time), End: 2016-02-21 00:00:00 +0000 UTC (*time.Time)"
 	s.Equal(expected, project.String())
 }
 
@@ -265,14 +265,11 @@ func (s *ReformSuite) TestTimezones() {
 	}
 
 	{
-		q := fmt.Sprintf(`INSERT INTO projects (i, id, name, start) VALUES `+
-			`(11, '11', '11', %s), (12, '12', '12', %s), (13, '13', '13', %s), (14, '14', '14', %s)`,
+		q := fmt.Sprintf(`INSERT INTO projects (id, name, start) VALUES `+
+			`('11', '11', %s), ('12', '12', %s), ('13', '13', %s), ('14', '14', %s)`,
 			s.q.Placeholder(1), s.q.Placeholder(2), s.q.Placeholder(3), s.q.Placeholder(4))
-
-		withIdentityInsert(s.T(), s.q, "projects", func() {
-			_, err := s.q.Exec(q, t1, t2, tVLAT, tHST)
-			s.NoError(err)
-		})
+		_, err := s.q.Exec(q, t1, t2, tVLAT, tHST)
+		s.NoError(err)
 
 		q = `SELECT start, start FROM projects WHERE id IN ('11', '12', '13', '14') ORDER BY id`
 		rows, err := s.q.Query(q)

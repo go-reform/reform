@@ -12,13 +12,11 @@ CREATE TABLE people (
 );
 
 CREATE TABLE projects (
-  i int NOT NULL AUTO_INCREMENT,
   name varchar(255) NOT NULL,
   id varchar(255) NOT NULL,
   start date NOT NULL,
   end date,
-  PRIMARY KEY (id),
-  UNIQUE (i)
+  PRIMARY KEY (id)
 );
 
 -- https://dev.mysql.com/doc/refman/5.7/en/create-table.html
@@ -37,4 +35,11 @@ CREATE TABLE person_project (
 CREATE TABLE id_only (
   id int NOT NULL AUTO_INCREMENT,
   PRIMARY KEY (id)
+);
+
+CREATE TABLE constraints (
+  i int NOT NULL AUTO_INCREMENT,
+  id varchar(255) NOT NULL,
+  PRIMARY KEY (id),
+  UNIQUE (i)
 );

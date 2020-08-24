@@ -1,2 +1,1 @@
 DBCC CHECKIDENT ('people', RESEED, 1000);
-DBCC CHECKIDENT ('projects', RESEED, 1000);

@@ -8,12 +8,10 @@ CREATE TABLE [people] (
 );
 
 CREATE TABLE [projects] (
-  [i] int identity(1, 1) NOT NULL,
   [name] varchar(255) NOT NULL,
   [id] varchar(255) PRIMARY KEY,
   [start] date NOT NULL,
-  [end] date,
-  UNIQUE ([i])
+  [end] date
 );
 
 CREATE TABLE [person_project] (
@@ -24,6 +22,12 @@ CREATE TABLE [person_project] (
 
 CREATE TABLE id_only (
   [id] int identity(1, 1) PRIMARY KEY
+);
+
+CREATE TABLE constraints (
+  [i] int identity(1, 1) NOT NULL,
+  [id] varchar(255) PRIMARY KEY,
+  UNIQUE ([i])
 );
 
 -- to allow insert test data with IDs

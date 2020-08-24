@@ -67,7 +67,6 @@ func (p *Person) AfterFind() error {
 // Project represents row in table projects
 // (reform:projects).
 type Project struct {
-	I     int32      `reform:"i"`
 	Name  string     `reform:"name"`
 	ID    string     `reform:"id,pk"`
 	Start time.Time  `reform:"start"`
@@ -107,15 +106,21 @@ type PersonProject struct {
 	ProjectID string `reform:"project_id"`
 }
 
+// reform:id_only
+type IDOnly struct {
+	ID int32 `reform:"id,pk"`
+}
+
+//reform:constraints
+type Constraints struct {
+	I  int32  `reform:"i"`
+	ID string `reform:"id,pk"`
+}
+
 //reform:legacy.people
 type LegacyPerson struct {
 	ID   int32   `reform:"id,pk"`
 	Name *string `reform:"name"`
-}
-
-// reform:id_only
-type IDOnly struct {
-	ID int32 `reform:"id,pk"`
 }
 
 // check interfaces

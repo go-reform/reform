@@ -27,7 +27,7 @@ func (s *ReformSuite) TestSelectOneTo() {
 	var project Project
 	err = s.q.SelectOneTo(&project, "WHERE id = "+s.q.Placeholder(1), "baron")
 	s.NoError(err)
-	expected := Project{I: 1, ID: "baron", Name: "Vicious Baron", Start: baronStart, End: &baronEnd}
+	expected := Project{ID: "baron", Name: "Vicious Baron", Start: baronStart, End: &baronEnd}
 	s.Equal(expected, project)
 
 	err = s.q.SelectOneTo(&project, "WHERE id IS NULL")
@@ -47,7 +47,7 @@ func (s *ReformSuite) TestSelectOneFrom() {
 
 	project, err := s.q.SelectOneFrom(ProjectTable, "WHERE id = "+s.q.Placeholder(1), "baron")
 	s.NoError(err)
-	s.Equal(&Project{I: 1, ID: "baron", Name: "Vicious Baron", Start: baronStart, End: &baronEnd}, project)
+	s.Equal(&Project{ID: "baron", Name: "Vicious Baron", Start: baronStart, End: &baronEnd}, project)
 
 	project, err = s.q.SelectOneFrom(ProjectTable, "WHERE id IS NULL")
 	s.Nil(project)
@@ -126,7 +126,7 @@ func (s *ReformSuite) TestFindOneTo() {
 	var project Project
 	err = s.q.FindOneTo(&project, "id", "queen")
 	s.NoError(err)
-	expected := Project{I: 2, ID: "queen", Name: "Thirsty Queen", Start: queenStart}
+	expected := Project{ID: "queen", Name: "Thirsty Queen", Start: queenStart}
 	s.Equal(expected, project)
 
 	err = s.q.FindOneTo(&project, "id", nil)
@@ -149,7 +149,7 @@ func (s *ReformSuite) TestFindOneFrom() {
 
 	project, err := s.q.FindOneFrom(ProjectTable, "id", "queen")
 	s.NoError(err)
-	s.Equal(&Project{I: 2, ID: "queen", Name: "Thirsty Queen", Start: queenStart}, project)
+	s.Equal(&Project{ID: "queen", Name: "Thirsty Queen", Start: queenStart}, project)
 
 	project, err = s.q.FindOneFrom(ProjectTable, "id", nil)
 	s.Nil(project)
@@ -234,7 +234,7 @@ func (s *ReformSuite) TestFindByPrimaryKeyTo() {
 	var project Project
 	err = s.q.FindByPrimaryKeyTo(&project, "baron")
 	s.NoError(err)
-	expected := Project{I: 1, ID: "baron", Name: "Vicious Baron", Start: baronStart, End: &baronEnd}
+	expected := Project{ID: "baron", Name: "Vicious Baron", Start: baronStart, End: &baronEnd}
 	s.Equal(expected, project)
 
 	err = s.q.FindByPrimaryKeyTo(&project, nil)
@@ -249,7 +249,7 @@ func (s *ReformSuite) TestFindByPrimaryKeyFrom() {
 
 	project, err := s.q.FindByPrimaryKeyFrom(ProjectTable, "baron")
 	s.NoError(err)
-	s.Equal(&Project{I: 1, ID: "baron", Name: "Vicious Baron", Start: baronStart, End: &baronEnd}, project)
+	s.Equal(&Project{ID: "baron", Name: "Vicious Baron", Start: baronStart, End: &baronEnd}, project)
 
 	project, err = s.q.FindByPrimaryKeyFrom(ProjectTable, nil)
 	s.Nil(project)
@@ -265,7 +265,7 @@ func (s *ReformSuite) TestReload() {
 	project := Project{ID: "baron"}
 	err = s.q.Reload(&project)
 	s.NoError(err)
-	expected := Project{I: 1, ID: "baron", Name: "Vicious Baron", Start: baronStart, End: &baronEnd}
+	expected := Project{ID: "baron", Name: "Vicious Baron", Start: baronStart, End: &baronEnd}
 	s.Equal(expected, project)
 
 	project = Project{}

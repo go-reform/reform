@@ -10,12 +10,10 @@ CREATE TABLE people (
 );
 
 CREATE TABLE projects (
-  i serial,
   name varchar NOT NULL,
   id varchar PRIMARY KEY,
   start date NOT NULL,
-  "end" date,
-  UNIQUE (i)
+  "end" date
 );
 
 CREATE TABLE person_project (
@@ -26,6 +24,12 @@ CREATE TABLE person_project (
 
 CREATE TABLE id_only (
   id serial PRIMARY KEY
+);
+
+CREATE TABLE constraints (
+  i serial,
+  id varchar PRIMARY KEY,
+  UNIQUE (i)
 );
 
 CREATE SCHEMA legacy;

@@ -23,6 +23,7 @@ jobs:
         go-version:
           - 1.13.x
           - 1.14.x
+          - 1.15.x
           - tip
         images:
           - {postgres: "postgres:9.6", mysql: "mysql:5.5"}
@@ -162,7 +163,7 @@ jobs:
         os:
           - ubuntu-latest
         go-version:
-          - 1.14.x
+          - 1.15.x
 
     runs-on: ${{ matrix.os }}
 
@@ -175,9 +176,19 @@ jobs:
 
     steps:
       - name: Set up Go version ${{ matrix.go-version }}
+        if: matrix.go-version != 'tip'
         uses: actions/setup-go@v2.1.2
         with:
           go-version: ${{ matrix.go-version }}
+
+      - name: Set up Go tip
+        if: matrix.go-version == 'tip'
+        run: |
+          git clone --depth=1 https://go.googlesource.com/go $HOME/gotip
+          cd $HOME/gotip/src
+          ./make.bash
+          echo "::set-env name=GOROOT::$HOME/gotip"
+          echo "::add-path::$HOME/gotip/bin"
 
       - name: Set environment variables
         run: |

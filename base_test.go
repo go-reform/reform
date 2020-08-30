@@ -268,11 +268,8 @@ func (s *ReformSuite) TestTimezones() {
 		q := fmt.Sprintf(`INSERT INTO projects (id, name, start) VALUES `+
 			`('11', '11', %s), ('12', '12', %s), ('13', '13', %s), ('14', '14', %s)`,
 			s.q.Placeholder(1), s.q.Placeholder(2), s.q.Placeholder(3), s.q.Placeholder(4))
-
-		withIdentityInsert(s.T(), s.q, "people", func() {
-			_, err := s.q.Exec(q, t1, t2, tVLAT, tHST)
-			s.NoError(err)
-		})
+		_, err := s.q.Exec(q, t1, t2, tVLAT, tHST)
+		s.NoError(err)
 
 		q = `SELECT start, start FROM projects WHERE id IN ('11', '12', '13', '14') ORDER BY id`
 		rows, err := s.q.Query(q)

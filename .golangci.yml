@@ -14,8 +14,10 @@ linters-settings:
 linters:
   enable-all: true
   disable:
+    - goerr113     # reform v1 should not wrap errors to keep SemVer compatibility
     - gomnd        # too annoying
     - lll          # too annoying
+    - nlreturn     # too annoying
     - testpackage  # too annoying
     - wsl          # too annoying
 

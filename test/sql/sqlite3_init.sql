@@ -23,3 +23,9 @@ CREATE TABLE person_project (
 CREATE TABLE id_only (
   id integer NOT NULL PRIMARY KEY AUTOINCREMENT
 );
+
+CREATE TABLE constraints (
+  i integer NOT NULL, -- no AUTOINCREMENT - it works only for PRIMARY KEY: https://www.sqlite.org/autoinc.html
+  id varchar NOT NULL PRIMARY KEY,
+  UNIQUE (i)
+);

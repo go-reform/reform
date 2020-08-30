@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.4.1 (2020-08-31, https://github.com/go-reform/reform/milestones/v1.4.1)
+
+* `reform-db init` command: fix PRIMARY KEY detection for MySQL.
+* Add testing with Go 1.15.
+* Updated dependencies.
+
 ## v1.4.0 (2020-07-29, https://github.com/go-reform/reform/milestones/v1.4.0)
 
 * Go 1.13+ is now required.

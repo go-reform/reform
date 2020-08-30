@@ -35,7 +35,7 @@ jobs:
 
     env:
       # no `-mod=readonly` to test PRs made by @dependabot;
-      # `git diff --exit-code` step below still checks what we need
+      # `make ci-check-changes` step below still checks what we need
       GO111MODULE: "on"
       GOPROXY: https://proxy.golang.org
       GORACE: halt_on_error=1
@@ -125,14 +125,7 @@ jobs:
       # to ensure that all generators still work the same way
       - name: Check that there are no source code changes
         working-directory: ${{ env.WORKDIR }}
-        run: |
-          # Break job if any files were changed during its run (code generation, etc), except go.sum.
-          # `go mod tidy` could remove old checksums from that file, and that's okay on CI,
-          # and actually expected for PRs made by @dependabot.
-          # Checksums of actually used modules are checked by previous `go` subcommands.
-          pushd tools && go mod tidy && git checkout go.sum
-          popd        && go mod tidy && git checkout go.sum
-          git diff --exit-code
+        run: make ci-check-changes
 
       - name: Upload coverage information
         working-directory: ${{ env.WORKDIR }}
@@ -169,7 +162,7 @@ jobs:
 
     env:
       # no `-mod=readonly` to test PRs made by @dependabot
-      # `git diff --exit-code` step below still checks what we need
+      # `make ci-check-changes` step below still checks what we need
       GO111MODULE: "on"
       GOPROXY: https://proxy.golang.org
       GORACE: halt_on_error=1
@@ -242,14 +235,7 @@ jobs:
       # to ensure that all generators still work the same way
       - name: Check that there are no source code changes
         working-directory: ${{ env.WORKDIR }}
-        run: |
-          # Break job if any files were changed during its run (code generation, etc), except go.sum.
-          # `go mod tidy` could remove old checksums from that file, and that's okay on CI,
-          # and actually expected for PRs made by @dependabot.
-          # Checksums of actually used modules are checked by previous `go` subcommands.
-          pushd tools && go mod tidy && git checkout go.sum
-          popd        && go mod tidy && git checkout go.sum
-          git diff --exit-code
+        run: make ci-check-changes
 
       - name: Run debug commands on failure
         if: ${{ failure() }}

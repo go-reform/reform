@@ -26,6 +26,12 @@ CREATE TABLE id_only (
   id serial PRIMARY KEY
 );
 
+CREATE TABLE constraints (
+  i serial,
+  id varchar PRIMARY KEY,
+  UNIQUE (i)
+);
+
 CREATE SCHEMA legacy;
 
 CREATE TABLE legacy.people (

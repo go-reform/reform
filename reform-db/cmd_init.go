@@ -80,7 +80,10 @@ func convertName(sqlName string) string {
 
 // getPrimaryKeyColumn returns single primary key column for given table, or nil.
 func getPrimaryKeyColumn(db *reform.DB, catalog, schema, tableName string) *keyColumnUsage {
-	using := []string{"table_catalog", "table_schema", "table_name"}
+	using := []string{
+		"table_catalog", "table_schema", "table_name",
+		"constraint_catalog", "constraint_schema", "constraint_name",
+	}
 	if db.Dialect == mysql.Dialect {
 		// MySQL doesn't have table_catalog in table_constraints
 		using = using[1:]
@@ -98,22 +101,40 @@ func getPrimaryKeyColumn(db *reform.DB, catalog, schema, tableName string) *keyC
 			ORDER BY ordinal_position DESC`,
 		strings.Join(using, " AND "), db.Placeholder(1), db.Placeholder(2), db.Placeholder(3),
 	)
-	row := db.QueryRow(q, catalog, schema, tableName)
-	var key keyColumnUsage
-	if err := row.Scan(key.Pointers()...); err != nil {
-		if err == reform.ErrNoRows {
-			return nil
-		}
+	rows, err := db.Query(q, catalog, schema, tableName)
+	if err != nil {
 		logger.Fatalf("%s", err)
 	}
-	if key.OrdinalPosition > 1 {
-		logger.Printf(
-			"Composite primary keys are not supported (found %d columns), skipping it for table %s.",
-			key.OrdinalPosition, tableName,
-		)
+	defer rows.Close() //nolint:errcheck
+
+	var key keyColumnUsage
+	var count int
+	for {
+		if err = db.NextRow(&key, rows); err != nil {
+			break
+		}
+		count++
+		logger.Debugf("%s", key)
+	}
+	if err != reform.ErrNoRows {
+		logger.Fatalf("%s", err)
+	}
+	switch count {
+	case 0:
+		return nil
+	case 1:
+		if key.OrdinalPosition > 1 {
+			logger.Printf(
+				"Composite primary keys are not supported (found %d columns), skipping it for table %s.",
+				key.OrdinalPosition, tableName,
+			)
+			return nil
+		}
+		return &key
+	default:
+		logger.Fatalf("Too many rows found. Please report this bug.")
 		return nil
 	}
-	return &key
 }
 
 // initModelsInformationSchema returns structs from database with information_schema.

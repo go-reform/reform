@@ -36,3 +36,10 @@ CREATE TABLE id_only (
   id int NOT NULL AUTO_INCREMENT,
   PRIMARY KEY (id)
 );
+
+CREATE TABLE constraints (
+  i int NOT NULL AUTO_INCREMENT,
+  id varchar(255) NOT NULL,
+  PRIMARY KEY (id),
+  UNIQUE (i)
+);

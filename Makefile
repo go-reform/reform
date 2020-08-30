@@ -20,6 +20,9 @@ env-up-detach:                           ## Start development environment in the
 env-down:                                ## Stop development environment.
 	docker-compose down --volumes --remove-orphans
 
+env-mysql:                               ## Run mysql client.
+	docker exec -ti reform_mysql mysql
+
 test:                                    ## Run all tests and gather coverage.
 	make test-unit
 

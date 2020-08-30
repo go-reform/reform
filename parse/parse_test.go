@@ -13,6 +13,7 @@ import (
 	. "gopkg.in/reform.v1/parse"
 )
 
+//nolint:gochecknoglobals
 var (
 	person = StructInfo{
 		Type:    "Person",

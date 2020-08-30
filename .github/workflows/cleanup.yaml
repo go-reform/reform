@@ -26,7 +26,6 @@ jobs:
     env:
       GO111MODULE: "on"
       GOPROXY: https://proxy.golang.org
-      GOFLAGS: -mod=readonly
 
     steps:
       - name: Set up Go version ${{ matrix.go-version }}

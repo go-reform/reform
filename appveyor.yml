@@ -4,10 +4,11 @@ version: '{build}'
 clone_folder: c:\gopath\src\gopkg.in\reform.v1
 
 environment:
+  # no `-mod=readonly` to test PRs made by @dependabot;
+  # `make ci-check-changes` step below still checks what we need
   GOPATH: c:\gopath
   GO111MODULE: "on"
   GOPROXY: https://proxy.golang.org
-  GOFLAGS: -mod=readonly
   GORACE: halt_on_error=1
 
   matrix:
@@ -58,8 +59,7 @@ test_script:
 
   # TODO test again with updated deps
 
-  - git status
-  - git diff --exit-code
+  - make ci-check-changes
 
 on_success:
   - curl -s -o codecov https://codecov.io/bash

@@ -193,4 +193,14 @@ lint:                                    ## Run linters.
 	bin/golangci-lint run --new
 	bin/go-consistent -pedantic ./... | bin/reviewdog -f=go-consistent -diff='git diff HEAD^'
 
+ci-check-changes:
+	# Break job if any files were changed during its run (code generation, etc), except go.sum.
+	# `go mod tidy` could remove old checksums from that file, and that's okay on CI,
+	# and actually expected for PRs made by @dependabot.
+	# Checksums of actually used modules are checked by previous CI steps.
+	cd tools && pwd && go mod tidy && git checkout go.sum
+	pwd && go mod tidy && git checkout go.sum
+	git status
+	git diff --exit-code
+
 .PHONY: docs parse reform reform-db test

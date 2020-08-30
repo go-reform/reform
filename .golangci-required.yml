@@ -5,8 +5,6 @@ run:
   skip-dirs:
     - bogus
 
-  modules-download-mode: readonly
-
 linters-settings:
   govet:
     check-shadowing: true

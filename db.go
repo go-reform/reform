@@ -14,6 +14,7 @@ import (
 type DBInterface interface {
 	DBTXContext
 	BeginTx(ctx context.Context, opts *sql.TxOptions) (*sql.Tx, error)
+	Conn(ctx context.Context) (*sql.Conn, error)
 }
 
 // check interface
@@ -44,6 +45,15 @@ func NewDBFromInterface(db DBInterface, dialect Dialect, logger Logger) *DB {
 // DBInterface returns DBInterface associated with a given DB object.
 func (db *DB) DBInterface() DBInterface {
 	return db.db
+}
+
+func (db *DB) Conn() (*Conn, error) {
+	conn, err := db.db.Conn(db.Context())
+	if err != nil {
+		return nil, err
+	}
+
+	return newConn(db.Context(), conn, db.Dialect, db.Logger), nil
 }
 
 // Begin starts transaction with Querier's context and default options.

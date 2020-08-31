@@ -54,7 +54,8 @@ func (q *Querier) Tag() string {
 	return q.tag
 }
 
-// WithTag returns a copy of Querier with set tag. Returned Querier is tied to the same DB or TX.
+// WithTag returns a copy of Querier with set tag.
+// Returned Querier is tied to the same database connection.
 // See Tagging section in documentation for details.
 func (q *Querier) WithTag(format string, args ...interface{}) *Querier {
 	newQ := q.clone()
@@ -80,7 +81,8 @@ func (q *Querier) Context() context.Context {
 	return q.ctx
 }
 
-// WithContext returns a copy of Querier with set context. Returned Querier is tied to the same DB or TX.
+// WithContext returns a copy of Querier with set context.
+// Returned Querier is tied to the same database connection.
 // See Context section in documentation for details.
 func (q *Querier) WithContext(ctx context.Context) *Querier {
 	newQ := q.clone()

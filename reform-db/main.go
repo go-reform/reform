@@ -115,7 +115,7 @@ func main() {
 			panic(err)
 		}
 		conn := getConn()
-		defer conn.Close()
+		defer conn.Close() //nolint:errcheck
 		cmdExec(conn.Querier, execFlags.Args())
 
 	case "query":
@@ -123,7 +123,7 @@ func main() {
 			panic(err)
 		}
 		conn := getConn()
-		defer conn.Close()
+		defer conn.Close() //nolint:errcheck
 		cmdQuery(conn.Querier, queryFlags.Args())
 
 	case "init":
@@ -157,7 +157,7 @@ func main() {
 		}
 
 		conn := getConn()
-		defer conn.Close()
+		defer conn.Close() //nolint:errcheck
 		cmdInit(conn.Querier, dir)
 
 	default:

@@ -36,7 +36,7 @@ func (s *ReformDBSuite) TestInit() {
 	s.Require().NoError(err)
 	s.T().Log(dir)
 
-	cmdInit(s.db, dir)
+	cmdInit(s.db.Querier, dir)
 
 	fis, err := ioutil.ReadDir(dir)
 	s.Require().NoError(err)

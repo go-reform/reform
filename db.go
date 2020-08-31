@@ -58,7 +58,7 @@ func (db *DB) Conn() (*Conn, error) {
 
 // Begin starts transaction with Querier's context and default options.
 func (db *DB) Begin() (*TX, error) {
-	return db.BeginTx(db.Querier.ctx, nil)
+	return db.BeginTx(db.ctx, nil)
 }
 
 // BeginTx starts transaction with given context and options (can be nil).
@@ -76,7 +76,7 @@ func (db *DB) BeginTx(ctx context.Context, opts *sql.TxOptions) (*TX, error) {
 // InTransaction wraps function execution in transaction with Querier's context and default options,
 // rolling back it in case of error or panic, committing otherwise.
 func (db *DB) InTransaction(f func(t *TX) error) error {
-	return db.InTransactionContext(db.Querier.ctx, nil, f)
+	return db.InTransactionContext(db.ctx, nil, f)
 }
 
 // InTransactionContext wraps function execution in transaction with given context and options (can be nil),

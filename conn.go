@@ -3,6 +3,7 @@ package reform
 import (
 	"context"
 	"database/sql"
+	"time"
 )
 
 // connInterface is a subset of *sql.Conn used by reform.
@@ -13,9 +14,7 @@ import (
 type connInterface interface {
 	DBTXContext
 	Close() error
-	// TODO Begin, BeginTx?
-	// TODO Ping?
-	// TODO Prepare?
+	BeginTx(ctx context.Context, opts *sql.TxOptions) (*sql.Tx, error)
 }
 
 // check interface
@@ -31,6 +30,23 @@ func newConn(ctx context.Context, conn connInterface, dialect Dialect, logger Lo
 		Querier: newQuerier(ctx, conn, "", dialect, logger),
 		conn:    conn,
 	}
+}
+
+// Begin starts transaction with Querier's context and default options.
+func (c *Conn) Begin() (*TX, error) {
+	return c.BeginTx(c.ctx, nil)
+}
+
+// BeginTx starts transaction with given context and options (can be nil).
+func (c *Conn) BeginTx(ctx context.Context, opts *sql.TxOptions) (*TX, error) {
+	c.logBefore("BEGIN", nil)
+	start := time.Now()
+	tx, err := c.conn.BeginTx(ctx, opts)
+	c.logAfter("BEGIN", nil, time.Since(start), err)
+	if err != nil {
+		return nil, err
+	}
+	return newTX(ctx, tx, c.Dialect, c.Logger), nil
 }
 
 func (c *Conn) Close() error {

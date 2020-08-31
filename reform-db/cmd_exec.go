@@ -88,11 +88,11 @@ func readFiles(files []string, split bool) (queries []string) {
 }
 
 // cmdExec implements exec command.
-func cmdExec(db *reform.DB, files []string) {
+func cmdExec(q *reform.Querier, files []string) {
 	queries := readFiles(files, *execSplitF)
-	for _, q := range queries {
-		if _, err := db.Exec(q); err != nil {
-			logger.Fatalf("failed to execute %s: %s", q, err)
+	for _, query := range queries {
+		if _, err := q.Exec(query); err != nil {
+			logger.Fatalf("failed to execute %s: %s", query, err)
 		}
 	}
 }

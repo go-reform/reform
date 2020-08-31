@@ -46,7 +46,7 @@ func init() {
 	}
 }
 
-func getDB() *reform.DB {
+func getConn() *reform.Conn {
 	if *driverF == "" || *sourceF == "" {
 		logger.Fatalf("Please set both -db-driver and -db-source flags.")
 	}
@@ -55,8 +55,6 @@ func getDB() *reform.DB {
 		logger.Fatalf("Failed to connect to %s %q: %s", *driverF, *sourceF, err)
 	}
 
-	// Use single connection so various session-related variables work.
-	// For example: "PRAGMA foreign_keys" for SQLite3, "SET IDENTITY_INSERT" for MS SQL, etc.
 	sqlDB.SetMaxIdleConns(1)
 	sqlDB.SetMaxOpenConns(1)
 	sqlDB.SetConnMaxLifetime(0)
@@ -76,9 +74,20 @@ func getDB() *reform.DB {
 		time.Sleep(time.Second)
 	}
 
-	logger.Debugf("Connected to database.")
 	dialect := dialects.ForDriver(*driverF)
-	return reform.NewDB(sqlDB, dialect, reform.NewPrintfLogger(logger.Debugf))
+	db := reform.NewDB(sqlDB, dialect, reform.NewPrintfLogger(logger.Debugf))
+
+	// Use single connection so various session-related variables work.
+	// For example: "PRAGMA foreign_keys" for SQLite3, "SET IDENTITY_INSERT" for MS SQL, etc.
+	// Just using *sql.DB connection pool with a single connection is not enough for drivers implementing
+	// https://golang.org/pkg/database/sql/driver/#SessionResetter interface.
+	conn, err := db.Conn()
+	if err != nil {
+		logger.Fatalf("Failed to open database connection: %s.", err)
+	}
+
+	logger.Debugf("Connected to database.")
+	return conn
 }
 
 func main() {
@@ -105,13 +114,17 @@ func main() {
 		if err := execFlags.Parse(flag.Args()[1:]); err != nil {
 			panic(err)
 		}
-		cmdExec(getDB(), execFlags.Args())
+		conn := getConn()
+		defer conn.Close()
+		cmdExec(conn.Querier, execFlags.Args())
 
 	case "query":
 		if err := queryFlags.Parse(flag.Args()[1:]); err != nil {
 			panic(err)
 		}
-		cmdQuery(getDB(), queryFlags.Args())
+		conn := getConn()
+		defer conn.Close()
+		cmdQuery(conn.Querier, queryFlags.Args())
 
 	case "init":
 		if err := initFlags.Parse(flag.Args()[1:]); err != nil {
@@ -143,7 +156,9 @@ func main() {
 			logger.Fatalf("%q should be existing directory", dir)
 		}
 
-		cmdInit(getDB(), dir)
+		conn := getConn()
+		defer conn.Close()
+		cmdInit(conn.Querier, dir)
 
 	default:
 		flag.Usage()

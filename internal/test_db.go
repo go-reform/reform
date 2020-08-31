@@ -57,6 +57,10 @@ func ConnectToTestDB() *reform.DB {
 
 	// Use single connection so various session-related variables work.
 	// For example: "PRAGMA foreign_keys" for SQLite3, "SET IDENTITY_INSERT" for MS SQL, etc.
+	//
+	// FIXME
+	// Just using *sql.DB connection pool with a single connection is not enough for drivers implementing
+	// https://golang.org/pkg/database/sql/driver/#SessionResetter interface.
 	db.SetMaxIdleConns(1)
 	db.SetMaxOpenConns(1)
 	db.SetConnMaxLifetime(0)

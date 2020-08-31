@@ -15,9 +15,6 @@ type TXInterface interface {
 	DBTXContext
 	Commit() error
 	Rollback() error
-
-	// Deprecated: do not use, it will be removed in v1.5.
-	DBTX
 }
 
 // check interface

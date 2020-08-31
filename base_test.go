@@ -117,7 +117,7 @@ func teardown(t testing.TB, db *reform.DB) {
 }
 
 // Deprecated: do not add new test to this suite, use Go subtests instead.
-// TODO Remove.
+// TODO Remove: https://github.com/go-reform/reform/issues/141.
 type ReformSuite struct {
 	suite.Suite
 	tx *reform.TX

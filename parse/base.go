@@ -7,6 +7,7 @@ package parse // import "gopkg.in/reform.v1/parse"
 
 import (
 	"fmt"
+	"reflect"
 	"strings"
 )
 
@@ -15,6 +16,8 @@ type FieldInfo struct {
 	Name   string // field name as defined in source file, e.g. Name
 	Type   string // field type as defined in source file, e.g. string; always present for primary key, may be absent otherwise
 	Column string // SQL database column name from "reform:" struct field tag, e.g. name
+
+	Kind reflect.Kind // underlying type; set only by runtime parser
 }
 
 // fieldInfoInSync returns true if FieldInfo fields that are set by both file and runtime parser are equal.

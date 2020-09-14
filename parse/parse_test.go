@@ -1,4 +1,4 @@
-package parse_test
+package parse
 
 import (
 	"errors"
@@ -10,7 +10,6 @@ import (
 
 	"gopkg.in/reform.v1/internal/test/models"
 	"gopkg.in/reform.v1/internal/test/models/bogus"
-	. "gopkg.in/reform.v1/parse"
 )
 
 //nolint:gochecknoglobals

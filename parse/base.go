@@ -7,7 +7,6 @@ package parse // import "gopkg.in/reform.v1/parse"
 
 import (
 	"fmt"
-	"reflect"
 	"strings"
 )
 
@@ -18,6 +17,20 @@ type FieldInfo struct {
 	Column string // SQL database column name from "reform:" struct field tag, e.g. name
 }
 
+// fieldInfoInSync returns true if FieldInfo fields that are set by both file and runtime parser are equal.
+func fieldInfoInSync(fi1, fi2 *FieldInfo) bool {
+	if fi1 == nil {
+		panic("fi1 is nil")
+	}
+	if fi2 == nil {
+		panic("fi2 is nil")
+	}
+
+	return fi1.Name == fi2.Name &&
+		fi1.Type == fi2.Type &&
+		fi1.Column == fi2.Column
+}
+
 // StructInfo represents information about struct.
 type StructInfo struct {
 	Type         string      // struct type as defined in source file, e.g. User
@@ -25,6 +38,34 @@ type StructInfo struct {
 	SQLName      string      // SQL database view or table name from magic "reform:" comment, e.g. users
 	Fields       []FieldInfo // fields info
 	PKFieldIndex int         // index of primary key field in Fields, -1 if none
+}
+
+// structInfoInSync returns true if FieldInfo fields that are set by both file and runtime parser are equal.
+func structInfoInSync(si1, si2 *StructInfo) bool {
+	if si1 == nil {
+		panic("si1 is nil")
+	}
+	if si2 == nil {
+		panic("si2 is nil")
+	}
+
+	inSync := si1.Type == si2.Type &&
+		si1.SQLSchema == si2.SQLSchema &&
+		si1.SQLName == si2.SQLName &&
+		si1.PKFieldIndex == si2.PKFieldIndex
+	if !inSync {
+		return false
+	}
+
+	if len(si1.Fields) != len(si2.Fields) {
+		return false
+	}
+	for i := range si1.Fields {
+		if inSync = fieldInfoInSync(&si1.Fields[i], &si2.Fields[i]); !inSync {
+			return false
+		}
+	}
+	return true
 }
 
 // Columns returns a new slice of column names.
@@ -61,7 +102,7 @@ func AssertUpToDate(si *StructInfo, obj interface{}) {
 	if err != nil {
 		panic(msg + err.Error())
 	}
-	if !reflect.DeepEqual(si, si2) {
+	if !structInfoInSync(si, si2) {
 		panic(msg)
 	}
 }

@@ -81,6 +81,7 @@ type Record interface {
 	HasPK() bool
 
 	// SetPK sets record primary key.
+	// Prefer direct field assignment where possible.
 	SetPK(pk interface{})
 }
 

@@ -2,8 +2,8 @@
 name: Cleanup
 on:
   schedule:
-    # run every Monday
-    - cron: "0 0 * * 1"
+    # Saturday 7:00
+    - cron: "0 7 * * 6"
 
 jobs:
   clean:

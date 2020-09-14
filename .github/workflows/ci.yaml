@@ -1,6 +1,9 @@
 ---
 name: CI
 on:
+  schedule:
+    # Saturday 8:00, after cleanup
+    - cron: "0 8 * * 6"
   push:
     branches:
       - main
@@ -9,7 +12,6 @@ on:
   pull_request:
 
 jobs:
-
   # test job
   test:
     name: Test
@@ -26,10 +28,10 @@ jobs:
           - 1.15.x
           - tip
         images:
-          - {postgres: "postgres:9.6", mysql: "mysql:5.5"}
-          - {postgres: "postgres:10",  mysql: "mysql:5.6"}
-          - {postgres: "postgres:11",  mysql: "mysql:5.7"}
-          - {postgres: "postgres:12",  mysql: "mysql:8.0"}
+          - { postgres: "postgres:9.6", mysql: "mysql:5.5" }
+          - { postgres: "postgres:10", mysql: "mysql:5.6" }
+          - { postgres: "postgres:11", mysql: "mysql:5.7" }
+          - { postgres: "postgres:12", mysql: "mysql:8.0" }
 
     runs-on: ${{ matrix.os }}
 
@@ -97,6 +99,11 @@ jobs:
       - name: Stop Ubuntu services
         run: sudo systemctl stop mysql
 
+      # FIXME Is there a more ergonomic way?
+      - name: Update Go language version in the module
+        working-directory: ${{ env.WORKDIR }}
+        run: go mod edit -go=$(go list -f '{{ $tag := 0 }}{{ range $tag = context.ReleaseTags }}{{ end }}{{ slice $tag 2 }}' runtime)
+
       - name: Download Go modules
         working-directory: ${{ env.WORKDIR }}
         run: go mod download
@@ -143,7 +150,6 @@ jobs:
           ls -al
           docker --version
           docker-compose --version
-
 
   # lint job
   lint:
@@ -213,6 +219,11 @@ jobs:
           restore-keys: |
             ${{ matrix.os }}-go-${{ matrix.go-version }}-build-${{ github.ref }}-
             ${{ matrix.os }}-go-${{ matrix.go-version }}-build-
+
+      # FIXME Is there a more ergonomic way?
+      - name: Update Go language version in the module
+        working-directory: ${{ env.WORKDIR }}
+        run: go mod edit -go=$(go list -f '{{ $tag := 0 }}{{ range $tag = context.ReleaseTags }}{{ end }}{{ slice $tag 2 }}' runtime)
 
       - name: Download Go modules
         working-directory: ${{ env.WORKDIR }}

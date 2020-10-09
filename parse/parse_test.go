@@ -217,6 +217,20 @@ func TestObjectBogus(t *testing.T) {
 
 func TestHelpersGood(t *testing.T) {
 	t.Run("person", func(t *testing.T) {
+		assert.Equal(t, strings.TrimSpace(`
+parse.StructInfo{
+	Type: "Person",
+	SQLName: "people",
+	Fields: []parse.FieldInfo{
+		{Name: "ID", Type: "int32", Column: "id"},
+		{Name: "GroupID", Type: "*int32", Column: "group_id"},
+		{Name: "Name", Type: "string", Column: "name"},
+		{Name: "Email", Type: "*string", Column: "email"},
+		{Name: "CreatedAt", Type: "time.Time", Column: "created_at"},
+		{Name: "UpdatedAt", Type: "*time.Time", Column: "updated_at"},
+	},
+	PKFieldIndex: 0,
+}`), person.GoString())
 		assert.Equal(t, []string{"id", "group_id", "name", "email", "created_at", "updated_at"}, person.Columns())
 		assert.Equal(t, strings.TrimSpace(`
 []string{
@@ -232,6 +246,18 @@ func TestHelpersGood(t *testing.T) {
 	})
 
 	t.Run("project", func(t *testing.T) {
+		assert.Equal(t, strings.TrimSpace(`
+parse.StructInfo{
+	Type: "Project",
+	SQLName: "projects",
+	Fields: []parse.FieldInfo{
+		{Name: "Name", Type: "string", Column: "name"},
+		{Name: "ID", Type: "string", Column: "id"},
+		{Name: "Start", Type: "time.Time", Column: "start"},
+		{Name: "End", Type: "*time.Time", Column: "end"},
+	},
+	PKFieldIndex: 1,
+}`), project.GoString())
 		assert.Equal(t, []string{"name", "id", "start", "end"}, project.Columns())
 		assert.Equal(t, strings.TrimSpace(`
 []string{
@@ -245,6 +271,16 @@ func TestHelpersGood(t *testing.T) {
 	})
 
 	t.Run("personProject", func(t *testing.T) {
+		assert.Equal(t, strings.TrimSpace(`
+parse.StructInfo{
+	Type: "PersonProject",
+	SQLName: "person_project",
+	Fields: []parse.FieldInfo{
+		{Name: "PersonID", Type: "int32", Column: "person_id"},
+		{Name: "ProjectID", Type: "string", Column: "project_id"},
+	},
+	PKFieldIndex: -1,
+}`), personProject.GoString())
 		assert.Equal(t, []string{"person_id", "project_id"}, personProject.Columns())
 		assert.Equal(t, strings.TrimSpace(`
 []string{
@@ -255,6 +291,16 @@ func TestHelpersGood(t *testing.T) {
 	})
 
 	t.Run("constraints", func(t *testing.T) {
+		assert.Equal(t, strings.TrimSpace(`
+parse.StructInfo{
+	Type: "Constraints",
+	SQLName: "constraints",
+	Fields: []parse.FieldInfo{
+		{Name: "I", Type: "int32", Column: "i"},
+		{Name: "ID", Type: "string", Column: "id"},
+	},
+	PKFieldIndex: 1,
+}`), constraints.GoString())
 		assert.Equal(t, []string{"i", "id"}, constraints.Columns())
 		assert.Equal(t, strings.TrimSpace(`
 []string{
@@ -266,6 +312,15 @@ func TestHelpersGood(t *testing.T) {
 	})
 
 	t.Run("idOnly", func(t *testing.T) {
+		assert.Equal(t, strings.TrimSpace(`
+parse.StructInfo{
+	Type: "IDOnly",
+	SQLName: "id_only",
+	Fields: []parse.FieldInfo{
+		{Name: "ID", Type: "int32", Column: "id"},
+	},
+	PKFieldIndex: 0,
+}`), idOnly.GoString())
 		assert.Equal(t, []string{"id"}, idOnly.Columns())
 		assert.Equal(t, strings.TrimSpace(`
 []string{
@@ -276,6 +331,17 @@ func TestHelpersGood(t *testing.T) {
 	})
 
 	t.Run("legacyPerson", func(t *testing.T) {
+		assert.Equal(t, strings.TrimSpace(`
+parse.StructInfo{
+	Type: "LegacyPerson",
+	SQLSchema: "legacy",
+	SQLName: "people",
+	Fields: []parse.FieldInfo{
+		{Name: "ID", Type: "int32", Column: "id"},
+		{Name: "Name", Type: "*string", Column: "name"},
+	},
+	PKFieldIndex: 0,
+}`), legacyPerson.GoString())
 		assert.Equal(t, []string{"id", "name"}, legacyPerson.Columns())
 		assert.Equal(t, strings.TrimSpace(`
 []string{

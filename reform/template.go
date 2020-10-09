@@ -13,6 +13,7 @@ type StructData struct {
 	TableVar  string
 }
 
+//nolint:gochecknoglobals
 var (
 	prologTemplate = template.Must(template.New("prolog").Parse(`
 import (
@@ -42,7 +43,7 @@ func (v *{{ .TableType }}) Name() string {
 
 // Columns returns a new slice of column names for that view or table in SQL database.
 func (v *{{ .TableType }}) Columns() []string {
-	return {{ printf "%#v" .Columns }}
+	return {{ .ColumnsGoString }}
 }
 
 // NewStruct makes a new struct for that view or table.

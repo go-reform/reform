@@ -80,6 +80,15 @@ func (s *StructInfo) Columns() []string {
 	return res
 }
 
+// ColumnsGoString returns column names as Go code string.
+func (s *StructInfo) ColumnsGoString() string {
+	res := make([]string, len(s.Fields))
+	for i, f := range s.Fields {
+		res[i] = fmt.Sprintf("%q", f.Column)
+	}
+	return `[]string{` + strings.Join(res, ", ") + `}`
+}
+
 // IsTable returns true if this object represent information for table, false for view.
 func (s *StructInfo) IsTable() bool {
 	return s.PKFieldIndex >= 0

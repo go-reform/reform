@@ -3,6 +3,7 @@ package parse_test
 import (
 	"errors"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -215,42 +216,208 @@ func TestObjectBogus(t *testing.T) {
 }
 
 func TestHelpersGood(t *testing.T) {
-	assert.Equal(t, []string{"id", "group_id", "name", "email", "created_at", "updated_at"}, person.Columns())
-	assert.True(t, person.IsTable())
-	assert.Equal(t, FieldInfo{Name: "ID", Type: "int32", Column: "id"}, person.PKField())
+	t.Run("person", func(t *testing.T) {
+		assert.Equal(t, strings.TrimSpace(`
+parse.StructInfo{
+	Type: "Person",
+	SQLName: "people",
+	Fields: []parse.FieldInfo{
+		{Name: "ID", Type: "int32", Column: "id"},
+		{Name: "GroupID", Type: "*int32", Column: "group_id"},
+		{Name: "Name", Type: "string", Column: "name"},
+		{Name: "Email", Type: "*string", Column: "email"},
+		{Name: "CreatedAt", Type: "time.Time", Column: "created_at"},
+		{Name: "UpdatedAt", Type: "*time.Time", Column: "updated_at"},
+	},
+	PKFieldIndex: 0,
+}`), person.GoString())
+		assert.Equal(t, []string{"id", "group_id", "name", "email", "created_at", "updated_at"}, person.Columns())
+		assert.Equal(t, strings.TrimSpace(`
+[]string{
+	"id",
+	"group_id",
+	"name",
+	"email",
+	"created_at",
+	"updated_at",
+}`), person.ColumnsGoString())
+		assert.True(t, person.IsTable())
+		assert.Equal(t, FieldInfo{Name: "ID", Type: "int32", Column: "id"}, person.PKField())
+	})
 
-	assert.Equal(t, []string{"name", "id", "start", "end"}, project.Columns())
-	assert.True(t, project.IsTable())
-	assert.Equal(t, FieldInfo{Name: "ID", Type: "string", Column: "id"}, project.PKField())
+	t.Run("project", func(t *testing.T) {
+		assert.Equal(t, strings.TrimSpace(`
+parse.StructInfo{
+	Type: "Project",
+	SQLName: "projects",
+	Fields: []parse.FieldInfo{
+		{Name: "Name", Type: "string", Column: "name"},
+		{Name: "ID", Type: "string", Column: "id"},
+		{Name: "Start", Type: "time.Time", Column: "start"},
+		{Name: "End", Type: "*time.Time", Column: "end"},
+	},
+	PKFieldIndex: 1,
+}`), project.GoString())
+		assert.Equal(t, []string{"name", "id", "start", "end"}, project.Columns())
+		assert.Equal(t, strings.TrimSpace(`
+[]string{
+	"name",
+	"id",
+	"start",
+	"end",
+}`), project.ColumnsGoString())
+		assert.True(t, project.IsTable())
+		assert.Equal(t, FieldInfo{Name: "ID", Type: "string", Column: "id"}, project.PKField())
+	})
 
-	assert.Equal(t, []string{"person_id", "project_id"}, personProject.Columns())
-	assert.False(t, personProject.IsTable())
+	t.Run("personProject", func(t *testing.T) {
+		assert.Equal(t, strings.TrimSpace(`
+parse.StructInfo{
+	Type: "PersonProject",
+	SQLName: "person_project",
+	Fields: []parse.FieldInfo{
+		{Name: "PersonID", Type: "int32", Column: "person_id"},
+		{Name: "ProjectID", Type: "string", Column: "project_id"},
+	},
+	PKFieldIndex: -1,
+}`), personProject.GoString())
+		assert.Equal(t, []string{"person_id", "project_id"}, personProject.Columns())
+		assert.Equal(t, strings.TrimSpace(`
+[]string{
+	"person_id",
+	"project_id",
+}`), personProject.ColumnsGoString())
+		assert.False(t, personProject.IsTable())
+	})
 
-	assert.Equal(t, []string{"i", "id"}, constraints.Columns())
-	assert.True(t, constraints.IsTable())
-	assert.Equal(t, FieldInfo{Name: "ID", Type: "string", Column: "id"}, constraints.PKField())
+	t.Run("constraints", func(t *testing.T) {
+		assert.Equal(t, strings.TrimSpace(`
+parse.StructInfo{
+	Type: "Constraints",
+	SQLName: "constraints",
+	Fields: []parse.FieldInfo{
+		{Name: "I", Type: "int32", Column: "i"},
+		{Name: "ID", Type: "string", Column: "id"},
+	},
+	PKFieldIndex: 1,
+}`), constraints.GoString())
+		assert.Equal(t, []string{"i", "id"}, constraints.Columns())
+		assert.Equal(t, strings.TrimSpace(`
+[]string{
+	"i",
+	"id",
+}`), constraints.ColumnsGoString())
+		assert.True(t, constraints.IsTable())
+		assert.Equal(t, FieldInfo{Name: "ID", Type: "string", Column: "id"}, constraints.PKField())
+	})
 
-	assert.Equal(t, []string{"id"}, idOnly.Columns())
-	assert.True(t, idOnly.IsTable())
-	assert.Equal(t, FieldInfo{Name: "ID", Type: "int32", Column: "id"}, idOnly.PKField())
+	t.Run("idOnly", func(t *testing.T) {
+		assert.Equal(t, strings.TrimSpace(`
+parse.StructInfo{
+	Type: "IDOnly",
+	SQLName: "id_only",
+	Fields: []parse.FieldInfo{
+		{Name: "ID", Type: "int32", Column: "id"},
+	},
+	PKFieldIndex: 0,
+}`), idOnly.GoString())
+		assert.Equal(t, []string{"id"}, idOnly.Columns())
+		assert.Equal(t, strings.TrimSpace(`
+[]string{
+	"id",
+}`), idOnly.ColumnsGoString())
+		assert.True(t, idOnly.IsTable())
+		assert.Equal(t, FieldInfo{Name: "ID", Type: "int32", Column: "id"}, idOnly.PKField())
+	})
 
-	assert.Equal(t, []string{"id", "name"}, legacyPerson.Columns())
-	assert.True(t, legacyPerson.IsTable())
-	assert.Equal(t, FieldInfo{Name: "ID", Type: "int32", Column: "id"}, legacyPerson.PKField())
+	t.Run("legacyPerson", func(t *testing.T) {
+		assert.Equal(t, strings.TrimSpace(`
+parse.StructInfo{
+	Type: "LegacyPerson",
+	SQLSchema: "legacy",
+	SQLName: "people",
+	Fields: []parse.FieldInfo{
+		{Name: "ID", Type: "int32", Column: "id"},
+		{Name: "Name", Type: "*string", Column: "name"},
+	},
+	PKFieldIndex: 0,
+}`), legacyPerson.GoString())
+		assert.Equal(t, []string{"id", "name"}, legacyPerson.Columns())
+		assert.Equal(t, strings.TrimSpace(`
+[]string{
+	"id",
+	"name",
+}`), legacyPerson.ColumnsGoString())
+		assert.True(t, legacyPerson.IsTable())
+		assert.Equal(t, FieldInfo{Name: "ID", Type: "int32", Column: "id"}, legacyPerson.PKField())
+	})
 }
 
 func TestHelpersExtra(t *testing.T) {
-	columns := []string{
-		"id", "name",
-		"byte", "uint8", "bytep", "uint8p", "bytes", "uint8s", "bytesa", "uint8sa", "bytest", "uint8st",
-	}
-	assert.Equal(t, columns, extra.Columns())
-	assert.True(t, extra.IsTable())
-	assert.Equal(t, FieldInfo{Name: "ID", Type: "Integer", Column: "id"}, extra.PKField())
+	t.Run("extra", func(t *testing.T) {
+		assert.Equal(t, strings.TrimSpace(`
+parse.StructInfo{
+	Type: "Extra",
+	SQLName: "extra",
+	Fields: []parse.FieldInfo{
+		{Name: "ID", Type: "Integer", Column: "id"},
+		{Name: "Name", Type: "*String", Column: "name"},
+		{Name: "Byte", Type: "uint8", Column: "byte"},
+		{Name: "Uint8", Type: "uint8", Column: "uint8"},
+		{Name: "ByteP", Type: "*uint8", Column: "bytep"},
+		{Name: "Uint8P", Type: "*uint8", Column: "uint8p"},
+		{Name: "Bytes", Type: "[]uint8", Column: "bytes"},
+		{Name: "Uint8s", Type: "[]uint8", Column: "uint8s"},
+		{Name: "BytesA", Type: "[512]uint8", Column: "bytesa"},
+		{Name: "Uint8sA", Type: "[512]uint8", Column: "uint8sa"},
+		{Name: "BytesT", Type: "Bytes", Column: "bytest"},
+		{Name: "Uint8sT", Type: "Uint8s", Column: "uint8st"},
+	},
+	PKFieldIndex: 0,
+}`), extra.GoString())
+		columns := []string{
+			"id", "name",
+			"byte", "uint8", "bytep", "uint8p", "bytes", "uint8s", "bytesa", "uint8sa", "bytest", "uint8st",
+		}
+		assert.Equal(t, columns, extra.Columns())
+		columnsS := strings.TrimSpace(`
+[]string{
+	"id",
+	"name",
+	"byte",
+	"uint8",
+	"bytep",
+	"uint8p",
+	"bytes",
+	"uint8s",
+	"bytesa",
+	"uint8sa",
+	"bytest",
+	"uint8st",
+}`)
+		assert.Equal(t, columnsS, extra.ColumnsGoString())
+		assert.True(t, extra.IsTable())
+		assert.Equal(t, FieldInfo{Name: "ID", Type: "Integer", Column: "id"}, extra.PKField())
+	})
 
-	assert.Equal(t, []string{"id"}, notExported.Columns())
-	assert.True(t, notExported.IsTable())
-	assert.Equal(t, FieldInfo{Name: "ID", Type: "string", Column: "id"}, notExported.PKField())
+	t.Run("notExported", func(t *testing.T) {
+		assert.Equal(t, strings.TrimSpace(`
+parse.StructInfo{
+	Type: "notExported",
+	SQLName: "not_exported",
+	Fields: []parse.FieldInfo{
+		{Name: "ID", Type: "string", Column: "id"},
+	},
+	PKFieldIndex: 0,
+}`), notExported.GoString())
+		assert.Equal(t, []string{"id"}, notExported.Columns())
+		assert.Equal(t, strings.TrimSpace(`
+[]string{
+	"id",
+}`), notExported.ColumnsGoString())
+		assert.True(t, notExported.IsTable())
+		assert.Equal(t, FieldInfo{Name: "ID", Type: "string", Column: "id"}, notExported.PKField())
+	})
 }
 
 func TestAssertUpToDate(t *testing.T) {

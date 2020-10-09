@@ -27,7 +27,14 @@ func (v *personTableType) Name() string {
 
 // Columns returns a new slice of column names for that view or table in SQL database.
 func (v *personTableType) Columns() []string {
-	return []string{"id", "group_id", "name", "email", "created_at", "updated_at"}
+	return []string{
+		"id",
+		"group_id",
+		"name",
+		"email",
+		"created_at",
+		"updated_at",
+	}
 }
 
 // NewStruct makes a new struct for that view or table.
@@ -153,7 +160,12 @@ func (v *projectTableType) Name() string {
 
 // Columns returns a new slice of column names for that view or table in SQL database.
 func (v *projectTableType) Columns() []string {
-	return []string{"name", "id", "start", "end"}
+	return []string{
+		"name",
+		"id",
+		"start",
+		"end",
+	}
 }
 
 // NewStruct makes a new struct for that view or table.
@@ -273,7 +285,10 @@ func (v *personProjectViewType) Name() string {
 
 // Columns returns a new slice of column names for that view or table in SQL database.
 func (v *personProjectViewType) Columns() []string {
-	return []string{"person_id", "project_id"}
+	return []string{
+		"person_id",
+		"project_id",
+	}
 }
 
 // NewStruct makes a new struct for that view or table.
@@ -342,7 +357,9 @@ func (v *iDOnlyTableType) Name() string {
 
 // Columns returns a new slice of column names for that view or table in SQL database.
 func (v *iDOnlyTableType) Columns() []string {
-	return []string{"id"}
+	return []string{
+		"id",
+	}
 }
 
 // NewStruct makes a new struct for that view or table.
@@ -453,7 +470,10 @@ func (v *constraintsTableType) Name() string {
 
 // Columns returns a new slice of column names for that view or table in SQL database.
 func (v *constraintsTableType) Columns() []string {
-	return []string{"i", "id"}
+	return []string{
+		"i",
+		"id",
+	}
 }
 
 // NewStruct makes a new struct for that view or table.
@@ -567,7 +587,10 @@ func (v *legacyPersonTableType) Name() string {
 
 // Columns returns a new slice of column names for that view or table in SQL database.
 func (v *legacyPersonTableType) Columns() []string {
-	return []string{"id", "name"}
+	return []string{
+		"id",
+		"name",
+	}
 }
 
 // NewStruct makes a new struct for that view or table.

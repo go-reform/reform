@@ -27,7 +27,20 @@ func (v *extraTableType) Name() string {
 
 // Columns returns a new slice of column names for that view or table in SQL database.
 func (v *extraTableType) Columns() []string {
-	return []string{"id", "name", "byte", "uint8", "bytep", "uint8p", "bytes", "uint8s", "bytesa", "uint8sa", "bytest", "uint8st"}
+	return []string{
+		"id",
+		"name",
+		"byte",
+		"uint8",
+		"bytep",
+		"uint8p",
+		"bytes",
+		"uint8s",
+		"bytesa",
+		"uint8sa",
+		"bytest",
+		"uint8st",
+	}
 }
 
 // NewStruct makes a new struct for that view or table.
@@ -171,7 +184,9 @@ func (v *notExportedTableType) Name() string {
 
 // Columns returns a new slice of column names for that view or table in SQL database.
 func (v *notExportedTableType) Columns() []string {
-	return []string{"id"}
+	return []string{
+		"id",
+	}
 }
 
 // NewStruct makes a new struct for that view or table.

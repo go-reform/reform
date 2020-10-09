@@ -27,7 +27,12 @@ func (v *tableViewType) Name() string {
 
 // Columns returns a new slice of column names for that view or table in SQL database.
 func (v *tableViewType) Columns() []string {
-	return []string{"table_catalog", "table_schema", "table_name", "table_type"}
+	return []string{
+		"table_catalog",
+		"table_schema",
+		"table_name",
+		"table_type",
+	}
 }
 
 // NewStruct makes a new struct for that view or table.
@@ -102,7 +107,14 @@ func (v *columnViewType) Name() string {
 
 // Columns returns a new slice of column names for that view or table in SQL database.
 func (v *columnViewType) Columns() []string {
-	return []string{"table_catalog", "table_schema", "table_name", "column_name", "is_nullable", "data_type"}
+	return []string{
+		"table_catalog",
+		"table_schema",
+		"table_name",
+		"column_name",
+		"is_nullable",
+		"data_type",
+	}
 }
 
 // NewStruct makes a new struct for that view or table.
@@ -183,7 +195,10 @@ func (v *keyColumnUsageViewType) Name() string {
 
 // Columns returns a new slice of column names for that view or table in SQL database.
 func (v *keyColumnUsageViewType) Columns() []string {
-	return []string{"column_name", "ordinal_position"}
+	return []string{
+		"column_name",
+		"ordinal_position",
+	}
 }
 
 // NewStruct makes a new struct for that view or table.
@@ -252,7 +267,9 @@ func (v *sqliteMasterViewType) Name() string {
 
 // Columns returns a new slice of column names for that view or table in SQL database.
 func (v *sqliteMasterViewType) Columns() []string {
-	return []string{"name"}
+	return []string{
+		"name",
+	}
 }
 
 // NewStruct makes a new struct for that view or table.
@@ -318,7 +335,14 @@ func (v *sqliteTableInfoViewType) Name() string {
 
 // Columns returns a new slice of column names for that view or table in SQL database.
 func (v *sqliteTableInfoViewType) Columns() []string {
-	return []string{"cid", "name", "type", "notnull", "dflt_value", "pk"}
+	return []string{
+		"cid",
+		"name",
+		"type",
+		"notnull",
+		"dflt_value",
+		"pk",
+	}
 }
 
 // NewStruct makes a new struct for that view or table.

@@ -86,7 +86,7 @@ func (s *StructInfo) ColumnsGoString() string {
 	for i, f := range s.Fields {
 		res[i] = fmt.Sprintf("%q", f.Column)
 	}
-	return `[]string{` + strings.Join(res, ", ") + `}`
+	return "[]string{\n\t" + strings.Join(res, ",\n\t") + ",\n}"
 }
 
 // IsTable returns true if this object represent information for table, false for view.

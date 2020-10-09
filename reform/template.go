@@ -67,7 +67,7 @@ func (v *{{ .TableType }}) PKColumnIndex() uint {
 
 // {{ .TableVar }} represents {{ .SQLName }} view or table in SQL database.
 var {{ .TableVar }} = &{{ .TableType }} {
-	s: {{ printf "%#v" .StructInfo }},
+	s: {{ .GoString }},
 	z: new({{ .Type }}).Values(),
 }
 

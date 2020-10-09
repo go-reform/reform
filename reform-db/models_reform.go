@@ -42,7 +42,18 @@ func (v *tableViewType) NewStruct() reform.Struct {
 
 // tableView represents tables view or table in SQL database.
 var tableView = &tableViewType{
-	s: parse.StructInfo{Type: "table", SQLSchema: "information_schema", SQLName: "tables", Fields: []parse.FieldInfo{{Name: "TableCatalog", Type: "string", Column: "table_catalog", Kind: 0x0}, {Name: "TableSchema", Type: "string", Column: "table_schema", Kind: 0x0}, {Name: "TableName", Type: "string", Column: "table_name", Kind: 0x0}, {Name: "TableType", Type: "string", Column: "table_type", Kind: 0x0}}, PKFieldIndex: -1},
+	s: parse.StructInfo{
+		Type:      "table",
+		SQLSchema: "information_schema",
+		SQLName:   "tables",
+		Fields: []parse.FieldInfo{
+			{Name: "TableCatalog", Type: "string", Column: "table_catalog"},
+			{Name: "TableSchema", Type: "string", Column: "table_schema"},
+			{Name: "TableName", Type: "string", Column: "table_name"},
+			{Name: "TableType", Type: "string", Column: "table_type"},
+		},
+		PKFieldIndex: -1,
+	},
 	z: new(table).Values(),
 }
 
@@ -124,7 +135,20 @@ func (v *columnViewType) NewStruct() reform.Struct {
 
 // columnView represents columns view or table in SQL database.
 var columnView = &columnViewType{
-	s: parse.StructInfo{Type: "column", SQLSchema: "information_schema", SQLName: "columns", Fields: []parse.FieldInfo{{Name: "TableCatalog", Type: "string", Column: "table_catalog", Kind: 0x0}, {Name: "TableSchema", Type: "string", Column: "table_schema", Kind: 0x0}, {Name: "TableName", Type: "string", Column: "table_name", Kind: 0x0}, {Name: "Name", Type: "string", Column: "column_name", Kind: 0x0}, {Name: "IsNullable", Type: "yesNo", Column: "is_nullable", Kind: 0x0}, {Name: "Type", Type: "string", Column: "data_type", Kind: 0x0}}, PKFieldIndex: -1},
+	s: parse.StructInfo{
+		Type:      "column",
+		SQLSchema: "information_schema",
+		SQLName:   "columns",
+		Fields: []parse.FieldInfo{
+			{Name: "TableCatalog", Type: "string", Column: "table_catalog"},
+			{Name: "TableSchema", Type: "string", Column: "table_schema"},
+			{Name: "TableName", Type: "string", Column: "table_name"},
+			{Name: "Name", Type: "string", Column: "column_name"},
+			{Name: "IsNullable", Type: "yesNo", Column: "is_nullable"},
+			{Name: "Type", Type: "string", Column: "data_type"},
+		},
+		PKFieldIndex: -1,
+	},
 	z: new(column).Values(),
 }
 
@@ -208,7 +232,16 @@ func (v *keyColumnUsageViewType) NewStruct() reform.Struct {
 
 // keyColumnUsageView represents key_column_usage view or table in SQL database.
 var keyColumnUsageView = &keyColumnUsageViewType{
-	s: parse.StructInfo{Type: "keyColumnUsage", SQLSchema: "information_schema", SQLName: "key_column_usage", Fields: []parse.FieldInfo{{Name: "ColumnName", Type: "string", Column: "column_name", Kind: 0x0}, {Name: "OrdinalPosition", Type: "int", Column: "ordinal_position", Kind: 0x0}}, PKFieldIndex: -1},
+	s: parse.StructInfo{
+		Type:      "keyColumnUsage",
+		SQLSchema: "information_schema",
+		SQLName:   "key_column_usage",
+		Fields: []parse.FieldInfo{
+			{Name: "ColumnName", Type: "string", Column: "column_name"},
+			{Name: "OrdinalPosition", Type: "int", Column: "ordinal_position"},
+		},
+		PKFieldIndex: -1,
+	},
 	z: new(keyColumnUsage).Values(),
 }
 
@@ -279,7 +312,14 @@ func (v *sqliteMasterViewType) NewStruct() reform.Struct {
 
 // sqliteMasterView represents sqlite_master view or table in SQL database.
 var sqliteMasterView = &sqliteMasterViewType{
-	s: parse.StructInfo{Type: "sqliteMaster", SQLSchema: "", SQLName: "sqlite_master", Fields: []parse.FieldInfo{{Name: "Name", Type: "string", Column: "name", Kind: 0x0}}, PKFieldIndex: -1},
+	s: parse.StructInfo{
+		Type:    "sqliteMaster",
+		SQLName: "sqlite_master",
+		Fields: []parse.FieldInfo{
+			{Name: "Name", Type: "string", Column: "name"},
+		},
+		PKFieldIndex: -1,
+	},
 	z: new(sqliteMaster).Values(),
 }
 
@@ -352,7 +392,19 @@ func (v *sqliteTableInfoViewType) NewStruct() reform.Struct {
 
 // sqliteTableInfoView represents dummy view or table in SQL database.
 var sqliteTableInfoView = &sqliteTableInfoViewType{
-	s: parse.StructInfo{Type: "sqliteTableInfo", SQLSchema: "", SQLName: "dummy", Fields: []parse.FieldInfo{{Name: "CID", Type: "int", Column: "cid", Kind: 0x0}, {Name: "Name", Type: "string", Column: "name", Kind: 0x0}, {Name: "Type", Type: "string", Column: "type", Kind: 0x0}, {Name: "NotNull", Type: "bool", Column: "notnull", Kind: 0x0}, {Name: "DefaultValue", Type: "*string", Column: "dflt_value", Kind: 0x0}, {Name: "PK", Type: "bool", Column: "pk", Kind: 0x0}}, PKFieldIndex: -1},
+	s: parse.StructInfo{
+		Type:    "sqliteTableInfo",
+		SQLName: "dummy",
+		Fields: []parse.FieldInfo{
+			{Name: "CID", Type: "int", Column: "cid"},
+			{Name: "Name", Type: "string", Column: "name"},
+			{Name: "Type", Type: "string", Column: "type"},
+			{Name: "NotNull", Type: "bool", Column: "notnull"},
+			{Name: "DefaultValue", Type: "*string", Column: "dflt_value"},
+			{Name: "PK", Type: "bool", Column: "pk"},
+		},
+		PKFieldIndex: -1,
+	},
 	z: new(sqliteTableInfo).Values(),
 }
 

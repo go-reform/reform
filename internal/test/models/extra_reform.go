@@ -60,7 +60,25 @@ func (v *extraTableType) PKColumnIndex() uint {
 
 // ExtraTable represents extra view or table in SQL database.
 var ExtraTable = &extraTableType{
-	s: parse.StructInfo{Type: "Extra", SQLSchema: "", SQLName: "extra", Fields: []parse.FieldInfo{{Name: "ID", Type: "Integer", Column: "id", Kind: 0x0}, {Name: "Name", Type: "*String", Column: "name", Kind: 0x0}, {Name: "Byte", Type: "uint8", Column: "byte", Kind: 0x0}, {Name: "Uint8", Type: "uint8", Column: "uint8", Kind: 0x0}, {Name: "ByteP", Type: "*uint8", Column: "bytep", Kind: 0x0}, {Name: "Uint8P", Type: "*uint8", Column: "uint8p", Kind: 0x0}, {Name: "Bytes", Type: "[]uint8", Column: "bytes", Kind: 0x0}, {Name: "Uint8s", Type: "[]uint8", Column: "uint8s", Kind: 0x0}, {Name: "BytesA", Type: "[512]uint8", Column: "bytesa", Kind: 0x0}, {Name: "Uint8sA", Type: "[512]uint8", Column: "uint8sa", Kind: 0x0}, {Name: "BytesT", Type: "Bytes", Column: "bytest", Kind: 0x0}, {Name: "Uint8sT", Type: "Uint8s", Column: "uint8st", Kind: 0x0}}, PKFieldIndex: 0},
+	s: parse.StructInfo{
+		Type:    "Extra",
+		SQLName: "extra",
+		Fields: []parse.FieldInfo{
+			{Name: "ID", Type: "Integer", Column: "id"},
+			{Name: "Name", Type: "*String", Column: "name"},
+			{Name: "Byte", Type: "uint8", Column: "byte"},
+			{Name: "Uint8", Type: "uint8", Column: "uint8"},
+			{Name: "ByteP", Type: "*uint8", Column: "bytep"},
+			{Name: "Uint8P", Type: "*uint8", Column: "uint8p"},
+			{Name: "Bytes", Type: "[]uint8", Column: "bytes"},
+			{Name: "Uint8s", Type: "[]uint8", Column: "uint8s"},
+			{Name: "BytesA", Type: "[512]uint8", Column: "bytesa"},
+			{Name: "Uint8sA", Type: "[512]uint8", Column: "uint8sa"},
+			{Name: "BytesT", Type: "Bytes", Column: "bytest"},
+			{Name: "Uint8sT", Type: "Uint8s", Column: "uint8st"},
+		},
+		PKFieldIndex: 0,
+	},
 	z: new(Extra).Values(),
 }
 
@@ -206,7 +224,14 @@ func (v *notExportedTableType) PKColumnIndex() uint {
 
 // notExportedTable represents not_exported view or table in SQL database.
 var notExportedTable = &notExportedTableType{
-	s: parse.StructInfo{Type: "notExported", SQLSchema: "", SQLName: "not_exported", Fields: []parse.FieldInfo{{Name: "ID", Type: "string", Column: "id", Kind: 0x0}}, PKFieldIndex: 0},
+	s: parse.StructInfo{
+		Type:    "notExported",
+		SQLName: "not_exported",
+		Fields: []parse.FieldInfo{
+			{Name: "ID", Type: "string", Column: "id"},
+		},
+		PKFieldIndex: 0,
+	},
 	z: new(notExported).Values(),
 }
 

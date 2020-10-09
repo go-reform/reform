@@ -54,7 +54,19 @@ func (v *personTableType) PKColumnIndex() uint {
 
 // PersonTable represents people view or table in SQL database.
 var PersonTable = &personTableType{
-	s: parse.StructInfo{Type: "Person", SQLSchema: "", SQLName: "people", Fields: []parse.FieldInfo{{Name: "ID", Type: "int32", Column: "id", Kind: 0x0}, {Name: "GroupID", Type: "*int32", Column: "group_id", Kind: 0x0}, {Name: "Name", Type: "string", Column: "name", Kind: 0x0}, {Name: "Email", Type: "*string", Column: "email", Kind: 0x0}, {Name: "CreatedAt", Type: "time.Time", Column: "created_at", Kind: 0x0}, {Name: "UpdatedAt", Type: "*time.Time", Column: "updated_at", Kind: 0x0}}, PKFieldIndex: 0},
+	s: parse.StructInfo{
+		Type:    "Person",
+		SQLName: "people",
+		Fields: []parse.FieldInfo{
+			{Name: "ID", Type: "int32", Column: "id"},
+			{Name: "GroupID", Type: "*int32", Column: "group_id"},
+			{Name: "Name", Type: "string", Column: "name"},
+			{Name: "Email", Type: "*string", Column: "email"},
+			{Name: "CreatedAt", Type: "time.Time", Column: "created_at"},
+			{Name: "UpdatedAt", Type: "*time.Time", Column: "updated_at"},
+		},
+		PKFieldIndex: 0,
+	},
 	z: new(Person).Values(),
 }
 
@@ -185,7 +197,17 @@ func (v *projectTableType) PKColumnIndex() uint {
 
 // ProjectTable represents projects view or table in SQL database.
 var ProjectTable = &projectTableType{
-	s: parse.StructInfo{Type: "Project", SQLSchema: "", SQLName: "projects", Fields: []parse.FieldInfo{{Name: "Name", Type: "string", Column: "name", Kind: 0x0}, {Name: "ID", Type: "string", Column: "id", Kind: 0x0}, {Name: "Start", Type: "time.Time", Column: "start", Kind: 0x0}, {Name: "End", Type: "*time.Time", Column: "end", Kind: 0x0}}, PKFieldIndex: 1},
+	s: parse.StructInfo{
+		Type:    "Project",
+		SQLName: "projects",
+		Fields: []parse.FieldInfo{
+			{Name: "Name", Type: "string", Column: "name"},
+			{Name: "ID", Type: "string", Column: "id"},
+			{Name: "Start", Type: "time.Time", Column: "start"},
+			{Name: "End", Type: "*time.Time", Column: "end"},
+		},
+		PKFieldIndex: 1,
+	},
 	z: new(Project).Values(),
 }
 
@@ -298,7 +320,15 @@ func (v *personProjectViewType) NewStruct() reform.Struct {
 
 // PersonProjectView represents person_project view or table in SQL database.
 var PersonProjectView = &personProjectViewType{
-	s: parse.StructInfo{Type: "PersonProject", SQLSchema: "", SQLName: "person_project", Fields: []parse.FieldInfo{{Name: "PersonID", Type: "int32", Column: "person_id", Kind: 0x0}, {Name: "ProjectID", Type: "string", Column: "project_id", Kind: 0x0}}, PKFieldIndex: -1},
+	s: parse.StructInfo{
+		Type:    "PersonProject",
+		SQLName: "person_project",
+		Fields: []parse.FieldInfo{
+			{Name: "PersonID", Type: "int32", Column: "person_id"},
+			{Name: "ProjectID", Type: "string", Column: "project_id"},
+		},
+		PKFieldIndex: -1,
+	},
 	z: new(PersonProject).Values(),
 }
 
@@ -379,7 +409,14 @@ func (v *iDOnlyTableType) PKColumnIndex() uint {
 
 // IDOnlyTable represents id_only view or table in SQL database.
 var IDOnlyTable = &iDOnlyTableType{
-	s: parse.StructInfo{Type: "IDOnly", SQLSchema: "", SQLName: "id_only", Fields: []parse.FieldInfo{{Name: "ID", Type: "int32", Column: "id", Kind: 0x0}}, PKFieldIndex: 0},
+	s: parse.StructInfo{
+		Type:    "IDOnly",
+		SQLName: "id_only",
+		Fields: []parse.FieldInfo{
+			{Name: "ID", Type: "int32", Column: "id"},
+		},
+		PKFieldIndex: 0,
+	},
 	z: new(IDOnly).Values(),
 }
 
@@ -493,7 +530,15 @@ func (v *constraintsTableType) PKColumnIndex() uint {
 
 // ConstraintsTable represents constraints view or table in SQL database.
 var ConstraintsTable = &constraintsTableType{
-	s: parse.StructInfo{Type: "Constraints", SQLSchema: "", SQLName: "constraints", Fields: []parse.FieldInfo{{Name: "I", Type: "int32", Column: "i", Kind: 0x0}, {Name: "ID", Type: "string", Column: "id", Kind: 0x0}}, PKFieldIndex: 1},
+	s: parse.StructInfo{
+		Type:    "Constraints",
+		SQLName: "constraints",
+		Fields: []parse.FieldInfo{
+			{Name: "I", Type: "int32", Column: "i"},
+			{Name: "ID", Type: "string", Column: "id"},
+		},
+		PKFieldIndex: 1,
+	},
 	z: new(Constraints).Values(),
 }
 
@@ -610,7 +655,16 @@ func (v *legacyPersonTableType) PKColumnIndex() uint {
 
 // LegacyPersonTable represents people view or table in SQL database.
 var LegacyPersonTable = &legacyPersonTableType{
-	s: parse.StructInfo{Type: "LegacyPerson", SQLSchema: "legacy", SQLName: "people", Fields: []parse.FieldInfo{{Name: "ID", Type: "int32", Column: "id", Kind: 0x0}, {Name: "Name", Type: "*string", Column: "name", Kind: 0x0}}, PKFieldIndex: 0},
+	s: parse.StructInfo{
+		Type:      "LegacyPerson",
+		SQLSchema: "legacy",
+		SQLName:   "people",
+		Fields: []parse.FieldInfo{
+			{Name: "ID", Type: "int32", Column: "id"},
+			{Name: "Name", Type: "*string", Column: "name"},
+		},
+		PKFieldIndex: 0,
+	},
 	z: new(LegacyPerson).Values(),
 }
 

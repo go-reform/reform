@@ -8,6 +8,7 @@ package parse // import "gopkg.in/reform.v1/parse"
 import (
 	"fmt"
 	"reflect"
+	"strconv"
 	"strings"
 )
 
@@ -32,6 +33,11 @@ func fieldInfoInSync(fi1, fi2 *FieldInfo) bool {
 	return fi1.Name == fi2.Name &&
 		fi1.Type == fi2.Type &&
 		fi1.Column == fi2.Column
+}
+
+// GoString returns struct field information as Go code string.
+func (fi *FieldInfo) GoString() string {
+	return fmt.Sprintf("{Name: %q, Type: %q, Column: %q}", fi.Name, fi.Type, fi.Column)
 }
 
 // StructInfo represents information about struct.
@@ -71,6 +77,28 @@ func structInfoInSync(si1, si2 *StructInfo) bool {
 	return true
 }
 
+// GoString returns struct information as Go code string.
+func (s *StructInfo) GoString() string {
+	res := "parse.StructInfo{\n"
+
+	res += fmt.Sprintf("\tType: %q,\n", s.Type)
+	if s.SQLSchema != "" {
+		res += fmt.Sprintf("\tSQLSchema: %q,\n", s.SQLSchema)
+	}
+	res += fmt.Sprintf("\tSQLName: %q,\n", s.SQLName)
+
+	res += "\tFields: []parse.FieldInfo{\n"
+	for _, f := range s.Fields {
+		res += fmt.Sprintf("\t\t%s,\n", f.GoString())
+	}
+	res += "\t},\n"
+
+	res += fmt.Sprintf("\tPKFieldIndex: %d,\n", s.PKFieldIndex)
+
+	res += "}"
+	return res
+}
+
 // Columns returns a new slice of column names.
 func (s *StructInfo) Columns() []string {
 	res := make([]string, len(s.Fields))
@@ -84,7 +112,7 @@ func (s *StructInfo) Columns() []string {
 func (s *StructInfo) ColumnsGoString() string {
 	res := make([]string, len(s.Fields))
 	for i, f := range s.Fields {
-		res[i] = fmt.Sprintf("%q", f.Column)
+		res[i] = strconv.Quote(f.Column)
 	}
 	return "[]string{\n\t" + strings.Join(res, ",\n\t") + ",\n}"
 }

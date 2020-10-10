@@ -28,10 +28,10 @@ jobs:
           - 1.15.x
           - tip
         images:
-          - { postgres: "postgres:9.6", mysql: "mysql:5.5" }
-          - { postgres: "postgres:10", mysql: "mysql:5.6" }
-          - { postgres: "postgres:11", mysql: "mysql:5.7" }
-          - { postgres: "postgres:12", mysql: "mysql:8.0" }
+          - { postgres: "postgres:9.6", mysql: "mysql:5.5", mssql: "mcr.microsoft.com/mssql/server:2017-latest" }
+          - { postgres: "postgres:10",  mysql: "mysql:5.6", mssql: "mcr.microsoft.com/mssql/server:2017-latest" }
+          - { postgres: "postgres:11",  mysql: "mysql:5.7", mssql: "mcr.microsoft.com/mssql/server:2019-latest" }
+          - { postgres: "postgres:12",  mysql: "mysql:8.0", mssql: "mcr.microsoft.com/mssql/server:2019-latest" }
 
     runs-on: ${{ matrix.os }}
 
@@ -43,7 +43,7 @@ jobs:
       GORACE: halt_on_error=1
       REFORM_POSTGRES_IMAGE: ${{ matrix.images.postgres }}
       REFORM_MYSQL_IMAGE: ${{ matrix.images.mysql }}
-      REFORM_MSSQL_IMAGE: microsoft/mssql-server-linux:latest
+      REFORM_MSSQL_IMAGE: ${{ matrix.images.mssql }}
 
     steps:
       - name: Set up Go version ${{ matrix.go-version }}

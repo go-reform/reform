@@ -32,7 +32,7 @@ services:
       retries: 1
 
   mssql:
-    image: ${REFORM_MSSQL_IMAGE:-microsoft/mssql-server-linux:latest}
+    image: ${REFORM_MSSQL_IMAGE:-mcr.microsoft.com/mssql/server:2017-latest}
     container_name: reform_mssql
     environment:
       - ACCEPT_EULA=Y

@@ -3,7 +3,7 @@ version: '3.7'
 
 services:
   postgres:
-    image: ${REFORM_POSTGRES_IMAGE:-postgres:11}
+    image: ${REFORM_POSTGRES_IMAGE:-postgres:12}
     container_name: reform_postgres
     environment:
       - TZ=Europe/Moscow
@@ -32,10 +32,15 @@ services:
       retries: 1
 
   mssql:
-    image: ${REFORM_MSSQL_IMAGE:-microsoft/mssql-server-linux:latest}
+    image: ${REFORM_MSSQL_IMAGE:-mcr.microsoft.com/mssql/server:2017-latest}
     container_name: reform_mssql
     environment:
       - ACCEPT_EULA=Y
       - SA_PASSWORD=reform-password123
     ports:
       - 127.0.0.1:1433:1433
+    healthcheck:
+      test: /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P "$$SA_PASSWORD" -Q "SELECT 1" || exit 1
+      interval: 1s
+      timeout: 1s
+      retries: 1

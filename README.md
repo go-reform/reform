@@ -22,7 +22,7 @@ Supported SQL dialects:
 |                      | [github.com/jackc/pgx/stdlib](https://github.com/jackc/pgx) (`pgx` v3)                              | Stable. Tested with all [supported](https://www.postgresql.org/support/versioning/) versions.
 | MySQL                | [github.com/go-sql-driver/mysql](https://github.com/go-sql-driver/mysql) (`mysql`)                  | Stable. Tested with all [supported](https://www.mysql.com/support/supportedplatforms/database.html) versions.
 | SQLite3              | [github.com/mattn/go-sqlite3](https://github.com/mattn/go-sqlite3) (`sqlite3`)                      | Stable.
-| Microsoft SQL Server | [github.com/denisenkom/go-mssqldb](https://github.com/denisenkom/go-mssqldb) (`sqlserver`, `mssql`) | Stable.<br/>Tested on Windows with: SQL2008R2SP2, SQL2012SP1, SQL2014, SQL2016.<br/>On Linux with: [`microsoft/mssql-server-linux:latest` Docker image](https://hub.docker.com/r/microsoft/mssql-server-linux/).
+| Microsoft SQL Server | [github.com/denisenkom/go-mssqldb](https://github.com/denisenkom/go-mssqldb) (`sqlserver`, `mssql`) | Stable.<br/>Tested on Windows with: SQL2008R2SP2, SQL2012SP1, SQL2014, SQL2016.<br/>On Linux with: `mcr.microsoft.com/mssql/server:2017-latest` and `mcr.microsoft.com/mssql/server:2019-latest` [Docker images](https://hub.docker.com/_/microsoft-mssql-server).
 
 Notes:
 * [`clientFoundRows=true` flag](https://github.com/go-sql-driver/mysql#clientfoundrows) is required for `mysql` driver.

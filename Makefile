@@ -16,6 +16,7 @@ env-up-detach:                           ## Start development environment in the
 	docker-compose up --detach --force-recreate --renew-anon-volumes --remove-orphans
 	until [ "`docker inspect -f {{.State.Health.Status}} reform_postgres`" = "healthy" ]; do sleep 1; done
 	until [ "`docker inspect -f {{.State.Health.Status}} reform_mysql`" = "healthy" ]; do sleep 1; done
+	until [ "`docker inspect -f {{.State.Health.Status}} reform_mssql`" = "healthy" ]; do sleep 1; done
 
 env-down:                                ## Stop development environment.
 	docker-compose down --volumes --remove-orphans

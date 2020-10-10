@@ -28,10 +28,12 @@ jobs:
           - 1.15.x
           - tip
         images:
-          - { postgres: "postgres:9.6", mysql: "mysql:5.5", mssql: "mcr.microsoft.com/mssql/server:2017-latest" }
-          - { postgres: "postgres:10",  mysql: "mysql:5.6", mssql: "mcr.microsoft.com/mssql/server:2017-latest" }
-          - { postgres: "postgres:11",  mysql: "mysql:5.7", mssql: "mcr.microsoft.com/mssql/server:2019-latest" }
-          - { postgres: "postgres:12",  mysql: "mysql:8.0", mssql: "mcr.microsoft.com/mssql/server:2019-latest" }
+          - { postgres: "postgres:9.5", mysql: "mysql:5.6", mssql: "mcr.microsoft.com/mssql/server:2017-latest" }
+          - { postgres: "postgres:9.6", mysql: "mysql:5.7", mssql: "mcr.microsoft.com/mssql/server:2019-latest" }
+          - { postgres: "postgres:10",  mysql: "mysql:8.0" }
+          - { postgres: "postgres:11" }
+          - { postgres: "postgres:12" }
+          - { postgres: "postgres:13" }
 
     runs-on: ${{ matrix.os }}
 

@@ -52,27 +52,22 @@ jobs:
         with:
           path: ${{ env.WORKDIR }}
 
-      # slightly decreases total CI time; see also cleanup.yaml
-      - name: Enable Go modules cache
+      # Cache Go modules, build cache, installed packages and GOPATH sources
+      # to significantly decreases total CI time. See also cleanup.yaml.
+      - name: Enable Go cache
         uses: actions/cache@v2
         with:
-          path: ${{ env.GOPATH }}/pkg/mod
-          key: ${{ matrix.os }}-go-${{ matrix.go-version }}-modules-${{ hashFiles('gopath/src/gopkg.in/reform.v1/go.mod') }}
-          restore-keys: |
-            ${{ matrix.os }}-go-${{ matrix.go-version }}-modules-
-
-      # significantly decreases total CI time; see also cleanup.yaml
-      # "reform.v1**/*.go" is not a typo - it covers both reform.v1/*.go and reform.v1/parse/*.go
-      - name: Enable Go build cache
-        uses: actions/cache@v2
-        with:
-          path: ~/.cache/go-build
-          key: ${{ matrix.os }}-go-${{ matrix.go-version }}-build-${{ hashFiles('gopath/src/gopkg.in/reform.v1**/*.go') }}
+          path: |
+            ~/.cache/go-build
+            ${{ env.GOPATH }}/pkg
+            ${{ env.GOPATH }}/src/github.com
+            ${{ env.GOPATH }}/src/golang.org
+          key: ${{ matrix.os }}-go-${{ matrix.go-version }}-build-${{ hashFiles('gopath/src/gopkg.in/reform.v1/go.mod') }}
           restore-keys: |
             ${{ matrix.os }}-go-${{ matrix.go-version }}-build-
 
-      - name: Clean Go modules cache
-        run: go clean -modcache
-
-      - name: Clean Go build cache
-        run: go clean -cache
+      - name: Clean Go cache
+        run: |
+          go clean -modcache
+          go clean -cache
+          rm -fr ${{ env.GOPATH }}

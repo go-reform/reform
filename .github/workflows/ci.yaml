@@ -85,9 +85,7 @@ jobs:
             ${{ env.GOPATH }}/pkg
             ${{ env.GOPATH }}/src/github.com
             ${{ env.GOPATH }}/src/golang.org
-          key: ${{ matrix.os }}-go-${{ matrix.go-version }}-build-${{ hashFiles('gopath/src/gopkg.in/reform.v1/go.mod,gopath/src/gopkg.in/reform.v1/tools/go.mod') }}
-          restore-keys: |
-            ${{ matrix.os }}-go-${{ matrix.go-version }}-build-
+          key: ${{ matrix.os }}-go-${{ matrix.go-version }}
 
       - name: Pull Docker images
         working-directory: ${{ env.WORKDIR }}
@@ -108,7 +106,7 @@ jobs:
       - name: Check that it is still possible to install reform without modules
         working-directory: ${{ env.WORKDIR }}
         run: |
-          env GO111MODULE=off go get -v ./...
+          env GO111MODULE=off go get -v -x ./...
           reform -version
           reform-db -version
 
@@ -215,9 +213,7 @@ jobs:
             ${{ env.GOPATH }}/pkg
             ${{ env.GOPATH }}/src/github.com
             ${{ env.GOPATH }}/src/golang.org
-          key: ${{ matrix.os }}-go-${{ matrix.go-version }}-build-${{ hashFiles('gopath/src/gopkg.in/reform.v1/go.mod,gopath/src/gopkg.in/reform.v1/tools/go.mod') }}
-          restore-keys: |
-            ${{ matrix.os }}-go-${{ matrix.go-version }}-build-
+          key: ${{ matrix.os }}-go-${{ matrix.go-version }}
 
       # FIXME Is there a more ergonomic way?
       - name: Update Go language version in the module

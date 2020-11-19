@@ -40,47 +40,17 @@ jobs:
     env:
       # no `-mod=readonly` to test PRs made by @dependabot;
       # `make ci-check-changes` step below still checks what we need
+      WORKDIR: "${{ github.workspace }}/gopath/src/gopkg.in/reform.v1"
+      GOPATH: "${{ github.workspace }}/gopath"
+      GOBIN: "${{ github.workspace }}/gopath/bin"
       GO111MODULE: "on"
-      GOPROXY: https://proxy.golang.org
-      GORACE: halt_on_error=1
-      REFORM_POSTGRES_IMAGE: ${{ matrix.images.postgres }}
-      REFORM_MYSQL_IMAGE: ${{ matrix.images.mysql }}
-      REFORM_MSSQL_IMAGE: ${{ matrix.images.mssql }}
+      GOPROXY: "https://proxy.golang.org"
+      GORACE: "halt_on_error=1"
+      REFORM_POSTGRES_IMAGE: "${{ matrix.images.postgres }}"
+      REFORM_MYSQL_IMAGE: "${{ matrix.images.mysql }}"
+      REFORM_MSSQL_IMAGE: "${{ matrix.images.mssql }}"
 
     steps:
-      - name: Set up Go version ${{ matrix.go-version }}
-        if: matrix.go-version != 'tip'
-        uses: actions/setup-go@v2
-        with:
-          go-version: ${{ matrix.go-version }}
-
-      - name: Set up Go tip
-        if: matrix.go-version == 'tip'
-        run: |
-          git clone --depth=1 https://go.googlesource.com/go $HOME/gotip
-          cd $HOME/gotip/src
-          ./make.bash
-          echo "GOROOT=$HOME/gotip" >> $GITHUB_ENV
-          echo "$HOME/gotip/bin" >> $GITHUB_PATH
-
-      - name: Set environment variables
-        run: |
-          echo "GOPATH=$GITHUB_WORKSPACE/gopath" >> $GITHUB_ENV
-          echo "$GITHUB_WORKSPACE/gopath/bin" >> $GITHUB_PATH
-          echo "WORKDIR=$GITHUB_WORKSPACE/gopath/src/gopkg.in/reform.v1" >> $GITHUB_ENV
-          echo "GO_VERSION=$(go version)" >> $GITHUB_ENV
-          cat $GITHUB_ENV
-          cat $GITHUB_PATH
-
-      - name: Check out code into GOPATH
-        uses: actions/checkout@v2
-        with:
-          path: ${{ env.WORKDIR }}
-
-      - name: Pull Docker images in the background
-        working-directory: ${{ env.WORKDIR }}
-        run: docker-compose pull --quiet &
-
       # slightly decreases total CI time; see also cleanup.yaml
       - name: Enable Go modules cache
         uses: actions/cache@v2
@@ -99,6 +69,33 @@ jobs:
           restore-keys: |
             ${{ matrix.os }}-go-${{ matrix.go-version }}-build-${{ github.ref }}-
             ${{ matrix.os }}-go-${{ matrix.go-version }}-build-
+
+      - name: Set up Go version ${{ matrix.go-version }}
+        if: matrix.go-version != 'tip'
+        uses: actions/setup-go@v2
+        with:
+          go-version: ${{ matrix.go-version }}
+
+      - name: Set up Go tip
+        if: matrix.go-version == 'tip'
+        run: |
+          git clone --depth=1 https://go.googlesource.com/go $HOME/gotip
+          cd $HOME/gotip/src
+          ./make.bash
+          echo "GOROOT=$HOME/gotip" >> $GITHUB_ENV
+          echo "$HOME/gotip/bin" >> $GITHUB_PATH
+
+      - name: Set GO_VERSION
+        run: echo "GO_VERSION=$(go version)" >> $GITHUB_ENV
+
+      - name: Check out code into GOPATH
+        uses: actions/checkout@v2
+        with:
+          path: ${{ env.WORKDIR }}
+
+      - name: Pull Docker images in the background
+        working-directory: ${{ env.WORKDIR }}
+        run: docker-compose pull --quiet &
 
       - name: Stop Ubuntu services
         run: sudo systemctl stop mysql
@@ -171,42 +168,19 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     env:
-      # no `-mod=readonly` to test PRs made by @dependabot
+      # no `-mod=readonly` to test PRs made by @dependabot;
       # `make ci-check-changes` step below still checks what we need
+      WORKDIR: "${{ github.workspace }}/gopath/src/gopkg.in/reform.v1"
+      GOPATH: "${{ github.workspace }}/gopath"
+      GOBIN: "${{ github.workspace }}/gopath/bin"
       GO111MODULE: "on"
-      GOPROXY: https://proxy.golang.org
-      GORACE: halt_on_error=1
+      GOPROXY: "https://proxy.golang.org"
+      GORACE: "halt_on_error=1"
+      REFORM_POSTGRES_IMAGE: "${{ matrix.images.postgres }}"
+      REFORM_MYSQL_IMAGE: "${{ matrix.images.mysql }}"
+      REFORM_MSSQL_IMAGE: "${{ matrix.images.mssql }}"
 
     steps:
-      - name: Set up Go version ${{ matrix.go-version }}
-        if: matrix.go-version != 'tip'
-        uses: actions/setup-go@v2
-        with:
-          go-version: ${{ matrix.go-version }}
-
-      - name: Set up Go tip
-        if: matrix.go-version == 'tip'
-        run: |
-          git clone --depth=1 https://go.googlesource.com/go $HOME/gotip
-          cd $HOME/gotip/src
-          ./make.bash
-          echo "GOROOT=$HOME/gotip" >> $GITHUB_ENV
-          echo "$HOME/gotip/bin" >> $GITHUB_PATH
-
-      - name: Set environment variables
-        run: |
-          echo "GOPATH=$GITHUB_WORKSPACE/gopath" >> $GITHUB_ENV
-          echo "$GITHUB_WORKSPACE/gopath/bin" >> $GITHUB_PATH
-          echo "WORKDIR=$GITHUB_WORKSPACE/gopath/src/gopkg.in/reform.v1" >> $GITHUB_ENV
-          echo "GO_VERSION=$(go version)" >> $GITHUB_ENV
-          cat $GITHUB_ENV
-          cat $GITHUB_PATH
-
-      - name: Check out code into GOPATH
-        uses: actions/checkout@v2
-        with:
-          path: ${{ env.WORKDIR }}
-
       # slightly decreases total CI time; see also cleanup.yaml
       - name: Enable Go modules cache
         uses: actions/cache@v2
@@ -225,6 +199,29 @@ jobs:
           restore-keys: |
             ${{ matrix.os }}-go-${{ matrix.go-version }}-build-${{ github.ref }}-
             ${{ matrix.os }}-go-${{ matrix.go-version }}-build-
+
+      - name: Set up Go version ${{ matrix.go-version }}
+        if: matrix.go-version != 'tip'
+        uses: actions/setup-go@v2
+        with:
+          go-version: ${{ matrix.go-version }}
+
+      - name: Set up Go tip
+        if: matrix.go-version == 'tip'
+        run: |
+          git clone --depth=1 https://go.googlesource.com/go $HOME/gotip
+          cd $HOME/gotip/src
+          ./make.bash
+          echo "GOROOT=$HOME/gotip" >> $GITHUB_ENV
+          echo "$HOME/gotip/bin" >> $GITHUB_PATH
+
+      - name: Set GO_VERSION
+        run: echo "GO_VERSION=$(go version)" >> $GITHUB_ENV
+
+      - name: Check out code into GOPATH
+        uses: actions/checkout@v2
+        with:
+          path: ${{ env.WORKDIR }}
 
       # FIXME Is there a more ergonomic way?
       - name: Update Go language version in the module

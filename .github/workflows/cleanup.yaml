@@ -24,39 +24,13 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     env:
+      WORKDIR: "${{ github.workspace }}/gopath/src/gopkg.in/reform.v1"
+      GOPATH: "${{ github.workspace }}/gopath"
+      GOBIN: "${{ github.workspace }}/gopath/bin"
       GO111MODULE: "on"
-      GOPROXY: https://proxy.golang.org
+      GOPROXY: "https://proxy.golang.org"
 
     steps:
-      - name: Set up Go version ${{ matrix.go-version }}
-        if: matrix.go-version != 'tip'
-        uses: actions/setup-go@v2
-        with:
-          go-version: ${{ matrix.go-version }}
-
-      - name: Set up Go tip
-        if: matrix.go-version == 'tip'
-        run: |
-          git clone --depth=1 https://go.googlesource.com/go $HOME/gotip
-          cd $HOME/gotip/src
-          ./make.bash
-          echo "GOROOT=$HOME/gotip" >> $GITHUB_ENV
-          echo "$HOME/gotip/bin" >> $GITHUB_PATH
-
-      - name: Set environment variables
-        run: |
-          echo "GOPATH=$GITHUB_WORKSPACE/gopath" >> $GITHUB_ENV
-          echo "$GITHUB_WORKSPACE/gopath/bin" >> $GITHUB_PATH
-          echo "WORKDIR=$GITHUB_WORKSPACE/gopath/src/gopkg.in/reform.v1" >> $GITHUB_ENV
-          echo "GO_VERSION=$(go version)" >> $GITHUB_ENV
-          cat $GITHUB_ENV
-          cat $GITHUB_PATH
-
-      - name: Check out code into GOPATH
-        uses: actions/checkout@v2
-        with:
-          path: ${{ env.WORKDIR }}
-
       - name: Enable Go modules cache
         uses: actions/cache@v2
         with:
@@ -73,6 +47,26 @@ jobs:
           restore-keys: |
             ${{ matrix.os }}-go-${{ matrix.go-version }}-build-${{ github.ref }}-
             ${{ matrix.os }}-go-${{ matrix.go-version }}-build-
+
+      - name: Set up Go version ${{ matrix.go-version }}
+        if: matrix.go-version != 'tip'
+        uses: actions/setup-go@v2
+        with:
+          go-version: ${{ matrix.go-version }}
+
+      - name: Set up Go tip
+        if: matrix.go-version == 'tip'
+        run: |
+          git clone --depth=1 https://go.googlesource.com/go $HOME/gotip
+          cd $HOME/gotip/src
+          ./make.bash
+          echo "GOROOT=$HOME/gotip" >> $GITHUB_ENV
+          echo "$HOME/gotip/bin" >> $GITHUB_PATH
+
+      - name: Check out code into GOPATH
+        uses: actions/checkout@v2
+        with:
+          path: ${{ env.WORKDIR }}
 
       - name: Clean Go modules cache
         run: go clean -modcache

@@ -31,6 +31,18 @@ jobs:
       GOPROXY: "https://proxy.golang.org"
 
     steps:
+      # Cache Go modules, build cache, installed packages and GOPATH sources
+      # to significantly decreases total CI time. See also cleanup.yaml.
+      - name: Enable Go cache
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.cache/go-build
+            ${{ env.GOPATH }}/pkg
+            ${{ env.GOPATH }}/src/github.com
+            ${{ env.GOPATH }}/src/golang.org
+          key: ${{ matrix.os }}-${{ matrix.go-version }}
+
       - name: Set up Go version ${{ matrix.go-version }}
         if: matrix.go-version != 'tip'
         uses: actions/setup-go@v2
@@ -51,18 +63,6 @@ jobs:
         uses: actions/checkout@v2
         with:
           path: ${{ env.WORKDIR }}
-
-      # Cache Go modules, build cache, installed packages and GOPATH sources
-      # to significantly decreases total CI time. See also cleanup.yaml.
-      - name: Enable Go cache
-        uses: actions/cache@v2
-        with:
-          path: |
-            ~/.cache/go-build
-            ${{ env.GOPATH }}/pkg
-            ${{ env.GOPATH }}/src/github.com
-            ${{ env.GOPATH }}/src/golang.org
-          key: ${{ matrix.os }}-${{ matrix.go-version }}
 
       - name: Clean Go cache
         run: |

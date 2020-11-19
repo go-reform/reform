@@ -40,15 +40,17 @@ jobs:
           git clone --depth=1 https://go.googlesource.com/go $HOME/gotip
           cd $HOME/gotip/src
           ./make.bash
-          echo "::set-env name=GOROOT::$HOME/gotip"
-          echo "::add-path::$HOME/gotip/bin"
+          echo "GOROOT=$HOME/gotip" >> $GITHUB_ENV
+          echo "$HOME/gotip/bin" >> $GITHUB_PATH
 
       - name: Set environment variables
         run: |
-          echo "::set-env name=GOPATH::$GITHUB_WORKSPACE/gopath"
-          echo "::add-path::$GITHUB_WORKSPACE/gopath/bin"
-          echo "::set-env name=WORKDIR::$GITHUB_WORKSPACE/gopath/src/gopkg.in/reform.v1"
-          echo "::set-env name=GO_VERSION::$(go version)"
+          echo "GOPATH=$GITHUB_WORKSPACE/gopath" >> $GITHUB_ENV
+          echo "$GITHUB_WORKSPACE/gopath/bin" >> $GITHUB_PATH
+          echo "WORKDIR=$GITHUB_WORKSPACE/gopath/src/gopkg.in/reform.v1" >> $GITHUB_ENV
+          echo "GO_VERSION=$(go version)" >> $GITHUB_ENV
+          cat $GITHUB_ENV
+          cat $GITHUB_PATH
 
       - name: Check out code into GOPATH
         uses: actions/checkout@v2

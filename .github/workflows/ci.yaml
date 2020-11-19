@@ -51,24 +51,6 @@ jobs:
       REFORM_MSSQL_IMAGE: "${{ matrix.images.mssql }}"
 
     steps:
-      # slightly decreases total CI time; see also cleanup.yaml
-      - name: Enable Go modules cache
-        uses: actions/cache@v2
-        with:
-          path: ${{ env.GOPATH }}/pkg/mod
-          key: ${{ matrix.os }}-go-${{ matrix.go-version }}-modules-${{ hashFiles('**/go.sum') }}
-          restore-keys: |
-            ${{ matrix.os }}-go-${{ matrix.go-version }}-modules-
-
-      # significantly decreases total CI time; see also cleanup.yaml
-      - name: Enable Go build cache
-        uses: actions/cache@v2
-        with:
-          path: ~/.cache/go-build
-          key: ${{ matrix.os }}-go-${{ matrix.go-version }}-build-${{ hashFiles('**') }}
-          restore-keys: |
-            ${{ matrix.os }}-go-${{ matrix.go-version }}-build-
-
       - name: Set up Go version ${{ matrix.go-version }}
         if: matrix.go-version != 'tip'
         uses: actions/setup-go@v2
@@ -92,6 +74,25 @@ jobs:
         uses: actions/checkout@v2
         with:
           path: ${{ env.WORKDIR }}
+
+      # slightly decreases total CI time; see also cleanup.yaml
+      - name: Enable Go modules cache
+        uses: actions/cache@v2
+        with:
+          path: ${{ env.GOPATH }}/pkg/mod
+          key: ${{ matrix.os }}-go-${{ matrix.go-version }}-modules-${{ hashFiles('gopath/src/gopkg.in/reform.v1/go.mod') }}
+          restore-keys: |
+            ${{ matrix.os }}-go-${{ matrix.go-version }}-modules-
+
+      # significantly decreases total CI time; see also cleanup.yaml
+      # "reform.v1**/*.go" is not a typo - it covers both reform.v1/*.go and reform.v1/parse/*.go
+      - name: Enable Go build cache
+        uses: actions/cache@v2
+        with:
+          path: ~/.cache/go-build
+          key: ${{ matrix.os }}-go-${{ matrix.go-version }}-build-${{ hashFiles('gopath/src/gopkg.in/reform.v1**/*.go') }}
+          restore-keys: |
+            ${{ matrix.os }}-go-${{ matrix.go-version }}-build-
 
       - name: Pull Docker images in the background
         working-directory: ${{ env.WORKDIR }}
@@ -181,24 +182,6 @@ jobs:
       REFORM_MSSQL_IMAGE: "${{ matrix.images.mssql }}"
 
     steps:
-      # slightly decreases total CI time; see also cleanup.yaml
-      - name: Enable Go modules cache
-        uses: actions/cache@v2
-        with:
-          path: ${{ env.GOPATH }}/pkg/mod
-          key: ${{ matrix.os }}-go-${{ matrix.go-version }}-modules-${{ hashFiles('**/go.sum') }}
-          restore-keys: |
-            ${{ matrix.os }}-go-${{ matrix.go-version }}-modules-
-
-      # significantly decreases total CI time; see also cleanup.yaml
-      - name: Enable Go build cache
-        uses: actions/cache@v2
-        with:
-          path: ~/.cache/go-build
-          key: ${{ matrix.os }}-go-${{ matrix.go-version }}-build-${{ hashFiles('**') }}
-          restore-keys: |
-            ${{ matrix.os }}-go-${{ matrix.go-version }}-build-
-
       - name: Set up Go version ${{ matrix.go-version }}
         if: matrix.go-version != 'tip'
         uses: actions/setup-go@v2
@@ -222,6 +205,25 @@ jobs:
         uses: actions/checkout@v2
         with:
           path: ${{ env.WORKDIR }}
+
+      # slightly decreases total CI time; see also cleanup.yaml
+      - name: Enable Go modules cache
+        uses: actions/cache@v2
+        with:
+          path: ${{ env.GOPATH }}/pkg/mod
+          key: ${{ matrix.os }}-go-${{ matrix.go-version }}-modules-${{ hashFiles('gopath/src/gopkg.in/reform.v1/go.mod') }}
+          restore-keys: |
+            ${{ matrix.os }}-go-${{ matrix.go-version }}-modules-
+
+      # significantly decreases total CI time; see also cleanup.yaml
+      # "reform.v1**/*.go" is not a typo - it covers both reform.v1/*.go and reform.v1/parse/*.go
+      - name: Enable Go build cache
+        uses: actions/cache@v2
+        with:
+          path: ~/.cache/go-build
+          key: ${{ matrix.os }}-go-${{ matrix.go-version }}-build-${{ hashFiles('gopath/src/gopkg.in/reform.v1**/*.go') }}
+          restore-keys: |
+            ${{ matrix.os }}-go-${{ matrix.go-version }}-build-
 
       # FIXME Is there a more ergonomic way?
       - name: Update Go language version in the module

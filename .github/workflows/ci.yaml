@@ -21,7 +21,7 @@ jobs:
       fail-fast: false
       matrix:
         os:
-          - ubuntu-latest
+          - ubuntu-20.04
         go-version:
           - 1.13.x
           - 1.14.x
@@ -65,9 +65,8 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ~/.cache/go-build
-          key: ${{ matrix.os }}-go-${{ matrix.go-version }}-build-${{ github.ref }}-${{ hashFiles('**') }}
+          key: ${{ matrix.os }}-go-${{ matrix.go-version }}-build-${{ hashFiles('**') }}
           restore-keys: |
-            ${{ matrix.os }}-go-${{ matrix.go-version }}-build-${{ github.ref }}-
             ${{ matrix.os }}-go-${{ matrix.go-version }}-build-
 
       - name: Set up Go version ${{ matrix.go-version }}
@@ -162,7 +161,7 @@ jobs:
       fail-fast: false
       matrix:
         os:
-          - ubuntu-latest
+          - ubuntu-20.04
         go-version:
           - 1.15.x
 
@@ -196,9 +195,8 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ~/.cache/go-build
-          key: ${{ matrix.os }}-go-${{ matrix.go-version }}-build-${{ github.ref }}-${{ hashFiles('**') }}
+          key: ${{ matrix.os }}-go-${{ matrix.go-version }}-build-${{ hashFiles('**') }}
           restore-keys: |
-            ${{ matrix.os }}-go-${{ matrix.go-version }}-build-${{ github.ref }}-
             ${{ matrix.os }}-go-${{ matrix.go-version }}-build-
 
       - name: Set up Go version ${{ matrix.go-version }}

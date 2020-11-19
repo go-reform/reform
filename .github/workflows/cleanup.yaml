@@ -62,7 +62,7 @@ jobs:
             ${{ env.GOPATH }}/pkg
             ${{ env.GOPATH }}/src/github.com
             ${{ env.GOPATH }}/src/golang.org
-          key: ${{ matrix.os }}-go-${{ matrix.go-version }}
+          key: ${{ matrix.os }}-${{ matrix.go-version }}
 
       - name: Clean Go cache
         run: |

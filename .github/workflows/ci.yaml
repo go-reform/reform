@@ -85,7 +85,7 @@ jobs:
             ${{ env.GOPATH }}/pkg
             ${{ env.GOPATH }}/src/github.com
             ${{ env.GOPATH }}/src/golang.org
-          key: ${{ matrix.os }}-go-${{ matrix.go-version }}
+          key: ${{ matrix.os }}-${{ matrix.go-version }}
 
       - name: Pull Docker images
         working-directory: ${{ env.WORKDIR }}
@@ -213,7 +213,7 @@ jobs:
             ${{ env.GOPATH }}/pkg
             ${{ env.GOPATH }}/src/github.com
             ${{ env.GOPATH }}/src/golang.org
-          key: ${{ matrix.os }}-go-${{ matrix.go-version }}
+          key: ${{ matrix.os }}-${{ matrix.go-version }}
 
       # FIXME Is there a more ergonomic way?
       - name: Update Go language version in the module

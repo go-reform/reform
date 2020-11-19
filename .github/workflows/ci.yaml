@@ -85,7 +85,7 @@ jobs:
             ${{ env.GOPATH }}/pkg
             ${{ env.GOPATH }}/src/github.com
             ${{ env.GOPATH }}/src/golang.org
-          key: ${{ matrix.os }}-go-${{ matrix.go-version }}-build-${{ hashFiles('gopath/src/gopkg.in/reform.v1/go.mod') }}
+          key: ${{ matrix.os }}-go-${{ matrix.go-version }}-build-${{ hashFiles('gopath/src/gopkg.in/reform.v1/go.mod,gopath/src/gopkg.in/reform.v1/tools/go.mod') }}
           restore-keys: |
             ${{ matrix.os }}-go-${{ matrix.go-version }}-build-
 
@@ -214,7 +214,7 @@ jobs:
             ${{ env.GOPATH }}/pkg
             ${{ env.GOPATH }}/src/github.com
             ${{ env.GOPATH }}/src/golang.org
-          key: ${{ matrix.os }}-go-${{ matrix.go-version }}-build-${{ hashFiles('gopath/src/gopkg.in/reform.v1/go.mod') }}
+          key: ${{ matrix.os }}-go-${{ matrix.go-version }}-build-${{ hashFiles('gopath/src/gopkg.in/reform.v1/go.mod,gopath/src/gopkg.in/reform.v1/tools/go.mod') }}
           restore-keys: |
             ${{ matrix.os }}-go-${{ matrix.go-version }}-build-
 

@@ -62,6 +62,7 @@ jobs:
           ./make.bash
           echo "GOROOT=$HOME/gotip" >> $GITHUB_ENV
           echo "$HOME/gotip/bin" >> $GITHUB_PATH
+          echo "$GOBIN" >> $GITHUB_PATH
 
       - name: Check out code into GOPATH
         uses: actions/checkout@v2

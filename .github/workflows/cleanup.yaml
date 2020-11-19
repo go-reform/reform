@@ -14,7 +14,7 @@ jobs:
       fail-fast: false
       matrix:
         os:
-          - ubuntu-latest
+          - ubuntu-20.04
         go-version:
           - 1.13.x
           - 1.14.x
@@ -24,10 +24,25 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     env:
+      WORKDIR: "${{ github.workspace }}/gopath/src/gopkg.in/reform.v1"
+      GOPATH: "${{ github.workspace }}/gopath"
+      GOBIN: "${{ github.workspace }}/gopath/bin"
       GO111MODULE: "on"
-      GOPROXY: https://proxy.golang.org
+      GOPROXY: "https://proxy.golang.org"
 
     steps:
+      # Cache Go modules, build cache, installed packages and GOPATH sources
+      # to significantly decreases total CI time. See also cleanup.yaml.
+      - name: Enable Go cache
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.cache/go-build
+            ${{ env.GOPATH }}/pkg
+            ${{ env.GOPATH }}/src/github.com
+            ${{ env.GOPATH }}/src/golang.org
+          key: ${{ matrix.os }}-${{ matrix.go-version }}
+
       - name: Set up Go version ${{ matrix.go-version }}
         if: matrix.go-version != 'tip'
         uses: actions/setup-go@v2
@@ -40,40 +55,17 @@ jobs:
           git clone --depth=1 https://go.googlesource.com/go $HOME/gotip
           cd $HOME/gotip/src
           ./make.bash
-          echo "::set-env name=GOROOT::$HOME/gotip"
-          echo "::add-path::$HOME/gotip/bin"
-
-      - name: Set environment variables
-        run: |
-          echo "::set-env name=GOPATH::$GITHUB_WORKSPACE/gopath"
-          echo "::add-path::$GITHUB_WORKSPACE/gopath/bin"
-          echo "::set-env name=WORKDIR::$GITHUB_WORKSPACE/gopath/src/gopkg.in/reform.v1"
-          echo "::set-env name=GO_VERSION::$(go version)"
+          echo "GOROOT=$HOME/gotip" >> $GITHUB_ENV
+          echo "$HOME/gotip/bin" >> $GITHUB_PATH
+          echo "$GOBIN" >> $GITHUB_PATH
 
       - name: Check out code into GOPATH
         uses: actions/checkout@v2
         with:
           path: ${{ env.WORKDIR }}
 
-      - name: Enable Go modules cache
-        uses: actions/cache@v2
-        with:
-          path: ${{ env.GOPATH }}/pkg/mod
-          key: ${{ matrix.os }}-go-${{ matrix.go-version }}-modules-${{ hashFiles('**/go.sum') }}
-          restore-keys: |
-            ${{ matrix.os }}-go-${{ matrix.go-version }}-modules-
-
-      - name: Enable Go build cache
-        uses: actions/cache@v2
-        with:
-          path: ~/.cache/go-build
-          key: ${{ matrix.os }}-go-${{ matrix.go-version }}-build-${{ github.ref }}-${{ hashFiles('**') }}
-          restore-keys: |
-            ${{ matrix.os }}-go-${{ matrix.go-version }}-build-${{ github.ref }}-
-            ${{ matrix.os }}-go-${{ matrix.go-version }}-build-
-
-      - name: Clean Go modules cache
-        run: go clean -modcache
-
-      - name: Clean Go build cache
-        run: go clean -cache
+      - name: Clean Go cache
+        run: |
+          go clean -modcache
+          go clean -cache
+          rm -fr ${{ env.GOPATH }}

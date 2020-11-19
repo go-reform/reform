@@ -89,9 +89,9 @@ jobs:
           restore-keys: |
             ${{ matrix.os }}-go-${{ matrix.go-version }}-build-
 
-      - name: Pull Docker images in the background
+      - name: Pull Docker images
         working-directory: ${{ env.WORKDIR }}
-        run: docker-compose pull --quiet &
+        run: docker-compose pull
 
       - name: Stop Ubuntu services
         run: sudo systemctl stop mysql
@@ -127,6 +127,7 @@ jobs:
       # TODO test again with updated deps
 
       - name: Clean Go test cache
+        if: ${{ always() }}
         run: go clean -testcache
 
       # to ensure that all generators still work the same way

@@ -79,19 +79,19 @@ func convertName(sqlName string) string {
 }
 
 // getPrimaryKeyColumn returns single primary key column for given table, or nil.
-func getPrimaryKeyColumn(db *reform.DB, catalog, schema, tableName string) *keyColumnUsage {
+func getPrimaryKeyColumn(q *reform.Querier, catalog, schema, tableName string) *keyColumnUsage {
 	using := []string{
 		"table_catalog", "table_schema", "table_name",
 		"constraint_catalog", "constraint_schema", "constraint_name",
 	}
-	if db.Dialect == mysql.Dialect {
+	if q.Dialect == mysql.Dialect {
 		// MySQL doesn't have table_catalog in table_constraints
 		using = using[1:]
 	}
 	for i, u := range using {
 		using[i] = fmt.Sprintf("key_column_usage.%s = table_constraints.%s", u, u)
 	}
-	q := fmt.Sprintf(
+	query := fmt.Sprintf(
 		`SELECT column_name, ordinal_position FROM information_schema.key_column_usage
 			INNER JOIN information_schema.table_constraints ON %s
 			WHERE key_column_usage.table_catalog = %s AND
@@ -99,9 +99,9 @@ func getPrimaryKeyColumn(db *reform.DB, catalog, schema, tableName string) *keyC
 				key_column_usage.table_name = %s AND
 				constraint_type = 'PRIMARY KEY'
 			ORDER BY ordinal_position DESC`,
-		strings.Join(using, " AND "), db.Placeholder(1), db.Placeholder(2), db.Placeholder(3),
+		strings.Join(using, " AND "), q.Placeholder(1), q.Placeholder(2), q.Placeholder(3),
 	)
-	rows, err := db.Query(q, catalog, schema, tableName)
+	rows, err := q.Query(query, catalog, schema, tableName)
 	if err != nil {
 		logger.Fatalf("%s", err)
 	}
@@ -110,7 +110,7 @@ func getPrimaryKeyColumn(db *reform.DB, catalog, schema, tableName string) *keyC
 	var key keyColumnUsage
 	var count int
 	for {
-		if err = db.NextRow(&key, rows); err != nil {
+		if err = q.NextRow(&key, rows); err != nil {
 			break
 		}
 		count++
@@ -138,8 +138,8 @@ func getPrimaryKeyColumn(db *reform.DB, catalog, schema, tableName string) *keyC
 }
 
 // initModelsInformationSchema returns structs from database with information_schema.
-func initModelsInformationSchema(db *reform.DB, tablesTail string, typeFunc typeFunc) (structs []StructData) {
-	tables, err := db.SelectAllFrom(tableView, tablesTail)
+func initModelsInformationSchema(q *reform.Querier, tablesTail string, typeFunc typeFunc) (structs []StructData) {
+	tables, err := q.SelectAllFrom(tableView, tablesTail)
 	if err != nil {
 		logger.Fatalf("%s", err)
 	}
@@ -154,13 +154,13 @@ func initModelsInformationSchema(db *reform.DB, tablesTail string, typeFunc type
 		}
 		var comments []string
 
-		key := getPrimaryKeyColumn(db, table.TableCatalog, table.TableSchema, table.TableName)
+		key := getPrimaryKeyColumn(q, table.TableCatalog, table.TableSchema, table.TableName)
 
 		tail := fmt.Sprintf(
 			`WHERE table_catalog = %s AND table_schema = %s AND table_name = %s ORDER BY ordinal_position`,
-			db.Placeholder(1), db.Placeholder(2), db.Placeholder(3),
+			q.Placeholder(1), q.Placeholder(2), q.Placeholder(3),
 		)
-		columns, err := db.SelectAllFrom(columnView, tail, table.TableCatalog, table.TableSchema, table.TableName)
+		columns, err := q.SelectAllFrom(columnView, tail, table.TableCatalog, table.TableSchema, table.TableName)
 		if err != nil {
 			logger.Fatalf("%s", err)
 		}
@@ -193,28 +193,28 @@ func initModelsInformationSchema(db *reform.DB, tablesTail string, typeFunc type
 }
 
 // cmdInit implements init command.
-func cmdInit(db *reform.DB, dir string) {
+func cmdInit(q *reform.Querier, dir string) {
 	var structs []StructData
-	switch db.Dialect {
+	switch q.Dialect {
 	case postgresql.Dialect:
 		// catalog is a currently selected database (reform-database, postgres, template0, etc.)
 		// schema is a PostgreSQL schema (public, pg_catalog, information_schema, etc.)
-		structs = initModelsInformationSchema(db, `WHERE table_schema = current_schema()`, goTypePostgres)
+		structs = initModelsInformationSchema(q, `WHERE table_schema = current_schema()`, goTypePostgres)
 	case mysql.Dialect:
 		// catalog is always "def"
 		// schema is a database name (reform-database, information_schema, performance_schema, mysql, sys, etc.)
-		structs = initModelsInformationSchema(db, `WHERE table_schema = DATABASE()`, goTypeMySQL)
+		structs = initModelsInformationSchema(q, `WHERE table_schema = DATABASE()`, goTypeMySQL)
 	case sqlite3.Dialect:
 		// SQLite is special
-		structs = initModelsSQLite3(db)
+		structs = initModelsSQLite3(q)
 	case mssql.Dialect: //nolint:staticcheck
 		fallthrough
 	case sqlserver.Dialect:
 		// catalog is a currently selected database (reform-database, master, etc.)
 		// schema is MS SQL schema (dbo, guest, sys, information_schema, etc.)
-		structs = initModelsInformationSchema(db, `WHERE table_schema = SCHEMA_NAME()`, goTypeMSSQL)
+		structs = initModelsInformationSchema(q, `WHERE table_schema = SCHEMA_NAME()`, goTypeMSSQL)
 	default:
-		logger.Fatalf("unhandled dialect %s", db.Dialect)
+		logger.Fatalf("unhandled dialect %s", q.Dialect)
 	}
 
 	// detect package name by importing package or from directory name

@@ -14,11 +14,7 @@ import (
 type DBInterface interface {
 	DBTXContext
 	BeginTx(ctx context.Context, opts *sql.TxOptions) (*sql.Tx, error)
-
-	// Deprecated: do not use, it will be removed in v1.5.
-	DBTX
-	// Deprecated: do not use, it will be removed in v1.5.
-	Begin() (*sql.Tx, error)
+	Conn(ctx context.Context) (*sql.Conn, error)
 }
 
 // check interface
@@ -51,9 +47,18 @@ func (db *DB) DBInterface() DBInterface {
 	return db.db
 }
 
+func (db *DB) Conn() (*Conn, error) {
+	conn, err := db.db.Conn(db.Context())
+	if err != nil {
+		return nil, err
+	}
+
+	return newConn(db.Context(), conn, db.Dialect, db.Logger), nil
+}
+
 // Begin starts transaction with Querier's context and default options.
 func (db *DB) Begin() (*TX, error) {
-	return db.BeginTx(db.Querier.ctx, nil)
+	return db.BeginTx(db.ctx, nil)
 }
 
 // BeginTx starts transaction with given context and options (can be nil).
@@ -71,7 +76,7 @@ func (db *DB) BeginTx(ctx context.Context, opts *sql.TxOptions) (*TX, error) {
 // InTransaction wraps function execution in transaction with Querier's context and default options,
 // rolling back it in case of error or panic, committing otherwise.
 func (db *DB) InTransaction(f func(t *TX) error) error {
-	return db.InTransactionContext(db.Querier.ctx, nil, f)
+	return db.InTransactionContext(db.ctx, nil, f)
 }
 
 // InTransactionContext wraps function execution in transaction with given context and options (can be nil),

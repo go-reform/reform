@@ -60,21 +60,15 @@ test-db-init:
 		test/sql/$(REFORM_TEST_DATABASE)_drop.sql
 	reform-db -db-driver="$(REFORM_TEST_DRIVER)" -db-source="$(REFORM_TEST_ADMIN_SOURCE)" exec \
 		test/sql/$(REFORM_TEST_DATABASE)_create.sql
-	reform-db -db-driver="$(REFORM_TEST_DRIVER)" -db-source="$(REFORM_TEST_INIT_SOURCE)" exec \
-		test/sql/$(REFORM_TEST_DATABASE)_combined.tmp.sql
 
-# run integration tests
-test-db:
-	# TODO remove that hack in reform 1.5
-	# https://github.com/go-reform/reform/issues/151
-	# https://github.com/go-reform/reform/issues/157
-	cat \
+	reform-db -db-driver="$(REFORM_TEST_DRIVER)" -db-source="$(REFORM_TEST_INIT_SOURCE)" exec \
 		test/sql/$(REFORM_TEST_DATABASE)_init.sql \
 		test/sql/data.sql \
 		test/sql/$(REFORM_TEST_DATABASE)_data.sql \
-		test/sql/$(REFORM_TEST_DATABASE)_set.sql \
-		> test/sql/$(REFORM_TEST_DATABASE)_combined.tmp.sql
+		test/sql/$(REFORM_TEST_DATABASE)_set.sql
 
+# run integration tests
+test-db:
 	make test-db-init
 
 	# run reform-db tests

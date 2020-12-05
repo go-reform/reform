@@ -74,8 +74,8 @@ func goTypeSQLite3(sqlType string, nullable bool) (typ string, pack string, comm
 }
 
 // initModelsSQLite3 returns structs from SQLite3 database.
-func initModelsSQLite3(db *reform.DB) (structs []StructData) {
-	tables, err := db.SelectAllFrom(sqliteMasterView, "WHERE type IN (?, ?)", "table", "view")
+func initModelsSQLite3(q *reform.Querier) (structs []StructData) {
+	tables, err := q.SelectAllFrom(sqliteMasterView, "WHERE type IN (?, ?)", "table", "view")
 	if err != nil {
 		logger.Fatalf("%s", err)
 	}
@@ -94,7 +94,7 @@ func initModelsSQLite3(db *reform.DB) (structs []StructData) {
 		}
 		var comments []string
 
-		rows, err := db.Query("PRAGMA table_info(" + tableName + ")") // no placeholders for PRAGMA
+		rows, err := q.Query("PRAGMA table_info(" + tableName + ")") // no placeholders for PRAGMA
 		if err != nil {
 			// https://github.com/go-reform/reform/issues/180
 			logger.Printf("Skipping %s: %s.", tableName, err)
@@ -102,7 +102,7 @@ func initModelsSQLite3(db *reform.DB) (structs []StructData) {
 		}
 		for {
 			var column sqliteTableInfo
-			if err = db.NextRow(&column, rows); err != nil {
+			if err = q.NextRow(&column, rows); err != nil {
 				break
 			}
 			if column.PK {

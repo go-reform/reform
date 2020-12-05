@@ -3,7 +3,6 @@
 
 /bin/
 
-*.tmp.sql
 *.sqlite3
 
 *.cover

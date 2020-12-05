@@ -36,16 +36,16 @@ a query is read from stdin until EOF, then executed.
 }
 
 // cmdQuery implements query command.
-func cmdQuery(db *reform.DB, files []string) {
+func cmdQuery(q *reform.Querier, files []string) {
 	queries := readFiles(files, *querySplitF)
-	for _, q := range queries {
-		rows, err := db.Query(q)
+	for _, query := range queries {
+		rows, err := q.Query(query)
 		if err != nil {
-			logger.Fatalf("failed to query %s: %s", q, err)
+			logger.Fatalf("failed to query %s: %s", query, err)
 		}
 		columns, err := rows.Columns()
 		if err != nil {
-			logger.Fatalf("failed to get columns for %s: %s", q, err)
+			logger.Fatalf("failed to get columns for %s: %s", query, err)
 		}
 		logger.Debugf("result columns: %v", columns)
 

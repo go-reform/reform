@@ -135,15 +135,11 @@ func (s *Person) HasPK() bool {
 	return s.ID != PersonTable.z[PersonTable.s.PKFieldIndex]
 }
 
-// SetPK sets record primary key.
+// SetPK sets record primary key, if possible.
 //
-// Prefer direct field assignment where possible: s.ID = pk.
+// Deprecated: prefer direct field assignment where possible: s.ID = pk.
 func (s *Person) SetPK(pk interface{}) {
-	if i64, ok := pk.(int64); ok {
-		s.ID = int32(i64)
-	} else {
-		s.ID = pk.(int32)
-	}
+	reform.SetPK(s, pk)
 }
 
 // check interfaces
@@ -270,15 +266,11 @@ func (s *Project) HasPK() bool {
 	return s.ID != ProjectTable.z[ProjectTable.s.PKFieldIndex]
 }
 
-// SetPK sets record primary key.
+// SetPK sets record primary key, if possible.
 //
-// Prefer direct field assignment where possible: s.ID = pk.
+// Deprecated: prefer direct field assignment where possible: s.ID = pk.
 func (s *Project) SetPK(pk interface{}) {
-	if i64, ok := pk.(int64); ok {
-		s.ID = string(i64)
-	} else {
-		s.ID = pk.(string)
-	}
+	reform.SetPK(s, pk)
 }
 
 // check interfaces
@@ -470,15 +462,11 @@ func (s *IDOnly) HasPK() bool {
 	return s.ID != IDOnlyTable.z[IDOnlyTable.s.PKFieldIndex]
 }
 
-// SetPK sets record primary key.
+// SetPK sets record primary key, if possible.
 //
-// Prefer direct field assignment where possible: s.ID = pk.
+// Deprecated: prefer direct field assignment where possible: s.ID = pk.
 func (s *IDOnly) SetPK(pk interface{}) {
-	if i64, ok := pk.(int64); ok {
-		s.ID = int32(i64)
-	} else {
-		s.ID = pk.(int32)
-	}
+	reform.SetPK(s, pk)
 }
 
 // check interfaces
@@ -595,15 +583,11 @@ func (s *Constraints) HasPK() bool {
 	return s.ID != ConstraintsTable.z[ConstraintsTable.s.PKFieldIndex]
 }
 
-// SetPK sets record primary key.
+// SetPK sets record primary key, if possible.
 //
-// Prefer direct field assignment where possible: s.ID = pk.
+// Deprecated: prefer direct field assignment where possible: s.ID = pk.
 func (s *Constraints) SetPK(pk interface{}) {
-	if i64, ok := pk.(int64); ok {
-		s.ID = string(i64)
-	} else {
-		s.ID = pk.(string)
-	}
+	reform.SetPK(s, pk)
 }
 
 // check interfaces
@@ -721,15 +705,11 @@ func (s *LegacyPerson) HasPK() bool {
 	return s.ID != LegacyPersonTable.z[LegacyPersonTable.s.PKFieldIndex]
 }
 
-// SetPK sets record primary key.
+// SetPK sets record primary key, if possible.
 //
-// Prefer direct field assignment where possible: s.ID = pk.
+// Deprecated: prefer direct field assignment where possible: s.ID = pk.
 func (s *LegacyPerson) SetPK(pk interface{}) {
-	if i64, ok := pk.(int64); ok {
-		s.ID = int32(i64)
-	} else {
-		s.ID = pk.(int32)
-	}
+	reform.SetPK(s, pk)
 }
 
 // check interfaces

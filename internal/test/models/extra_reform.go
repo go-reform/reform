@@ -165,15 +165,11 @@ func (s *Extra) HasPK() bool {
 	return s.ID != ExtraTable.z[ExtraTable.s.PKFieldIndex]
 }
 
-// SetPK sets record primary key.
+// SetPK sets record primary key, if possible.
 //
-// Prefer direct field assignment where possible: s.ID = pk.
+// Deprecated: prefer direct field assignment where possible: s.ID = pk.
 func (s *Extra) SetPK(pk interface{}) {
-	if i64, ok := pk.(int64); ok {
-		s.ID = Integer(i64)
-	} else {
-		s.ID = pk.(Integer)
-	}
+	reform.SetPK(s, pk)
 }
 
 // check interfaces
@@ -285,15 +281,11 @@ func (s *notExported) HasPK() bool {
 	return s.ID != notExportedTable.z[notExportedTable.s.PKFieldIndex]
 }
 
-// SetPK sets record primary key.
+// SetPK sets record primary key, if possible.
 //
-// Prefer direct field assignment where possible: s.ID = pk.
+// Deprecated: prefer direct field assignment where possible: s.ID = pk.
 func (s *notExported) SetPK(pk interface{}) {
-	if i64, ok := pk.(int64); ok {
-		s.ID = string(i64)
-	} else {
-		s.ID = pk.(string)
-	}
+	reform.SetPK(s, pk)
 }
 
 // check interfaces

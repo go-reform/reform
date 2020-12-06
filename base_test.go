@@ -313,6 +313,7 @@ func (s *ReformSuite) TestColumns() {
 	s.NoError(rows.Close())
 }
 
+//nolint:staticcheck
 func TestSetPK(t *testing.T) {
 	t.Parallel()
 

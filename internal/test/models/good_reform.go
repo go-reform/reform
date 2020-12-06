@@ -135,7 +135,7 @@ func (s *Person) HasPK() bool {
 	return s.ID != PersonTable.z[PersonTable.s.PKFieldIndex]
 }
 
-// SetPK sets record primary key.
+// SetPK sets record primary key, if possible.
 //
 // Deprecated: prefer direct field assignment where possible: s.ID = pk.
 func (s *Person) SetPK(pk interface{}) {
@@ -266,7 +266,7 @@ func (s *Project) HasPK() bool {
 	return s.ID != ProjectTable.z[ProjectTable.s.PKFieldIndex]
 }
 
-// SetPK sets record primary key.
+// SetPK sets record primary key, if possible.
 //
 // Deprecated: prefer direct field assignment where possible: s.ID = pk.
 func (s *Project) SetPK(pk interface{}) {
@@ -462,7 +462,7 @@ func (s *IDOnly) HasPK() bool {
 	return s.ID != IDOnlyTable.z[IDOnlyTable.s.PKFieldIndex]
 }
 
-// SetPK sets record primary key.
+// SetPK sets record primary key, if possible.
 //
 // Deprecated: prefer direct field assignment where possible: s.ID = pk.
 func (s *IDOnly) SetPK(pk interface{}) {
@@ -583,7 +583,7 @@ func (s *Constraints) HasPK() bool {
 	return s.ID != ConstraintsTable.z[ConstraintsTable.s.PKFieldIndex]
 }
 
-// SetPK sets record primary key.
+// SetPK sets record primary key, if possible.
 //
 // Deprecated: prefer direct field assignment where possible: s.ID = pk.
 func (s *Constraints) SetPK(pk interface{}) {
@@ -705,7 +705,7 @@ func (s *LegacyPerson) HasPK() bool {
 	return s.ID != LegacyPersonTable.z[LegacyPersonTable.s.PKFieldIndex]
 }
 
-// SetPK sets record primary key.
+// SetPK sets record primary key, if possible.
 //
 // Deprecated: prefer direct field assignment where possible: s.ID = pk.
 func (s *LegacyPerson) SetPK(pk interface{}) {

@@ -121,6 +121,19 @@ func (s *StructInfo) IsTable() bool {
 	return s.PKFieldIndex >= 0
 }
 
+func (s *StructInfo) IsIntPK() bool {
+	switch s.PKField().Type {
+	case "int", "int8", "int16", "int32", "int64":
+		return true
+	case "uint", "uint8", "uint16", "uint32", "uint64":
+		return true
+	case "byte", "rune":
+		return true
+	default:
+		return false
+	}
+}
+
 // PKField returns a primary key field, panics for views.
 func (s *StructInfo) PKField() FieldInfo {
 	if !s.IsTable() {

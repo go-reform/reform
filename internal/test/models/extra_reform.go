@@ -167,13 +167,9 @@ func (s *Extra) HasPK() bool {
 
 // SetPK sets record primary key.
 //
-// Prefer direct field assignment where possible: s.ID = pk.
+// Deprecated: prefer direct field assignment where possible: s.ID = pk.
 func (s *Extra) SetPK(pk interface{}) {
-	if i64, ok := pk.(int64); ok {
-		s.ID = Integer(i64)
-	} else {
-		s.ID = pk.(Integer)
-	}
+	reform.SetPK(s, pk)
 }
 
 // check interfaces
@@ -287,13 +283,9 @@ func (s *notExported) HasPK() bool {
 
 // SetPK sets record primary key.
 //
-// Prefer direct field assignment where possible: s.ID = pk.
+// Deprecated: prefer direct field assignment where possible: s.ID = pk.
 func (s *notExported) SetPK(pk interface{}) {
-	if i64, ok := pk.(int64); ok {
-		s.ID = string(i64)
-	} else {
-		s.ID = pk.(string)
-	}
+	reform.SetPK(s, pk)
 }
 
 // check interfaces

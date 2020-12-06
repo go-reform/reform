@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"reflect"
 )
 
 var (
@@ -81,7 +82,8 @@ type Record interface {
 	HasPK() bool
 
 	// SetPK sets record primary key.
-	// Prefer direct field assignment where possible.
+	//
+	// Deprecated: prefer direct field assignment where possible.
 	SetPK(pk interface{})
 }
 
@@ -203,6 +205,16 @@ type Dialect interface {
 
 	// DefaultValuesMethod returns a method of inserting of row with all default values.
 	DefaultValuesMethod() DefaultValuesMethod
+}
+
+// SetPK sets record's primary key.
+//
+// Deprecated: prefer direct field assignment where possible.
+func SetPK(r Record, pk interface{}) {
+	t := r.Table()
+	p := r.Pointers()[t.PKColumnIndex()]
+	v := reflect.ValueOf(pk).Int()
+	reflect.ValueOf(p).Elem().SetInt(v)
 }
 
 // check interfaces

@@ -127,13 +127,9 @@ func (s *{{ .Type }}) HasPK() bool {
 
 // SetPK sets record primary key.
 //
-// Prefer direct field assignment where possible: s.{{ .PKField.Name }} = pk.
+// Deprecated: prefer direct field assignment where possible: s.{{ .PKField.Name }} = pk.
 func (s *{{ .Type }}) SetPK(pk interface{}) {
-	if i64, ok := pk.(int64); ok {
-		s.{{ .PKField.Name }} = {{ .PKField.Type }}(i64)
-	} else {
-		s.{{ .PKField.Name }} = pk.({{ .PKField.Type }})
-	}
+	reform.SetPK(s, pk)
 }
 
 {{- end }}

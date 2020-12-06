@@ -50,8 +50,7 @@ test-unit:
 	go generate -v -x gopkg.in/reform.v1/reform-db
 	go install -v gopkg.in/reform.v1/reform-db
 
-	# TODO enable in 1.5
-	# go vet ./...
+	go vet ./...
 
 test-db-init:
 	# recreate and initialize database

@@ -2,6 +2,7 @@ package reform_test
 
 import (
 	"database/sql"
+	"flag"
 	"fmt"
 	"log"
 	"os"
@@ -14,6 +15,7 @@ import (
 	_ "github.com/lib/pq"
 	_ "github.com/mattn/go-sqlite3"
 
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
 
@@ -28,12 +30,20 @@ import (
 
 var (
 	// DB is a global connection pool shared by tests and examples.
+	//
 	// Deprecated: do not add new tests using it as using a global pool makes tests more brittle.
 	DB *reform.DB
 )
 
 func TestMain(m *testing.M) {
-	DB = internal.ConnectToTestDB()
+	flag.Parse()
+
+	if testing.Short() {
+		log.Print("Not setting DB in short mode")
+	} else {
+		DB = internal.ConnectToTestDB()
+	}
+
 	os.Exit(m.Run())
 }
 
@@ -301,4 +311,30 @@ func (s *ReformSuite) TestColumns() {
 	s.NoError(err)
 	s.Equal(PersonTable.Columns(), columns)
 	s.NoError(rows.Close())
+}
+
+func TestSetPK(t *testing.T) {
+	t.Parallel()
+
+	var person Person
+	person.SetPK(int32(1))
+	assert.EqualValues(t, 1, person.ID)
+	person.SetPK(int64(2))
+	assert.EqualValues(t, 2, person.ID)
+	person.SetPK(Integer(3))
+	assert.EqualValues(t, 3, person.ID)
+
+	var project Project
+	project.SetPK("baron")
+	assert.EqualValues(t, "baron", project.ID)
+	project.SetPK(1)
+	assert.EqualValues(t, "baron", project.ID)
+
+	var extra Extra
+	extra.SetPK(int32(1))
+	assert.EqualValues(t, 1, extra.ID)
+	extra.SetPK(int64(2))
+	assert.EqualValues(t, 2, extra.ID)
+	extra.SetPK(Integer(3))
+	assert.EqualValues(t, 3, extra.ID)
 }

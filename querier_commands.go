@@ -94,7 +94,7 @@ func (q *Querier) insert(str Struct, columns []string, values []interface{}) err
 			if err != nil {
 				return err
 			}
-			record.SetPK(id)
+			record.SetPK(id) // TODO optimize
 		}
 		return nil
 

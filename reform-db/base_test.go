@@ -19,6 +19,10 @@ func TestReformDBSuite(t *testing.T) {
 }
 
 func (s *ReformDBSuite) SetupSuite() {
+	if testing.Short() {
+		s.T().Skip("skipping in short mode")
+	}
+
 	logger = internal.NewLogger("reform-db-test: ", true)
 
 	s.db = internal.ConnectToTestDB()

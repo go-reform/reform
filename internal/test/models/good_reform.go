@@ -742,10 +742,10 @@ var (
 )
 
 func init() {
-	parse.AssertUpToDate(&PersonTable.s, new(Person))
-	parse.AssertUpToDate(&ProjectTable.s, new(Project))
-	parse.AssertUpToDate(&PersonProjectView.s, new(PersonProject))
-	parse.AssertUpToDate(&IDOnlyTable.s, new(IDOnly))
-	parse.AssertUpToDate(&ConstraintsTable.s, new(Constraints))
-	parse.AssertUpToDate(&LegacyPersonTable.s, new(LegacyPerson))
+	parse.Init(&PersonTable.s, new(Person))
+	parse.Init(&ProjectTable.s, new(Project))
+	parse.Init(&PersonProjectView.s, new(PersonProject))
+	parse.Init(&IDOnlyTable.s, new(IDOnly))
+	parse.Init(&ConstraintsTable.s, new(Constraints))
+	parse.Init(&LegacyPersonTable.s, new(LegacyPerson))
 }

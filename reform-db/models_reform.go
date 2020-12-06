@@ -459,9 +459,9 @@ var (
 )
 
 func init() {
-	parse.AssertUpToDate(&tableView.s, new(table))
-	parse.AssertUpToDate(&columnView.s, new(column))
-	parse.AssertUpToDate(&keyColumnUsageView.s, new(keyColumnUsage))
-	parse.AssertUpToDate(&sqliteMasterView.s, new(sqliteMaster))
-	parse.AssertUpToDate(&sqliteTableInfoView.s, new(sqliteTableInfo))
+	parse.Init(&tableView.s, new(table))
+	parse.Init(&columnView.s, new(column))
+	parse.Init(&keyColumnUsageView.s, new(keyColumnUsage))
+	parse.Init(&sqliteMasterView.s, new(sqliteMaster))
+	parse.Init(&sqliteTableInfoView.s, new(sqliteTableInfo))
 }

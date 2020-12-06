@@ -306,6 +306,6 @@ var (
 )
 
 func init() {
-	parse.AssertUpToDate(&ExtraTable.s, new(Extra))
-	parse.AssertUpToDate(&notExportedTable.s, new(notExported))
+	parse.Init(&ExtraTable.s, new(Extra))
+	parse.Init(&notExportedTable.s, new(notExported))
 }

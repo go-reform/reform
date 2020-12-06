@@ -169,11 +169,7 @@ func (s *Extra) HasPK() bool {
 //
 // Prefer direct field assignment where possible: s.ID = pk.
 func (s *Extra) SetPK(pk interface{}) {
-	if i64, ok := pk.(int64); ok {
-		s.ID = Integer(i64)
-	} else {
-		s.ID = pk.(Integer)
-	}
+	s.ID = pk.(Integer)
 }
 
 // check interfaces
@@ -289,11 +285,7 @@ func (s *notExported) HasPK() bool {
 //
 // Prefer direct field assignment where possible: s.ID = pk.
 func (s *notExported) SetPK(pk interface{}) {
-	if i64, ok := pk.(int64); ok {
-		s.ID = string(i64)
-	} else {
-		s.ID = pk.(string)
-	}
+	s.ID = pk.(string)
 }
 
 // check interfaces

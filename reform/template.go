@@ -125,16 +125,25 @@ func (s *{{ .Type }}) HasPK() bool {
 	return s.{{ .PKField.Name }} != {{ .TableVar }}.z[{{ .TableVar }}.s.PKFieldIndex]
 }
 
+{{- if .IsIntPK }}
+
 // SetPK sets record primary key.
 //
 // Prefer direct field assignment where possible: s.{{ .PKField.Name }} = pk.
 func (s *{{ .Type }}) SetPK(pk interface{}) {
-	if i64, ok := pk.(int64); ok {
-		s.{{ .PKField.Name }} = {{ .PKField.Type }}(i64)
-	} else {
-		s.{{ .PKField.Name }} = pk.({{ .PKField.Type }})
-	}
+	s.{{ .PKField.Name }} = {{ .PKField.Type }}(pk.(int64))
 }
+
+{{ else }}
+
+// SetPK sets record primary key.
+//
+// Prefer direct field assignment where possible: s.{{ .PKField.Name }} = pk.
+func (s *{{ .Type }}) SetPK(pk interface{}) {
+	s.{{ .PKField.Name }} = pk.({{ .PKField.Type }})
+}
+
+{{- end }}
 
 {{- end }}
 

@@ -15,9 +15,9 @@ type DBInterface interface {
 	DBTXContext
 	BeginTx(ctx context.Context, opts *sql.TxOptions) (*sql.Tx, error)
 
-	// Deprecated: do not use, it will be removed in v1.5.
+	// Deprecated: do not use, it will be removed in v1.6.
 	DBTX
-	// Deprecated: do not use, it will be removed in v1.5.
+	// Deprecated: do not use, it will be removed in v1.6.
 	Begin() (*sql.Tx, error)
 }
 

@@ -7,6 +7,7 @@ import (
 
 	"gopkg.in/reform.v1"
 	"gopkg.in/reform.v1/internal"
+	"gopkg.in/reform.v1/internal/test"
 )
 
 type ReformDBSuite struct {
@@ -25,7 +26,7 @@ func (s *ReformDBSuite) SetupSuite() {
 
 	logger = internal.NewLogger("reform-db-test: ", true)
 
-	s.db = internal.ConnectToTestDB()
+	s.db = test.ConnectToTestDB()
 	s.db.Querier = s.db.WithTag("reform-db-test")
 }
 

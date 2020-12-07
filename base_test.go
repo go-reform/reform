@@ -24,7 +24,7 @@ import (
 	"gopkg.in/reform.v1/dialects/postgresql"
 	"gopkg.in/reform.v1/dialects/sqlite3"
 	"gopkg.in/reform.v1/dialects/sqlserver"
-	"gopkg.in/reform.v1/internal"
+	"gopkg.in/reform.v1/internal/test"
 	. "gopkg.in/reform.v1/internal/test/models"
 )
 
@@ -41,7 +41,7 @@ func TestMain(m *testing.M) {
 	if testing.Short() {
 		log.Print("Not setting DB in short mode")
 	} else {
-		DB = internal.ConnectToTestDB()
+		DB = test.ConnectToTestDB()
 	}
 
 	os.Exit(m.Run())
@@ -97,7 +97,7 @@ func setupDB(t testing.TB) *reform.DB {
 		t.Skip("skipping in short mode")
 	}
 
-	db := internal.ConnectToTestDB()
+	db := test.ConnectToTestDB()
 	pl := reform.NewPrintfLogger(t.Logf)
 	pl.LogTypes = true
 	db.Logger = pl

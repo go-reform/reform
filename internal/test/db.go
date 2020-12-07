@@ -1,4 +1,4 @@
-package internal
+package test
 
 import (
 	"database/sql"
@@ -8,7 +8,7 @@ import (
 	"sync"
 	"time"
 
-	sqlite3Driver "github.com/mattn/go-sqlite3" // TODO remove that dependency from that package
+	sqlite3Driver "github.com/mattn/go-sqlite3"
 
 	"gopkg.in/reform.v1"
 	"gopkg.in/reform.v1/dialects"

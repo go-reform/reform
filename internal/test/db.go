@@ -1,4 +1,5 @@
-package internal
+// Package test provides shared testing utilities.
+package test
 
 import (
 	"database/sql"

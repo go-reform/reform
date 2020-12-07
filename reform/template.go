@@ -149,7 +149,7 @@ var (
 	initTemplate = template.Must(template.New("init").Parse(`
 func init() {
 	{{- range $i, $sd := . }}
-	parse.AssertUpToDate(&{{ $sd.TableVar }}.s, new({{ $sd.Type }}))
+	parse.Init(&{{ $sd.TableVar }}.s, new({{ $sd.Type }}))
 	{{- end }}
 }
 `))

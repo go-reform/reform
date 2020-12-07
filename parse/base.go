@@ -7,6 +7,7 @@ package parse // import "gopkg.in/reform.v1/parse"
 
 import (
 	"fmt"
+	"reflect"
 	"strconv"
 	"strings"
 )
@@ -17,7 +18,7 @@ type FieldInfo struct {
 	Type   string // field type as defined in source file, e.g. string; always present for primary key, may be absent otherwise
 	Column string // SQL database column name from "reform:" struct field tag, e.g. name
 
-	// TODO Kind reflect.Kind // underlying type; set only by runtime parser
+	Kind reflect.Kind // underlying type; set only by runtime parser
 }
 
 // fieldInfoInSync returns true if FieldInfo fields that are set by both file and runtime parser are equal.
@@ -129,9 +130,10 @@ func (s *StructInfo) PKField() FieldInfo {
 	return s.Fields[s.PKFieldIndex]
 }
 
-// AssertUpToDate checks that given StructInfo matches given object.
-// It is used during program initialization to check that generated files are up-to-date.
-func AssertUpToDate(si *StructInfo, obj interface{}) {
+// Init checks that given generated StructInfo matches object's runtime information
+// (those checking that generated file is up-to-date),
+// then adds information from the runtime parser.
+func Init(si *StructInfo, obj interface{}) {
 	msg := fmt.Sprintf(`reform:
 		%s struct information is not up-to-date.
 		Typically this means that %s type definition was changed, but 'reform' command / 'go generate' was not run.
@@ -144,9 +146,14 @@ func AssertUpToDate(si *StructInfo, obj interface{}) {
 	if !structInfoInSync(si, si2) {
 		panic(msg)
 	}
+
+	// set runtime fields
+	for i := range si.Fields {
+		si.Fields[i].Kind = si2.Fields[i].Kind
+	}
 }
 
-// parseStructFieldTag is used by both file and runtime parsers
+// parseStructFieldTag is used by both file and runtime parsers.
 func parseStructFieldTag(tag string) (sqlName string, isPK bool) {
 	parts := strings.Split(tag, ",")
 	if len(parts) == 0 || len(parts) > 2 {
@@ -166,7 +173,7 @@ func parseStructFieldTag(tag string) (sqlName string, isPK bool) {
 	return
 }
 
-// checkFields is used by both file and runtime parsers
+// checkFields is used by both file and runtime parsers.
 func checkFields(res *StructInfo) error {
 	if len(res.Fields) == 0 {
 		return fmt.Errorf(`reform: %s has no fields with "reform:" tag, it is not allowed`, res.Type)

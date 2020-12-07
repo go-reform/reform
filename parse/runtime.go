@@ -84,6 +84,7 @@ func Object(obj interface{}, schema, table string) (res *StructInfo, err error) 
 			Name:   f.Name,
 			Type:   typ,
 			Column: column,
+			Kind:   f.Type.Kind(),
 		})
 		if isPK {
 			res.PKFieldIndex = n

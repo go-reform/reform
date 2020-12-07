@@ -96,7 +96,8 @@ func (q *Querier) insert(str Struct, columns []string, values []interface{}) err
 			}
 
 			// TODO optimize to avoid using reflection
-			record.SetPK(id) //nolint:staticcheck
+			// record.SetPK(id)
+			SetPK(record, id) //nolint:staticcheck
 		}
 		return nil
 

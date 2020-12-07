@@ -8,7 +8,7 @@ import (
 	"sync"
 	"time"
 
-	sqlite3Driver "github.com/mattn/go-sqlite3"
+	sqlite3Driver "github.com/mattn/go-sqlite3" // TODO remove that dependency from that package
 
 	"gopkg.in/reform.v1"
 	"gopkg.in/reform.v1/dialects"

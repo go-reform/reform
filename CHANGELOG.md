@@ -1,5 +1,12 @@
 # Changelog
 
+## v1.5.0 (2020-12-08, https://github.com/go-reform/reform/milestones/v1.5.0)
+
+* Generated code now passes Go 1.15's `go vet`. See https://github.com/go-reform/reform/issues/245
+and https://github.com/go-reform/reform/issues/269.
+* Removed hard-coded dependency on sqlite3 package.
+* Updated dependencies and testing infrastructure.
+
 ## v1.4.0 (2020-07-29, https://github.com/go-reform/reform/milestones/v1.4.0)
 
 * Go 1.13+ is now required.

@@ -96,6 +96,7 @@ func (q *Querier) insert(str Struct, columns []string, values []interface{}) err
 			}
 
 			// TODO optimize to avoid using reflection
+			// https://github.com/go-reform/reform/issues/269
 			// record.SetPK(id)
 			SetPK(record, id) //nolint:staticcheck
 		}

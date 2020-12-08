@@ -64,7 +64,7 @@ test-db-init:
 
 # run integration tests
 test-db:
-	# TODO remove that hack in reform 1.5
+	# TODO remove that hack in reform 1.6
 	# https://github.com/go-reform/reform/issues/151
 	# https://github.com/go-reform/reform/issues/157
 	cat \

@@ -1,6 +1,6 @@
 module gopkg.in/reform.v1
 
-go 1.13
+go 1.14
 
 require (
 	github.com/AlekSi/pointer v1.1.0

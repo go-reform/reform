@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.6.0 (not released yet)
+
+* Go 1.14+ is now required.
+
 ## v1.5.0 (2020-12-08, https://github.com/go-reform/reform/milestones/v1.5.0)
 
 * Generated code now passes Go 1.15's `go vet`. See https://github.com/go-reform/reform/issues/245

@@ -43,6 +43,3 @@ issues:
     - path: internal/test/models/
       linters:
         - golint
-    - path: _test\.go
-      linters:
-        - unused       # very annoying false positive: https://github.com/golangci/golangci-lint/issues/791

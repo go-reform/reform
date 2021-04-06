@@ -16,9 +16,12 @@ linters:
   disable:
     - goerr113     # reform v1 should not wrap errors to keep SemVer compatibility
     - gomnd        # too annoying
+    - interfacer   # deprecated
     - lll          # too annoying
+    - maligned     # deprecated
     - nlreturn     # too annoying
-    - testpackage  # too annoying
+    - scopelint    # deprecated
+    - wrapcheck    # reform v1 should not wrap errors to keep SemVer compatibility
     - wsl          # too annoying
 
 issues:
@@ -42,4 +45,3 @@ issues:
       linters:
         - funlen       # tests may be long
         - testpackage  # senseless
-        - unused       # very annoying false positive: https://github.com/golangci/golangci-lint/issues/791

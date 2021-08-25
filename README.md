@@ -31,7 +31,7 @@ Notes:
 
 ## Quickstart
 
-1. Make sure you are using Go 1.14+, and Go modules support is enabled.
+1. Make sure you are using Go 1.15+, and Go modules support is enabled.
    Install or update `reform` package, `reform` and `reform-db` commands with:
     ```
     go get -v gopkg.in/reform.v1/...

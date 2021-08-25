@@ -1,3 +1,4 @@
+//go:build tools
 // +build tools
 
 package tools // import "gopkg.in/reform.v1/tools"

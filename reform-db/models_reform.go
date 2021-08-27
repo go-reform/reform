@@ -401,7 +401,7 @@ var sqliteTableInfoView = &sqliteTableInfoViewType{
 			{Name: "Type", Type: "string", Column: "type"},
 			{Name: "NotNull", Type: "bool", Column: "notnull"},
 			{Name: "DefaultValue", Type: "*string", Column: "dflt_value"},
-			{Name: "PK", Type: "bool", Column: "pk"},
+			{Name: "PK", Type: "int", Column: "pk"},
 		},
 		PKFieldIndex: -1,
 	},

@@ -29,3 +29,10 @@ CREATE TABLE constraints (
   id varchar NOT NULL PRIMARY KEY,
   UNIQUE (i)
 );
+
+CREATE TABLE composite_pk (
+  i integer NOT NULL,
+  name varchar NOT NULL,
+  j varchar NOT NULL,
+  PRIMARY KEY (i, j)
+);

@@ -13,23 +13,25 @@ import (
 func (s *ReformDBSuite) TestInit() {
 	good, err := parse.File("../internal/test/models/good.go")
 	s.Require().NoError(err)
-	s.Require().Len(good, 6)
+	s.Require().Len(good, 7)
 
 	people := good[0]
 	projects := good[1]
 	personProject := good[2]
 	idOnly := good[3]
 	constraints := good[4]
+	compositePK := good[5]
 
 	// patch difference we don't handle
-	people.Type = strings.Replace(people.Type, "Person", "People", -1)
-	projects.Type = strings.Replace(projects.Type, "Project", "Projects", -1)
+	people.Type = strings.ReplaceAll(people.Type, "Person", "People")
+	projects.Type = strings.ReplaceAll(projects.Type, "Project", "Projects")
 	if s.db.Dialect == sqlite3.Dialect {
-		people.Fields[0].Type = strings.Replace(people.Fields[0].Type, "int32", "int64", -1)
-		people.Fields[1].Type = strings.Replace(people.Fields[1].Type, "int32", "int64", -1)
-		personProject.Fields[0].Type = strings.Replace(personProject.Fields[0].Type, "int32", "int64", -1)
-		idOnly.Fields[0].Type = strings.Replace(idOnly.Fields[0].Type, "int32", "int64", -1)
-		constraints.Fields[0].Type = strings.Replace(constraints.Fields[0].Type, "int32", "int64", -1)
+		people.Fields[0].Type = strings.ReplaceAll(people.Fields[0].Type, "int32", "int64")
+		people.Fields[1].Type = strings.ReplaceAll(people.Fields[1].Type, "int32", "int64")
+		personProject.Fields[0].Type = strings.ReplaceAll(personProject.Fields[0].Type, "int32", "int64")
+		idOnly.Fields[0].Type = strings.ReplaceAll(idOnly.Fields[0].Type, "int32", "int64")
+		constraints.Fields[0].Type = strings.ReplaceAll(constraints.Fields[0].Type, "int32", "int64")
+		compositePK.Fields[0].Type = strings.ReplaceAll(compositePK.Fields[0].Type, "int32", "int64")
 	}
 
 	dir, err := ioutil.TempDir("", "ReformDBTestInit")
@@ -40,7 +42,7 @@ func (s *ReformDBSuite) TestInit() {
 
 	fis, err := ioutil.ReadDir(dir)
 	s.Require().NoError(err)
-	s.Require().Len(fis, 5)
+	s.Require().Len(fis, 6)
 
 	ff := filepath.Join(dir, "people.go")
 	actual, err := parse.File(ff)
@@ -71,6 +73,12 @@ func (s *ReformDBSuite) TestInit() {
 	s.Require().NoError(err)
 	s.Require().Len(actual, 1)
 	s.Require().Equal(constraints, actual[0])
+
+	ff = filepath.Join(dir, "composite_pk.go")
+	actual, err = parse.File(ff)
+	s.Require().NoError(err)
+	s.Require().Len(actual, 1)
+	s.Require().Equal(compositePK, actual[0])
 
 	err = os.RemoveAll(dir)
 	s.Require().NoError(err)

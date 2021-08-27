@@ -118,6 +118,13 @@ type Constraints struct {
 	ID string `reform:"id,pk"`
 }
 
+//reform:composite_pk
+type CompositePk struct {
+	I    int32  `reform:"i"`
+	Name string `reform:"name"`
+	J    string `reform:"j"`
+}
+
 //reform:legacy.people
 type LegacyPerson struct {
 	ID   int32   `reform:"id,pk"`

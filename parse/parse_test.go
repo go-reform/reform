@@ -17,8 +17,9 @@ import (
 //nolint:gochecknoglobals
 var (
 	person = StructInfo{
-		Type:    "Person",
-		SQLName: "people",
+		Type:      "Person",
+		SQLSchema: "",
+		SQLName:   "people",
 		Fields: []FieldInfo{
 			{Name: "ID", Type: "int32", Column: "id"},
 			{Name: "GroupID", Type: "*int32", Column: "group_id"},
@@ -31,8 +32,9 @@ var (
 	}
 
 	project = StructInfo{
-		Type:    "Project",
-		SQLName: "projects",
+		Type:      "Project",
+		SQLSchema: "",
+		SQLName:   "projects",
 		Fields: []FieldInfo{
 			{Name: "Name", Type: "string", Column: "name"},
 			{Name: "ID", Type: "string", Column: "id"},
@@ -43,8 +45,9 @@ var (
 	}
 
 	personProject = StructInfo{
-		Type:    "PersonProject",
-		SQLName: "person_project",
+		Type:      "PersonProject",
+		SQLSchema: "",
+		SQLName:   "person_project",
 		Fields: []FieldInfo{
 			{Name: "PersonID", Type: "int32", Column: "person_id"},
 			{Name: "ProjectID", Type: "string", Column: "project_id"},
@@ -52,9 +55,20 @@ var (
 		PKFieldIndex: -1,
 	}
 
+	idOnly = StructInfo{
+		Type:      "IDOnly",
+		SQLSchema: "",
+		SQLName:   "id_only",
+		Fields: []FieldInfo{
+			{Name: "ID", Type: "int32", Column: "id"},
+		},
+		PKFieldIndex: 0,
+	}
+
 	constraints = StructInfo{
-		Type:    "Constraints",
-		SQLName: "constraints",
+		Type:      "Constraints",
+		SQLSchema: "",
+		SQLName:   "constraints",
 		Fields: []FieldInfo{
 			{Name: "I", Type: "int32", Column: "i"},
 			{Name: "ID", Type: "string", Column: "id"},
@@ -62,13 +76,16 @@ var (
 		PKFieldIndex: 1,
 	}
 
-	idOnly = StructInfo{
-		Type:    "IDOnly",
-		SQLName: "id_only",
+	compositePk = StructInfo{
+		Type:      "CompositePk",
+		SQLSchema: "",
+		SQLName:   "composite_pk",
 		Fields: []FieldInfo{
-			{Name: "ID", Type: "int32", Column: "id"},
+			{Name: "I", Type: "int32", Column: "i"},
+			{Name: "Name", Type: "string", Column: "name"},
+			{Name: "J", Type: "string", Column: "j"},
 		},
-		PKFieldIndex: 0,
+		PKFieldIndex: -1,
 	}
 
 	legacyPerson = StructInfo{
@@ -83,8 +100,9 @@ var (
 	}
 
 	extra = StructInfo{
-		Type:    "Extra",
-		SQLName: "extra",
+		Type:      "Extra",
+		SQLSchema: "",
+		SQLName:   "extra",
 		Fields: []FieldInfo{
 			{Name: "ID", Type: "Integer", Column: "id"},
 			{Name: "Name", Type: "*String", Column: "name"},
@@ -103,8 +121,9 @@ var (
 	}
 
 	notExported = StructInfo{
-		Type:    "notExported",
-		SQLName: "not_exported",
+		Type:      "notExported",
+		SQLSchema: "",
+		SQLName:   "not_exported",
 		Fields: []FieldInfo{
 			{Name: "ID", Type: "string", Column: "id"},
 		},
@@ -115,13 +134,14 @@ var (
 func TestFileGood(t *testing.T) {
 	s, err := File(filepath.FromSlash("../internal/test/models/good.go"))
 	assert.NoError(t, err)
-	require.Len(t, s, 6)
+	require.Len(t, s, 7)
 	assert.Equal(t, person, s[0])
 	assert.Equal(t, project, s[1])
 	assert.Equal(t, personProject, s[2])
 	assert.Equal(t, idOnly, s[3])
 	assert.Equal(t, constraints, s[4])
-	assert.Equal(t, legacyPerson, s[5])
+	assert.Equal(t, compositePk, s[5])
+	assert.Equal(t, legacyPerson, s[6])
 }
 
 func TestFileExtra(t *testing.T) {
@@ -177,6 +197,10 @@ func TestObjectGood(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, &constraints, s)
 
+	s, err = Object(new(models.CompositePk), "", "composite_pk")
+	assert.NoError(t, err)
+	assert.Equal(t, &compositePk, s)
+
 	s, err = Object(new(models.LegacyPerson), "legacy", "people")
 	assert.NoError(t, err)
 	assert.Equal(t, &legacyPerson, s)
@@ -216,7 +240,11 @@ func TestObjectBogus(t *testing.T) {
 }
 
 func TestHelpersGood(t *testing.T) {
+	t.Parallel()
+
 	t.Run("person", func(t *testing.T) {
+		t.Parallel()
+
 		assert.Equal(t, strings.TrimSpace(`
 parse.StructInfo{
 	Type: "Person",
@@ -246,6 +274,8 @@ parse.StructInfo{
 	})
 
 	t.Run("project", func(t *testing.T) {
+		t.Parallel()
+
 		assert.Equal(t, strings.TrimSpace(`
 parse.StructInfo{
 	Type: "Project",
@@ -271,6 +301,8 @@ parse.StructInfo{
 	})
 
 	t.Run("personProject", func(t *testing.T) {
+		t.Parallel()
+
 		assert.Equal(t, strings.TrimSpace(`
 parse.StructInfo{
 	Type: "PersonProject",
@@ -290,7 +322,30 @@ parse.StructInfo{
 		assert.False(t, personProject.IsTable())
 	})
 
+	t.Run("idOnly", func(t *testing.T) {
+		t.Parallel()
+
+		assert.Equal(t, strings.TrimSpace(`
+parse.StructInfo{
+	Type: "IDOnly",
+	SQLName: "id_only",
+	Fields: []parse.FieldInfo{
+		{Name: "ID", Type: "int32", Column: "id"},
+	},
+	PKFieldIndex: 0,
+}`), idOnly.GoString())
+		assert.Equal(t, []string{"id"}, idOnly.Columns())
+		assert.Equal(t, strings.TrimSpace(`
+[]string{
+	"id",
+}`), idOnly.ColumnsGoString())
+		assert.True(t, idOnly.IsTable())
+		assert.Equal(t, FieldInfo{Name: "ID", Type: "int32", Column: "id"}, idOnly.PKField())
+	})
+
 	t.Run("constraints", func(t *testing.T) {
+		t.Parallel()
+
 		assert.Equal(t, strings.TrimSpace(`
 parse.StructInfo{
 	Type: "Constraints",
@@ -311,26 +366,33 @@ parse.StructInfo{
 		assert.Equal(t, FieldInfo{Name: "ID", Type: "string", Column: "id"}, constraints.PKField())
 	})
 
-	t.Run("idOnly", func(t *testing.T) {
+	t.Run("compositePk", func(t *testing.T) {
+		t.Parallel()
+
 		assert.Equal(t, strings.TrimSpace(`
 parse.StructInfo{
-	Type: "IDOnly",
-	SQLName: "id_only",
+	Type: "CompositePk",
+	SQLName: "composite_pk",
 	Fields: []parse.FieldInfo{
-		{Name: "ID", Type: "int32", Column: "id"},
+		{Name: "I", Type: "int32", Column: "i"},
+		{Name: "Name", Type: "string", Column: "name"},
+		{Name: "J", Type: "string", Column: "j"},
 	},
-	PKFieldIndex: 0,
-}`), idOnly.GoString())
-		assert.Equal(t, []string{"id"}, idOnly.Columns())
+	PKFieldIndex: -1,
+}`), compositePk.GoString())
+		assert.Equal(t, []string{"i", "name", "j"}, compositePk.Columns())
 		assert.Equal(t, strings.TrimSpace(`
 []string{
-	"id",
-}`), idOnly.ColumnsGoString())
-		assert.True(t, idOnly.IsTable())
-		assert.Equal(t, FieldInfo{Name: "ID", Type: "int32", Column: "id"}, idOnly.PKField())
+	"i",
+	"name",
+	"j",
+}`), compositePk.ColumnsGoString())
+		assert.False(t, compositePk.IsTable())
 	})
 
 	t.Run("legacyPerson", func(t *testing.T) {
+		t.Parallel()
+
 		assert.Equal(t, strings.TrimSpace(`
 parse.StructInfo{
 	Type: "LegacyPerson",

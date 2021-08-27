@@ -81,12 +81,7 @@ test-db:
 	go test -count=1 -covermode=count -coverprofile=$(REFORM_TEST_COVER)_reform-db.cover gopkg.in/reform.v1/reform-db
 
 	# run main tests with -race
-	# FIXME skipped for go-mssqldb driver:
-	# https://github.com/denisenkom/go-mssqldb/issues/549
-	# https://github.com/denisenkom/go-mssqldb/issues/558
-	if [ "$(REFORM_TEST_DATABASE)" != "mssql" ]; then \
-		go test -count=1 -race; \
-	fi
+	go test -count=1 -race
 
 	make test-db-init
 

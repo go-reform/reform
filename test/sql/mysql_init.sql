@@ -43,3 +43,10 @@ CREATE TABLE constraints (
   PRIMARY KEY (id),
   UNIQUE (i)
 );
+
+CREATE TABLE composite_pk (
+  i int NOT NULL AUTO_INCREMENT,
+  name varchar(255) NOT NULL,
+  j varchar(255) NOT NULL,
+  PRIMARY KEY (i, j)
+);

@@ -32,6 +32,13 @@ CREATE TABLE constraints (
   UNIQUE (i)
 );
 
+CREATE TABLE composite_pk (
+  i serial,
+  name varchar NOT NULL,
+  j varchar NOT NULL,
+  PRIMARY KEY (i, j)
+);
+
 CREATE SCHEMA legacy;
 
 CREATE TABLE legacy.people (

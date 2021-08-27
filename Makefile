@@ -196,7 +196,7 @@ lint:                                    ## Run linters.
 
 ci-check-changes:
 	# Revert version change in go.mod.
-	go mod edit -go=1.15
+	go mod edit -go=1.17
 
 	# Break job if any files were changed during its run (code generation, etc), except go.sum.
 	# `go mod tidy` could remove old checksums from that file, and that's okay on CI,

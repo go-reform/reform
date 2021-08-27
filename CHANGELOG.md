@@ -2,7 +2,7 @@
 
 ## v1.6.0 (not released yet)
 
-* Go 1.15+ is now required.
+* Go 1.17+ is now required.
 
 ## v1.5.1 (2021-08-27, https://github.com/go-reform/reform/milestones/v1.5.1)
 

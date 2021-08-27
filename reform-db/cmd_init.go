@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"flag"
 	"fmt"
 	"go/build"
@@ -66,7 +67,7 @@ func maybePointer(typ string, nullable bool) string {
 // convertName converts snake_case name of table or column to CamelCase name of type or field.
 // It also handles "_id" to "ID" conversion as a typical special case.
 func convertName(sqlName string) string {
-	fields := strings.Fields(strings.Replace(sqlName, "_", " ", -1))
+	fields := strings.Fields(strings.ReplaceAll(sqlName, "_", " "))
 	res := make([]string, len(fields))
 	for i, f := range fields {
 		if f == "id" {
@@ -101,40 +102,26 @@ func getPrimaryKeyColumn(db *reform.DB, catalog, schema, tableName string) *keyC
 			ORDER BY ordinal_position DESC`,
 		strings.Join(using, " AND "), db.Placeholder(1), db.Placeholder(2), db.Placeholder(3),
 	)
-	rows, err := db.Query(q, catalog, schema, tableName)
-	if err != nil {
-		logger.Fatalf("%s", err)
-	}
-	defer rows.Close() //nolint:errcheck
 
+	// get only the first row (with the maximum ordinal_position)
+	row := db.QueryRow(q, catalog, schema, tableName)
 	var key keyColumnUsage
-	var count int
-	for {
-		if err = db.NextRow(&key, rows); err != nil {
-			break
-		}
-		count++
-		logger.Debugf("%s", key)
-	}
-	if err != reform.ErrNoRows {
-		logger.Fatalf("%s", err)
-	}
-	switch count {
-	case 0:
-		return nil
-	case 1:
-		if key.OrdinalPosition > 1 {
-			logger.Printf(
-				"Composite primary keys are not supported (found %d columns), skipping it for table %s.",
-				key.OrdinalPosition, tableName,
-			)
+	if err := row.Scan(key.Pointers()...); err != nil {
+		if errors.Is(err, reform.ErrNoRows) {
 			return nil
 		}
-		return &key
-	default:
-		logger.Fatalf("Too many rows found. Please report this bug.")
+		logger.Fatalf("%s", err)
+	}
+
+	if key.OrdinalPosition > 1 {
+		logger.Printf(
+			"Composite primary keys are not supported (found %d columns), skipping it for table %s.",
+			key.OrdinalPosition, tableName,
+		)
 		return nil
 	}
+
+	return &key
 }
 
 // initModelsInformationSchema returns structs from database with information_schema.
@@ -224,7 +211,7 @@ func cmdInit(db *reform.DB, dir string) {
 		packageName = pack.Name
 	} else {
 		s := strings.Split(filepath.Base(dir), ".")[0]
-		packageName = strings.Replace(s, "-", "_", -1)
+		packageName = strings.ReplaceAll(s, "-", "_")
 	}
 
 	for _, s := range structs {

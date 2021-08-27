@@ -30,5 +30,12 @@ CREATE TABLE constraints (
   UNIQUE ([i])
 );
 
+CREATE TABLE composite_pk (
+  [i] int identity(1, 1) NOT NULL,
+  [name] varchar(255) NOT NULL,
+  [j] varchar(255) NOT NULL,
+  PRIMARY KEY ([i], [j])
+);
+
 -- to allow insert test data with IDs
 SET IDENTITY_INSERT people ON;

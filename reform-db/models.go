@@ -72,5 +72,5 @@ type sqliteTableInfo struct {
 	Type         string  `reform:"type"`
 	NotNull      bool    `reform:"notnull"`
 	DefaultValue *string `reform:"dflt_value"`
-	PK           bool    `reform:"pk"`
+	PK           int     `reform:"pk"`
 }

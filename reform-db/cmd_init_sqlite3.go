@@ -105,8 +105,13 @@ func initModelsSQLite3(db *reform.DB) (structs []StructData) {
 			if err = db.NextRow(&column, rows); err != nil {
 				break
 			}
-			if column.PK {
+			switch column.PK {
+			case 0: // not PK
+				// nothing
+			case 1:
 				str.PKFieldIndex = len(str.Fields)
+			default: // composite PK
+				str.PKFieldIndex = -1
 			}
 			typ, pack, comment := goTypeSQLite3(column.Type, !column.NotNull)
 			if pack != "" {

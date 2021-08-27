@@ -599,6 +599,91 @@ var (
 	_ fmt.Stringer  = (*Constraints)(nil)
 )
 
+type compositePkViewType struct {
+	s parse.StructInfo
+	z []interface{}
+}
+
+// Schema returns a schema name in SQL database ("").
+func (v *compositePkViewType) Schema() string {
+	return v.s.SQLSchema
+}
+
+// Name returns a view or table name in SQL database ("composite_pk").
+func (v *compositePkViewType) Name() string {
+	return v.s.SQLName
+}
+
+// Columns returns a new slice of column names for that view or table in SQL database.
+func (v *compositePkViewType) Columns() []string {
+	return []string{
+		"i",
+		"name",
+		"j",
+	}
+}
+
+// NewStruct makes a new struct for that view or table.
+func (v *compositePkViewType) NewStruct() reform.Struct {
+	return new(CompositePk)
+}
+
+// CompositePkView represents composite_pk view or table in SQL database.
+var CompositePkView = &compositePkViewType{
+	s: parse.StructInfo{
+		Type:    "CompositePk",
+		SQLName: "composite_pk",
+		Fields: []parse.FieldInfo{
+			{Name: "I", Type: "int32", Column: "i"},
+			{Name: "Name", Type: "string", Column: "name"},
+			{Name: "J", Type: "string", Column: "j"},
+		},
+		PKFieldIndex: -1,
+	},
+	z: new(CompositePk).Values(),
+}
+
+// String returns a string representation of this struct or record.
+func (s CompositePk) String() string {
+	res := make([]string, 3)
+	res[0] = "I: " + reform.Inspect(s.I, true)
+	res[1] = "Name: " + reform.Inspect(s.Name, true)
+	res[2] = "J: " + reform.Inspect(s.J, true)
+	return strings.Join(res, ", ")
+}
+
+// Values returns a slice of struct or record field values.
+// Returned interface{} values are never untyped nils.
+func (s *CompositePk) Values() []interface{} {
+	return []interface{}{
+		s.I,
+		s.Name,
+		s.J,
+	}
+}
+
+// Pointers returns a slice of pointers to struct or record fields.
+// Returned interface{} values are never untyped nils.
+func (s *CompositePk) Pointers() []interface{} {
+	return []interface{}{
+		&s.I,
+		&s.Name,
+		&s.J,
+	}
+}
+
+// View returns View object for that struct.
+func (s *CompositePk) View() reform.View {
+	return CompositePkView
+}
+
+// check interfaces
+var (
+	_ reform.View   = CompositePkView
+	_ reform.Struct = (*CompositePk)(nil)
+	_ fmt.Stringer  = (*CompositePk)(nil)
+)
+
 type legacyPersonTableType struct {
 	s parse.StructInfo
 	z []interface{}
@@ -727,5 +812,6 @@ func init() {
 	parse.AssertUpToDate(&PersonProjectView.s, new(PersonProject))
 	parse.AssertUpToDate(&IDOnlyTable.s, new(IDOnly))
 	parse.AssertUpToDate(&ConstraintsTable.s, new(Constraints))
+	parse.AssertUpToDate(&CompositePkView.s, new(CompositePk))
 	parse.AssertUpToDate(&LegacyPersonTable.s, new(LegacyPerson))
 }

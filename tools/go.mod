@@ -8,5 +8,5 @@ require (
 	github.com/quasilyte/go-consistent v0.0.0-20200404105227-766526bf1e96
 	github.com/reviewdog/reviewdog v0.11.0
 	golang.org/x/sys v0.0.0-20210823070655-63515b42dcdf // indirect; for newer macOS until golangci-lint is updated
-	golang.org/x/tools v0.1.0
+	golang.org/x/tools v0.1.5
 )

@@ -31,6 +31,21 @@ services:
       timeout: 1s
       retries: 1
 
+  mariadb:
+    image: ${REFORM_MARIADB_IMAGE:-mariadb:10.5}
+    container_name: reform_mariadb
+    environment:
+      - TZ=Europe/Moscow
+      - MARIADB_ALLOW_EMPTY_ROOT_PASSWORD=1
+      - MARIADB_ROOT_HOST=%
+    ports:
+      - 127.0.0.1:6033:3306 # Would be otherwise in conflict with the mysql container
+    healthcheck:
+      test: echo 'SELECT 1' | mysql -P 6033
+      interval: 1s
+      timeout: 1s
+      retries: 1
+
   mssql:
     image: ${REFORM_MSSQL_IMAGE:-mcr.microsoft.com/mssql/server:2017-latest}
     container_name: reform_mssql

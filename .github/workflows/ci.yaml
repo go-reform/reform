@@ -26,11 +26,11 @@ jobs:
           - 1.17.x
           - tip
         images:
-          - { postgres: "postgres:9.5", mariadb: "10.2", mysql: "mysql:5.6", mssql: "mcr.microsoft.com/mssql/server:2017-latest" }
-          - { postgres: "postgres:9.6", mariadb: "10.3", mysql: "mysql:5.7", mssql: "mcr.microsoft.com/mssql/server:2019-latest" }
-          - { postgres: "postgres:10", mariadb: "10.4", mysql: "mysql:8.0" }
-          - { postgres: "postgres:11", mariadb: "10.5" }
-          - { postgres: "postgres:12", mariadb: "10.6" }
+          - { postgres: "postgres:9.5", mariadb: "mariadb:10.2", mysql: "mysql:5.6", mssql: "mcr.microsoft.com/mssql/server:2017-latest" }
+          - { postgres: "postgres:9.6", mariadb: "mariadb:10.3", mysql: "mysql:5.7", mssql: "mcr.microsoft.com/mssql/server:2019-latest" }
+          - { postgres: "postgres:10", mariadb: "mariadb:10.4", mysql: "mysql:8.0" }
+          - { postgres: "postgres:11", mariadb: "mariadb:10.5" }
+          - { postgres: "postgres:12", mariadb: "mariadb:10.6" }
           - { postgres: "postgres:13" }
 
     runs-on: ${{ matrix.os }}

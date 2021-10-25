@@ -3,7 +3,7 @@ module gopkg.in/reform.v1
 go 1.17
 
 require (
-	github.com/AlekSi/pointer v1.1.0
+	github.com/AlekSi/pointer v1.2.0
 	github.com/brianvoe/gofakeit v3.18.0+incompatible
 	github.com/denisenkom/go-mssqldb v0.10.0
 	github.com/go-sql-driver/mysql v1.6.0

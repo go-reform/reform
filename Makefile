@@ -110,16 +110,6 @@ pgx: export REFORM_TEST_COVER=pgx
 pgx:
 	make test-db
 
-# run integration tests for MariaDB (traditional SQL mode + interpolateParams)
-mariadb-traditional: export REFORM_TEST_DATABASE = mysql
-mariadb-traditional: export REFORM_TEST_DRIVER = mysql
-mariadb-traditional: export REFORM_TEST_ADMIN_SOURCE = root@tcp(localhost:6033)/mysql
-mariadb-traditional: export REFORM_TEST_INIT_SOURCE = root@tcp(localhost:6033)/reform-database?parseTime=true&clientFoundRows=true&time_zone='UTC'&sql_mode='ANSI'&multiStatements=true
-mariadb-traditional: export REFORM_TEST_SOURCE = root@tcp(localhost:6033)/reform-database?parseTime=true&clientFoundRows=true&time_zone='America%2FNew_York'&sql_mode='TRADITIONAL'&interpolateParams=true
-mariadb-traditional: export REFORM_TEST_COVER=mysql
-mariadb-traditional:
-	make test-db
-
 # run integration tests for MariaDB (ANSI SQL mode)
 mariadb: export REFORM_TEST_DATABASE = mysql
 mariadb: export REFORM_TEST_DRIVER = mysql
@@ -130,14 +120,14 @@ mariadb: export REFORM_TEST_COVER=mysql
 mariadb:
 	make test-db
 
-# run integration tests for MySQL (traditional SQL mode + interpolateParams)
-mysql-traditional: export REFORM_TEST_DATABASE = mysql
-mysql-traditional: export REFORM_TEST_DRIVER = mysql
-mysql-traditional: export REFORM_TEST_ADMIN_SOURCE = root@/mysql
-mysql-traditional: export REFORM_TEST_INIT_SOURCE = root@/reform-database?parseTime=true&clientFoundRows=true&time_zone='UTC'&sql_mode='ANSI'&multiStatements=true
-mysql-traditional: export REFORM_TEST_SOURCE = root@/reform-database?parseTime=true&clientFoundRows=true&time_zone='America%2FNew_York'&sql_mode='TRADITIONAL'&interpolateParams=true
-mysql-traditional: export REFORM_TEST_COVER=mysql-traditional
-mysql-traditional:
+# run integration tests for MariaDB (traditional SQL mode + interpolateParams)
+mariadb-traditional: export REFORM_TEST_DATABASE = mysql
+mariadb-traditional: export REFORM_TEST_DRIVER = mysql
+mariadb-traditional: export REFORM_TEST_ADMIN_SOURCE = root@tcp(localhost:6033)/mysql
+mariadb-traditional: export REFORM_TEST_INIT_SOURCE = root@tcp(localhost:6033)/reform-database?parseTime=true&clientFoundRows=true&time_zone='UTC'&sql_mode='ANSI'&multiStatements=true
+mariadb-traditional: export REFORM_TEST_SOURCE = root@tcp(localhost:6033)/reform-database?parseTime=true&clientFoundRows=true&time_zone='America%2FNew_York'&sql_mode='TRADITIONAL'&interpolateParams=true
+mariadb-traditional: export REFORM_TEST_COVER=mysql
+mariadb-traditional:
 	make test-db
 
 # run integration tests for MySQL (ANSI SQL mode)

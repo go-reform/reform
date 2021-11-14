@@ -6,7 +6,7 @@ import (
 	"testing"
 
 	"github.com/AlekSi/pointer"
-	"github.com/brianvoe/gofakeit"
+	"github.com/brianvoe/gofakeit/v6"
 	"github.com/jackc/pgx"
 	"github.com/jackc/pgx/stdlib"
 	"github.com/lib/pq"

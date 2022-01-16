@@ -17,7 +17,6 @@ linters:
     - deadcode
     - depguard
     - goimports
-    - golint
     - gosec
     - govet
     - ineffassign
@@ -33,13 +32,13 @@ issues:
     - "G201: SQL string formatting"
     - "G202: SQL string concatenation"
 
-    # golint - matches database/sql.Result.LastInsertId()
-    # > method LastInsertIdMethod should be LastInsertIDMethod
-    # > type `LastInsertIdMethod` should be `LastInsertIDMethod`
-    # > var `lastInsertIdMethod` should be `lastInsertIDMethod`
-    - "`?LastInsertIdMethod`? should be `?LastInsertIDMethod`?"
+    # # golint - matches database/sql.Result.LastInsertId()
+    # # > method LastInsertIdMethod should be LastInsertIDMethod
+    # # > type `LastInsertIdMethod` should be `LastInsertIDMethod`
+    # # > var `lastInsertIdMethod` should be `lastInsertIDMethod`
+    # - "`?LastInsertIdMethod`? should be `?LastInsertIDMethod`?"
 
-  exclude-rules:
-    - path: internal/test/models/
-      linters:
-        - golint
+  # exclude-rules:
+  #   - path: internal/test/models/
+  #     linters:
+  #       - golint

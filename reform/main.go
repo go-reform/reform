@@ -91,7 +91,7 @@ func processFile(path, file, pack string) error {
 
 func gofmt(path string) {
 	if *gofmtF {
-		cmd := exec.Command("gofmt", "-s", "-w", path) //nolint:gosec
+		cmd := exec.Command("gofmt", "-s", "-w", path)
 		logger.Debugf(strings.Join(cmd.Args, " "))
 		b, err := cmd.CombinedOutput()
 		if err != nil {
@@ -112,7 +112,7 @@ func goformat(filePath string) {
 			logger.Fatalf("go/format formatting error: %s", err)
 		}
 		if !reflect.DeepEqual(in, out) {
-			if err := ioutil.WriteFile(filePath, out, 0644); err != nil { //nolint:gosec
+			if err := ioutil.WriteFile(filePath, out, 0o644); err != nil { //nolint:gosec
 				logger.Fatalf("go/format write error: %s", err)
 			}
 		}

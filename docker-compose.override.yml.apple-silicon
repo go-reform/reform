@@ -1,0 +1,8 @@
+---
+# Rename to `docker-compose.override.yml` to make it work on Apple Silicon Macs.
+
+services:
+  mysql:
+    platform: linux/amd64
+  mssql:
+    image: mcr.microsoft.com/azure-sql-edge

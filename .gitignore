@@ -3,6 +3,8 @@
 
 /bin/
 
+docker-compose.override.yml
+
 *.tmp.sql
 *.sqlite3
 

@@ -6,8 +6,11 @@ help:                           ## Display this help message.
 # SHELL = go run .github/shell.go
 
 init:                                    ## Install development tools.
-	# emulate -modfile flag for older Go
-	make -C tools
+	rm -fr bin
+	go mod tidy -go=1.17 -compat=1.17
+	cd tools && go mod tidy -go=1.17 -compat=1.17
+	go mod verify
+	cd tools && go generate -tags=tools -x
 
 env-up:                                  ## Start development environment.
 	docker-compose up --force-recreate --abort-on-container-exit --renew-anon-volumes --remove-orphans
@@ -202,8 +205,8 @@ ci-check-changes:
 	# `go mod tidy` could remove old checksums from that file, and that's okay on CI,
 	# and actually expected for PRs made by @dependabot.
 	# Checksums of actually used modules are checked by previous CI steps.
-	cd tools && pwd && go mod tidy && git checkout go.sum
-	pwd && go mod tidy && git checkout go.sum
+	cd tools && pwd && go mod tidy -go=1.17 -compat=1.17 && git checkout go.sum
+	pwd && go mod tidy -go=1.17 -compat=1.17 && git checkout go.sum
 	git status
 	git diff --exit-code
 

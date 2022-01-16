@@ -28,12 +28,10 @@ import (
 	. "gopkg.in/reform.v1/internal/test/models"
 )
 
-var (
-	// DB is a global connection pool shared by tests and examples.
-	//
-	// Deprecated: do not add new tests using it as using a global pool makes tests more brittle.
-	DB *reform.DB
-)
+// DB is a global connection pool shared by tests and examples.
+//
+// Deprecated: do not add new tests using it as using a global pool makes tests more brittle.
+var DB *reform.DB
 
 func TestMain(m *testing.M) {
 	flag.Parse()

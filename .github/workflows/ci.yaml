@@ -26,11 +26,11 @@ jobs:
           - 1.17.x
           - tip
         images:
-          - { postgres: "postgres:9.5", mysql: "mysql:5.6", mssql: "mcr.microsoft.com/mssql/server:2017-latest" }
-          - { postgres: "postgres:9.6", mysql: "mysql:5.7", mssql: "mcr.microsoft.com/mssql/server:2019-latest" }
-          - { postgres: "postgres:10",  mysql: "mysql:8.0" }
-          - { postgres: "postgres:11" }
-          - { postgres: "postgres:12" }
+          - { postgres: "postgres:9.5", mariadb: "mariadb:10.2", mysql: "mysql:5.6", mssql: "mcr.microsoft.com/mssql/server:2017-latest" }
+          - { postgres: "postgres:9.6", mariadb: "mariadb:10.3", mysql: "mysql:5.7", mssql: "mcr.microsoft.com/mssql/server:2019-latest" }
+          - { postgres: "postgres:10", mariadb: "mariadb:10.4", mysql: "mysql:8.0" }
+          - { postgres: "postgres:11", mariadb: "mariadb:10.5" }
+          - { postgres: "postgres:12", mariadb: "mariadb:10.6" }
           - { postgres: "postgres:13" }
 
     runs-on: ${{ matrix.os }}
@@ -45,6 +45,7 @@ jobs:
       GOPROXY: "https://proxy.golang.org"
       GORACE: "halt_on_error=1"
       REFORM_POSTGRES_IMAGE: "${{ matrix.images.postgres }}"
+      REFORM_MARIADB_IMAGE: "${{ matrix.images.mariadb }}"
       REFORM_MYSQL_IMAGE: "${{ matrix.images.mysql }}"
       REFORM_MSSQL_IMAGE: "${{ matrix.images.mssql }}"
 
@@ -133,7 +134,7 @@ jobs:
 
       - name: Upload coverage information
         working-directory: ${{ env.WORKDIR }}
-        run: bash <(curl -s https://codecov.io/bash) -f coverage.txt -X fix -e GO_VERSION,REFORM_POSTGRES_IMAGE,REFORM_MYSQL_IMAGE,REFORM_MSSQL_IMAGE
+        run: bash <(curl -s https://codecov.io/bash) -f coverage.txt -X fix -e GO_VERSION,REFORM_POSTGRES_IMAGE,REFORM_MARIADB_IMAGE,REFORM_MYSQL_IMAGE,REFORM_MSSQL_IMAGE
 
       - name: Run debug commands on failure
         if: ${{ failure() }}
@@ -173,6 +174,7 @@ jobs:
       GOPROXY: "https://proxy.golang.org"
       GORACE: "halt_on_error=1"
       REFORM_POSTGRES_IMAGE: "${{ matrix.images.postgres }}"
+      REFORM_MARIADB_IMAGE: "${{ matrix.images.mariadb }}"
       REFORM_MYSQL_IMAGE: "${{ matrix.images.mysql }}"
       REFORM_MSSQL_IMAGE: "${{ matrix.images.mssql }}"
 

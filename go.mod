@@ -4,7 +4,7 @@ go 1.17
 
 require (
 	github.com/AlekSi/pointer v1.2.0
-	github.com/brianvoe/gofakeit/v6 v6.14.3
+	github.com/brianvoe/gofakeit/v6 v6.17.0
 	github.com/denisenkom/go-mssqldb v0.10.0
 	github.com/go-sql-driver/mysql v1.6.0
 	github.com/jackc/pgx v3.6.2+incompatible

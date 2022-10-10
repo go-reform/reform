@@ -58,7 +58,7 @@ jobs:
           echo "$GOBIN" >> $GITHUB_PATH
 
       - name: Check out code into GOPATH
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3.1.0
         with:
           path: ${{ env.WORKDIR }}
 

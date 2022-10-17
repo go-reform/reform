@@ -52,7 +52,7 @@ jobs:
       # Cache Go modules, build cache, installed packages and GOPATH sources
       # to significantly decreases total CI time. See also cleanup.yaml.
       - name: Enable Go cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3.0.11
         with:
           path: |
             ~/.cache/go-build
@@ -180,7 +180,7 @@ jobs:
       # Cache Go modules, build cache, installed packages and GOPATH sources
       # to significantly decreases total CI time. See also cleanup.yaml.
       - name: Enable Go cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3.0.11
         with:
           path: |
             ~/.cache/go-build

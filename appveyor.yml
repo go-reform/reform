@@ -7,7 +7,6 @@ environment:
   # no `-mod=readonly` to test PRs made by @dependabot;
   # `make ci-check-changes` step below still checks what we need
   GOPATH: c:\gopath
-  GO111MODULE: "on"
   GOPROXY: https://proxy.golang.org
   GORACE: halt_on_error=1
 
@@ -44,12 +43,6 @@ install:
 
 build_script:
   - go mod download
-
-  # check that it is still possible to install reform without modules
-  - env GO111MODULE=off go get -v ./...
-  - reform -version
-  - reform-db -version
-
   - make init
 
 test_script:

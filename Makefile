@@ -1,33 +1,33 @@
-help:                           ## Display this help message.
+help:                    ## Display this help message.
 	@echo "Please use \`make <target>\` where <target> is one of:"
 	@grep '^[a-zA-Z]' $(MAKEFILE_LIST) | \
 		awk -F ':.*?## ' 'NF==2 {printf "  %-26s%s\n", $$1, $$2}'
 
 # SHELL = go run .github/shell.go
 
-init:                                    ## Install development tools.
+init:                    ## Install development tools.
 	rm -fr bin
-	go mod tidy -go=1.17 -compat=1.17
-	cd tools && go mod tidy -go=1.17 -compat=1.17
+	go mod tidy
+	cd tools && go mod tidy
 	go mod verify
 	cd tools && go generate -tags=tools -x
 
-env-up:                                  ## Start development environment.
-	docker-compose up --force-recreate --abort-on-container-exit --renew-anon-volumes --remove-orphans
+env-up:                  ## Start development environment.
+	docker compose up --force-recreate --abort-on-container-exit --renew-anon-volumes --remove-orphans
 
-env-up-detach:                           ## Start development environment in the backgroud.
-	docker-compose up --detach --force-recreate --renew-anon-volumes --remove-orphans
+env-up-detach:           ## Start development environment in the backgroud.
+	docker compose up --detach --force-recreate --renew-anon-volumes --remove-orphans
 	until [ "`docker inspect -f {{.State.Health.Status}} reform_postgres`" = "healthy" ]; do sleep 1; done
 	until [ "`docker inspect -f {{.State.Health.Status}} reform_mysql`" = "healthy" ]; do sleep 1; done
 	until [ "`docker inspect -f {{.State.Health.Status}} reform_mssql`" = "healthy" ]; do sleep 1; done
 
-env-down:                                ## Stop development environment.
-	docker-compose down --volumes --remove-orphans
+env-down:                ## Stop development environment.
+	docker compose down --volumes --remove-orphans
 
-env-mysql:                               ## Run mysql client.
+env-mysql:               ## Run mysql client.
 	docker exec -ti reform_mysql mysql
 
-test:                                    ## Run all tests and gather coverage.
+test:                    ## Run all tests and gather coverage.
 	make test-unit
 
 	make postgres
@@ -189,7 +189,7 @@ merge-cover:
 	bin/gocoverutil -coverprofile=coverage.txt merge *.cover
 	rm -f *.cover
 
-lint:                                    ## Run linters.
+lint:                    ## Run linters.
 	# run required linters for all code
 	bin/golangci-lint run --config=.golangci-required.yml
 
@@ -199,14 +199,14 @@ lint:                                    ## Run linters.
 
 ci-check-changes:
 	# Revert version change in go.mod.
-	go mod tidy -go=1.17 -compat=1.17
+	go mod tidy -go=1.24 -compat=1.23
 
 	# Break job if any files were changed during its run (code generation, etc), except go.sum.
 	# `go mod tidy` could remove old checksums from that file, and that's okay on CI,
 	# and actually expected for PRs made by @dependabot.
 	# Checksums of actually used modules are checked by previous CI steps.
-	cd tools && pwd && go mod tidy -go=1.17 -compat=1.17 && git checkout go.sum
-	pwd && go mod tidy -go=1.17 -compat=1.17 && git checkout go.sum
+	cd tools && pwd && go mod tidy && git checkout go.sum
+	pwd && go mod tidy -go=1.24 -compat=1.23 && git checkout go.sum
 	git status
 	git diff --exit-code
 

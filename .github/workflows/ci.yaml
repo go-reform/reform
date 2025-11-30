@@ -2,7 +2,7 @@
 name: CI
 on:
   schedule:
-    # Saturday 8:00, after cleanup
+    # at 08:00 on Saturday
     - cron: "0 8 * * 6"
   push:
     branches:
@@ -21,18 +21,17 @@ jobs:
       fail-fast: false
       matrix:
         os:
-          - ubuntu-20.04
+          - ubuntu-24.04
         go-version:
-          - 1.17.x
+          - 1.24.x
+          - 1.25.x
           - tip
         images:
-          - { postgres: "postgres:9.5", mysql: "mysql:5.6", mssql: "mcr.microsoft.com/mssql/server:2017-latest" }
-          - { postgres: "postgres:9.6", mysql: "mysql:5.7", mssql: "mcr.microsoft.com/mssql/server:2019-latest" }
-          - { postgres: "postgres:10",  mysql: "mysql:8.0" }
-          - { postgres: "postgres:11" }
-          - { postgres: "postgres:12" }
-          - { postgres: "postgres:13" }
-
+          - { postgres: "postgres:14", mysql: "mysql:8.0", mssql: "mcr.microsoft.com/mssql/server:2017-latest" }
+          - { postgres: "postgres:15", mysql: "mysql:8.4", mssql: "mcr.microsoft.com/mssql/server:2019-latest" }
+          - { postgres: "postgres:16", mysql: "mysql:9",   mssql: "mcr.microsoft.com/mssql/server:2022-latest" }
+          - { postgres: "postgres:17",                     mssql: "mcr.microsoft.com/mssql/server:2025-latest" }
+          - { postgres: "postgres:18" }
     runs-on: ${{ matrix.os }}
 
     env:
@@ -41,7 +40,6 @@ jobs:
       WORKDIR: "${{ github.workspace }}/gopath/src/gopkg.in/reform.v1"
       GOPATH: "${{ github.workspace }}/gopath"
       GOBIN: "${{ github.workspace }}/gopath/bin"
-      GO111MODULE: "on"
       GOPROXY: "https://proxy.golang.org"
       GORACE: "halt_on_error=1"
       REFORM_POSTGRES_IMAGE: "${{ matrix.images.postgres }}"
@@ -52,7 +50,7 @@ jobs:
       # Cache Go modules, build cache, installed packages and GOPATH sources
       # to significantly decreases total CI time. See also cleanup.yaml.
       - name: Enable Go cache
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         with:
           path: |
             ~/.cache/go-build
@@ -63,7 +61,7 @@ jobs:
 
       - name: Set up Go version ${{ matrix.go-version }}
         if: matrix.go-version != 'tip'
-        uses: actions/setup-go@v2
+        uses: actions/setup-go@v6
         with:
           go-version: ${{ matrix.go-version }}
 
@@ -81,13 +79,13 @@ jobs:
         run: echo "GO_VERSION=$(go version)" >> $GITHUB_ENV
 
       - name: Check out code into GOPATH
-        uses: actions/checkout@v2
+        uses: actions/checkout@v6
         with:
           path: ${{ env.WORKDIR }}
 
       - name: Pull Docker images
         working-directory: ${{ env.WORKDIR }}
-        run: docker-compose pull
+        run: docker compose pull
 
       - name: Stop Ubuntu services
         run: sudo systemctl stop mysql
@@ -100,13 +98,6 @@ jobs:
       - name: Download Go modules
         working-directory: ${{ env.WORKDIR }}
         run: go mod download
-
-      - name: Check that it is still possible to install reform without modules
-        working-directory: ${{ env.WORKDIR }}
-        run: |
-          env GO111MODULE=off go get -v -x ./...
-          reform -version
-          reform-db -version
 
       - name: Run init target
         working-directory: ${{ env.WORKDIR }}
@@ -146,7 +137,6 @@ jobs:
           tree -d
           ls -al
           docker --version
-          docker-compose --version
 
   # lint job
   lint:
@@ -157,9 +147,9 @@ jobs:
       fail-fast: false
       matrix:
         os:
-          - ubuntu-20.04
+          - ubuntu-24.04
         go-version:
-          - 1.17.x
+          - 1.25.x
 
     runs-on: ${{ matrix.os }}
 
@@ -169,7 +159,6 @@ jobs:
       WORKDIR: "${{ github.workspace }}/gopath/src/gopkg.in/reform.v1"
       GOPATH: "${{ github.workspace }}/gopath"
       GOBIN: "${{ github.workspace }}/gopath/bin"
-      GO111MODULE: "on"
       GOPROXY: "https://proxy.golang.org"
       GORACE: "halt_on_error=1"
       REFORM_POSTGRES_IMAGE: "${{ matrix.images.postgres }}"
@@ -180,7 +169,7 @@ jobs:
       # Cache Go modules, build cache, installed packages and GOPATH sources
       # to significantly decreases total CI time. See also cleanup.yaml.
       - name: Enable Go cache
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         with:
           path: |
             ~/.cache/go-build
@@ -191,7 +180,7 @@ jobs:
 
       - name: Set up Go version ${{ matrix.go-version }}
         if: matrix.go-version != 'tip'
-        uses: actions/setup-go@v2
+        uses: actions/setup-go@v6
         with:
           go-version: ${{ matrix.go-version }}
 
@@ -209,7 +198,7 @@ jobs:
         run: echo "GO_VERSION=$(go version)" >> $GITHUB_ENV
 
       - name: Check out code into GOPATH
-        uses: actions/checkout@v2
+        uses: actions/checkout@v6
         with:
           path: ${{ env.WORKDIR }}
 
@@ -252,4 +241,3 @@ jobs:
           tree -d
           ls -al
           docker --version
-          docker-compose --version

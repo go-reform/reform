@@ -16,13 +16,13 @@ as opposed to `interface{}`, type system sidestepping, and runtime reflection. I
 
 Supported SQL dialects:
 
-| RDBMS                | Library and drivers                                                                                 | Status
-| -----                | -------------------                                                                                 | ------
-| PostgreSQL           | [github.com/lib/pq](https://github.com/lib/pq) (`postgres`)                                         | Stable. Tested with all [supported](https://www.postgresql.org/support/versioning/) versions.
-|                      | [github.com/jackc/pgx/stdlib](https://github.com/jackc/pgx) (`pgx` v3)                              | Stable. Tested with all [supported](https://www.postgresql.org/support/versioning/) versions.
-| MySQL                | [github.com/go-sql-driver/mysql](https://github.com/go-sql-driver/mysql) (`mysql`)                  | Stable. Tested with all [supported](https://www.mysql.com/support/supportedplatforms/database.html) versions.
-| SQLite3              | [github.com/mattn/go-sqlite3](https://github.com/mattn/go-sqlite3) (`sqlite3`)                      | Stable.
-| Microsoft SQL Server | [github.com/denisenkom/go-mssqldb](https://github.com/denisenkom/go-mssqldb) (`sqlserver`, `mssql`) | Stable.<br/>Tested on Windows with: SQL2008R2SP2, SQL2012SP1, SQL2014, SQL2016.<br/>On Linux with: `mcr.microsoft.com/mssql/server:2017-latest` and `mcr.microsoft.com/mssql/server:2019-latest` [Docker images](https://hub.docker.com/_/microsoft-mssql-server).
+| RDBMS                | Library and drivers                                                                                 | Status                                                                                                                                                              |
+| -------------------- | --------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| PostgreSQL           | [github.com/lib/pq](https://github.com/lib/pq) (`postgres`)                                         | Stable. Tested with all [supported](https://www.postgresql.org/support/versioning/) versions.                                                                       |
+|                      | [github.com/jackc/pgx/stdlib](https://github.com/jackc/pgx) (`pgx` v3)                              | Stable. Tested with all [supported](https://www.postgresql.org/support/versioning/) versions.                                                                       |
+| MySQL                | [github.com/go-sql-driver/mysql](https://github.com/go-sql-driver/mysql) (`mysql`)                  | Stable. Tested with all [supported](https://www.mysql.com/support/supportedplatforms/database.html) versions.                                                       |
+| SQLite3              | [github.com/mattn/go-sqlite3](https://github.com/mattn/go-sqlite3) (`sqlite3`)                      | Stable.                                                                                                                                                             |
+| Microsoft SQL Server | [github.com/denisenkom/go-mssqldb](https://github.com/denisenkom/go-mssqldb) (`sqlserver`, `mssql`) | Stable.<br/>Tested on Windows with: SQL2008R2SP2, SQL2012SP1, SQL2014, SQL2016.<br/>On Linux with [Docker images](https://hub.docker.com/_/microsoft-mssql-server). |
 
 Notes:
 * [`clientFoundRows=true` flag](https://github.com/go-sql-driver/mysql#clientfoundrows) is required for `mysql` driver.
@@ -31,23 +31,10 @@ Notes:
 
 ## Quickstart
 
-1. Make sure you are using Go 1.17+, and Go modules support is enabled.
+1. Make sure you are using Go 1.24+, and Go modules support is enabled.
    Install or update `reform` package, `reform` and `reform-db` commands with:
     ```
     go get -v gopkg.in/reform.v1/...
-    ```
-
-   If you are not using Go modules yet, you can use dep to vendor desired version of reform,
-   and then install commands with:
-    ```
-    go install -v ./vendor/gopkg.in/reform.v1/...
-    ```
-
-   You can also install the latest stable version of reform without using Go modules thanks to
-   [gopkg.in redirection](https://gopkg.in/reform.v1), but please note that this will not use the stable
-   versions of the database drivers:
-    ```
-    env GO111MODULE=off go get -u -v gopkg.in/reform.v1/...
     ```
 
    Canonical import path is `gopkg.in/reform.v1`; using `github.com/go-reform/reform` will not work.

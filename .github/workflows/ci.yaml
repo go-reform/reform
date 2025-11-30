@@ -50,7 +50,7 @@ jobs:
       # Cache Go modules, build cache, installed packages and GOPATH sources
       # to significantly decreases total CI time. See also cleanup.yaml.
       - name: Enable Go cache
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         with:
           path: |
             ~/.cache/go-build
@@ -61,7 +61,7 @@ jobs:
 
       - name: Set up Go version ${{ matrix.go-version }}
         if: matrix.go-version != 'tip'
-        uses: actions/setup-go@v2
+        uses: actions/setup-go@v6
         with:
           go-version: ${{ matrix.go-version }}
 
@@ -79,7 +79,7 @@ jobs:
         run: echo "GO_VERSION=$(go version)" >> $GITHUB_ENV
 
       - name: Check out code into GOPATH
-        uses: actions/checkout@v2
+        uses: actions/checkout@v6
         with:
           path: ${{ env.WORKDIR }}
 
@@ -170,7 +170,7 @@ jobs:
       # Cache Go modules, build cache, installed packages and GOPATH sources
       # to significantly decreases total CI time. See also cleanup.yaml.
       - name: Enable Go cache
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         with:
           path: |
             ~/.cache/go-build
@@ -181,7 +181,7 @@ jobs:
 
       - name: Set up Go version ${{ matrix.go-version }}
         if: matrix.go-version != 'tip'
-        uses: actions/setup-go@v2
+        uses: actions/setup-go@v6
         with:
           go-version: ${{ matrix.go-version }}
 
@@ -199,7 +199,7 @@ jobs:
         run: echo "GO_VERSION=$(go version)" >> $GITHUB_ENV
 
       - name: Check out code into GOPATH
-        uses: actions/checkout@v2
+        uses: actions/checkout@v6
         with:
           path: ${{ env.WORKDIR }}
 

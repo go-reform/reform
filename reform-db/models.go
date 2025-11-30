@@ -65,6 +65,7 @@ type sqliteMaster struct {
 
 // TODO This "dummy" table name is ugly. We should do better.
 // See https://github.com/go-reform/reform/issues/107.
+//
 //reform:dummy
 type sqliteTableInfo struct {
 	CID          int     `reform:"cid"`

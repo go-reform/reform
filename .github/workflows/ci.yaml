@@ -85,7 +85,7 @@ jobs:
 
       - name: Pull Docker images
         working-directory: ${{ env.WORKDIR }}
-        run: docker-compose pull
+        run: docker compose pull
 
       - name: Stop Ubuntu services
         run: sudo systemctl stop mysql
@@ -137,7 +137,6 @@ jobs:
           tree -d
           ls -al
           docker --version
-          docker-compose --version
 
   # lint job
   lint:
@@ -242,4 +241,3 @@ jobs:
           tree -d
           ls -al
           docker --version
-          docker-compose --version

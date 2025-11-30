@@ -13,16 +13,16 @@ init:                                    ## Install development tools.
 	cd tools && go generate -tags=tools -x
 
 env-up:                                  ## Start development environment.
-	docker-compose up --force-recreate --abort-on-container-exit --renew-anon-volumes --remove-orphans
+	docker compose up --force-recreate --abort-on-container-exit --renew-anon-volumes --remove-orphans
 
 env-up-detach:                           ## Start development environment in the backgroud.
-	docker-compose up --detach --force-recreate --renew-anon-volumes --remove-orphans
+	docker compose up --detach --force-recreate --renew-anon-volumes --remove-orphans
 	until [ "`docker inspect -f {{.State.Health.Status}} reform_postgres`" = "healthy" ]; do sleep 1; done
 	until [ "`docker inspect -f {{.State.Health.Status}} reform_mysql`" = "healthy" ]; do sleep 1; done
 	until [ "`docker inspect -f {{.State.Health.Status}} reform_mssql`" = "healthy" ]; do sleep 1; done
 
 env-down:                                ## Stop development environment.
-	docker-compose down --volumes --remove-orphans
+	docker compose down --volumes --remove-orphans
 
 env-mysql:                               ## Run mysql client.
 	docker exec -ti reform_mysql mysql

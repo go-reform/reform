@@ -1,9 +1,8 @@
 ---
-version: '3.7'
-
 services:
   postgres:
-    image: ${REFORM_POSTGRES_IMAGE:-postgres:12}
+    # https://hub.docker.com/_/postgres
+    image: ${REFORM_POSTGRES_IMAGE:-postgres}
     container_name: reform_postgres
     environment:
       - TZ=Europe/Moscow
@@ -17,7 +16,8 @@ services:
       retries: 1
 
   mysql:
-    image: ${REFORM_MYSQL_IMAGE:-mysql:5.7}
+    # https://hub.docker.com/_/mysql
+    image: ${REFORM_MYSQL_IMAGE:-mysql}
     container_name: reform_mysql
     environment:
       - TZ=Europe/Moscow
@@ -32,8 +32,10 @@ services:
       retries: 1
 
   mssql:
-    image: ${REFORM_MSSQL_IMAGE:-mcr.microsoft.com/mssql/server:2017-latest}
+    # https://hub.docker.com/r/microsoft/mssql-server
+    image: ${REFORM_MSSQL_IMAGE:-mcr.microsoft.com/mssql/server:2022-latest}
     container_name: reform_mssql
+    platform: linux/amd64
     environment:
       - ACCEPT_EULA=Y
       - SA_PASSWORD=reform-password123

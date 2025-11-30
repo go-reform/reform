@@ -1,33 +1,33 @@
-help:                           ## Display this help message.
+help:                    ## Display this help message.
 	@echo "Please use \`make <target>\` where <target> is one of:"
 	@grep '^[a-zA-Z]' $(MAKEFILE_LIST) | \
 		awk -F ':.*?## ' 'NF==2 {printf "  %-26s%s\n", $$1, $$2}'
 
 # SHELL = go run .github/shell.go
 
-init:                                    ## Install development tools.
+init:                    ## Install development tools.
 	rm -fr bin
 	go mod tidy
 	cd tools && go mod tidy
 	go mod verify
 	cd tools && go generate -tags=tools -x
 
-env-up:                                  ## Start development environment.
+env-up:                  ## Start development environment.
 	docker compose up --force-recreate --abort-on-container-exit --renew-anon-volumes --remove-orphans
 
-env-up-detach:                           ## Start development environment in the backgroud.
+env-up-detach:           ## Start development environment in the backgroud.
 	docker compose up --detach --force-recreate --renew-anon-volumes --remove-orphans
 	until [ "`docker inspect -f {{.State.Health.Status}} reform_postgres`" = "healthy" ]; do sleep 1; done
 	until [ "`docker inspect -f {{.State.Health.Status}} reform_mysql`" = "healthy" ]; do sleep 1; done
 	until [ "`docker inspect -f {{.State.Health.Status}} reform_mssql`" = "healthy" ]; do sleep 1; done
 
-env-down:                                ## Stop development environment.
+env-down:                ## Stop development environment.
 	docker compose down --volumes --remove-orphans
 
-env-mysql:                               ## Run mysql client.
+env-mysql:               ## Run mysql client.
 	docker exec -ti reform_mysql mysql
 
-test:                                    ## Run all tests and gather coverage.
+test:                    ## Run all tests and gather coverage.
 	make test-unit
 
 	make postgres
@@ -189,7 +189,7 @@ merge-cover:
 	bin/gocoverutil -coverprofile=coverage.txt merge *.cover
 	rm -f *.cover
 
-lint:                                    ## Run linters.
+lint:                    ## Run linters.
 	# run required linters for all code
 	bin/golangci-lint run --config=.golangci-required.yml
 

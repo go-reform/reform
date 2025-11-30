@@ -7,8 +7,8 @@ help:                           ## Display this help message.
 
 init:                                    ## Install development tools.
 	rm -fr bin
-	go mod tidy -go=1.17 -compat=1.17
-	cd tools && go mod tidy -go=1.17 -compat=1.17
+	go mod tidy
+	cd tools && go mod tidy
 	go mod verify
 	cd tools && go generate -tags=tools -x
 
@@ -199,14 +199,14 @@ lint:                                    ## Run linters.
 
 ci-check-changes:
 	# Revert version change in go.mod.
-	go mod tidy -go=1.17 -compat=1.17
+	go mod tidy -go=1.24 -compat=1.23
 
 	# Break job if any files were changed during its run (code generation, etc), except go.sum.
 	# `go mod tidy` could remove old checksums from that file, and that's okay on CI,
 	# and actually expected for PRs made by @dependabot.
 	# Checksums of actually used modules are checked by previous CI steps.
-	cd tools && pwd && go mod tidy -go=1.17 -compat=1.17 && git checkout go.sum
-	pwd && go mod tidy -go=1.17 -compat=1.17 && git checkout go.sum
+	cd tools && pwd && go mod tidy && git checkout go.sum
+	pwd && go mod tidy -go=1.24 -compat=1.23 && git checkout go.sum
 	git status
 	git diff --exit-code
 

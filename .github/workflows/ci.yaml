@@ -23,7 +23,8 @@ jobs:
         os:
           - ubuntu-20.04
         go-version:
-          - 1.17.x
+          - 1.24.x
+          - 1.25.x
           - tip
         images:
           - { postgres: "postgres:9.5", mysql: "mysql:5.6", mssql: "mcr.microsoft.com/mssql/server:2017-latest" }
@@ -41,7 +42,6 @@ jobs:
       WORKDIR: "${{ github.workspace }}/gopath/src/gopkg.in/reform.v1"
       GOPATH: "${{ github.workspace }}/gopath"
       GOBIN: "${{ github.workspace }}/gopath/bin"
-      GO111MODULE: "on"
       GOPROXY: "https://proxy.golang.org"
       GORACE: "halt_on_error=1"
       REFORM_POSTGRES_IMAGE: "${{ matrix.images.postgres }}"
@@ -101,13 +101,6 @@ jobs:
         working-directory: ${{ env.WORKDIR }}
         run: go mod download
 
-      - name: Check that it is still possible to install reform without modules
-        working-directory: ${{ env.WORKDIR }}
-        run: |
-          env GO111MODULE=off go get -v -x ./...
-          reform -version
-          reform-db -version
-
       - name: Run init target
         working-directory: ${{ env.WORKDIR }}
         run: make init
@@ -159,7 +152,7 @@ jobs:
         os:
           - ubuntu-20.04
         go-version:
-          - 1.17.x
+          - 1.25.x
 
     runs-on: ${{ matrix.os }}
 
@@ -169,7 +162,6 @@ jobs:
       WORKDIR: "${{ github.workspace }}/gopath/src/gopkg.in/reform.v1"
       GOPATH: "${{ github.workspace }}/gopath"
       GOBIN: "${{ github.workspace }}/gopath/bin"
-      GO111MODULE: "on"
       GOPROXY: "https://proxy.golang.org"
       GORACE: "halt_on_error=1"
       REFORM_POSTGRES_IMAGE: "${{ matrix.images.postgres }}"

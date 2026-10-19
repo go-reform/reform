@@ -8,12 +8,12 @@ import (
 	"testing"
 	"time"
 
-	mssqlDriver "github.com/denisenkom/go-mssqldb"
 	mysqlDriver "github.com/go-sql-driver/mysql"
-	"github.com/jackc/pgx"
-	"github.com/jackc/pgx/stdlib"
+	"github.com/jackc/pgx/v5/stdlib"
 	"github.com/lib/pq"
+	"github.com/lib/pq/pqerror"
 	sqlite3Driver "github.com/mattn/go-sqlite3"
+	mssqlDriver "github.com/microsoft/go-mssqldb"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
@@ -69,8 +69,9 @@ func TestExecWithContext(t *testing.T) {
 
 	switch dbDriver.(type) {
 	case *sqlite3Driver.SQLiteDriver:
-		// sqlite3 driver does not support query cancelation
-		assert.Equal(t, context.DeadlineExceeded, err)
+		// SQLite cannot interrupt this Go function; the statement completes successfully.
+		assert.NoError(t, err)
+		assert.ErrorIs(t, ctx.Err(), context.DeadlineExceeded)
 		assert.True(t, dur >= sleep, "sqlite3: failed comparison: dur >= sleep")
 		assert.True(t, dur >= ctxTimeout, "sqlite3: failed comparison: dur >= ctxTimeout")
 
@@ -82,13 +83,13 @@ func TestExecWithContext(t *testing.T) {
 		// check specific error type
 		switch dbDriver.(type) {
 		case *pq.Driver:
-			require.EqualError(t, err, "pq: canceling statement due to user request")
+			require.EqualError(t, err, "pq: canceling statement due to user request (57014)")
 			pgErr := err.(*pq.Error)
 			assert.Equal(t, "ERROR", pgErr.Severity)
-			assert.Equal(t, pq.ErrorCode("57014"), pgErr.Code)
+			assert.Equal(t, pqerror.Code("57014"), pgErr.Code)
 			assert.Equal(t, "ProcessInterrupts", pgErr.Routine)
 		case *stdlib.Driver:
-			assert.Equal(t, context.DeadlineExceeded, err)
+			assert.ErrorIs(t, err, context.DeadlineExceeded)
 		case *mysqlDriver.MySQLDriver:
 			assert.Equal(t, context.DeadlineExceeded, err)
 		case *mssqlDriver.Driver:
@@ -111,22 +112,9 @@ func TestExecWithContext(t *testing.T) {
 	// check the same tx without timeout
 	err = tx.QueryRow("SELECT 1").Scan(&res)
 	switch dbDriver.(type) {
-	case *pq.Driver:
-		require.EqualError(t, err, "pq: current transaction is aborted, commands ignored until end of transaction block")
-		pgErr := err.(*pq.Error)
-		assert.Equal(t, "ERROR", pgErr.Severity)
-		assert.Equal(t, pq.ErrorCode("25P02"), pgErr.Code)
-		assert.Equal(t, "exec_simple_query", pgErr.Routine)
-
-		assert.Equal(t, 0, res)
-
-	case *stdlib.Driver:
-		assert.EqualError(t, err, "ERROR: current transaction is aborted, commands ignored until end of transaction block (SQLSTATE 25P02)")
-		pgErr := err.(pgx.PgError)
-		assert.Equal(t, "ERROR", pgErr.Severity)
-		assert.Equal(t, "25P02", pgErr.Code)
-		assert.Equal(t, "exec_parse_message", pgErr.Routine)
-
+	case *pq.Driver, *stdlib.Driver:
+		// Both PostgreSQL drivers discard the connection after cancellation.
+		assert.Equal(t, driver.ErrBadConn, err)
 		assert.Equal(t, 0, res)
 
 	case *mysqlDriver.MySQLDriver:
@@ -148,11 +136,11 @@ func TestExecWithContext(t *testing.T) {
 	err = tx.Rollback()
 	switch dbDriver.(type) {
 	case *pq.Driver:
-		assert.NoError(t, err)
+		assert.Equal(t, driver.ErrBadConn, err)
 	case *stdlib.Driver:
-		assert.NoError(t, err)
+		assert.EqualError(t, err, "conn closed")
 	case *mysqlDriver.MySQLDriver:
-		assert.Equal(t, mysqlDriver.ErrInvalidConn, err)
+		assert.ErrorIs(t, err, context.DeadlineExceeded)
 	case *sqlite3Driver.SQLiteDriver:
 		assert.NoError(t, err)
 	case *mssqlDriver.Driver:

@@ -2,7 +2,9 @@
 
 ## v1.6.0 (not released yet)
 
-* Go 1.24+ is now required.
+* Go 1.26+ is now required; Go 1.26 and 1.27 are supported.
+* Updated dependencies, development tools, database images, and GitHub Actions.
+* Updated pgx support to v5 and switched to the maintained Microsoft SQL Server driver.
 
 ## v1.5.1 (2021-08-27, https://github.com/go-reform/reform/milestones/v1.5.1)
 

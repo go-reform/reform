@@ -228,7 +228,8 @@ func (q *Querier) InsertMulti(structs ...Struct) error {
 	}
 
 	placeholders := q.Placeholders(1, len(columns)*len(structs))
-	query := fmt.Sprintf("%s INTO %s (%s) VALUES ",
+	query := fmt.Sprintf(
+		"%s INTO %s (%s) VALUES ",
 		q.startQuery("INSERT"),
 		q.QualifiedView(view),
 		strings.Join(columns, ", "),
@@ -262,7 +263,8 @@ func (q *Querier) update(str Struct, columns []string, values []interface{}, tai
 		p[i] = c + " = " + placeholders[i]
 	}
 	table := str.View()
-	query := fmt.Sprintf("%s %s SET %s %s",
+	query := fmt.Sprintf(
+		"%s %s SET %s %s",
 		q.startQuery("UPDATE"),
 		q.QualifiedView(table),
 		strings.Join(p, ", "),
@@ -278,7 +280,7 @@ func (q *Querier) update(str Struct, columns []string, values []interface{}, tai
 	if err != nil {
 		return 0, err
 	}
-	return uint(ra), nil
+	return uint(ra), nil //nolint:gosec // Preserve reform v1's uint result conversion semantics.
 }
 
 func (q *Querier) beforeUpdate(str Struct) error {
@@ -414,7 +416,8 @@ func (q *Querier) Delete(record Record) error {
 
 	table := record.Table()
 	pk := table.PKColumnIndex()
-	query := fmt.Sprintf("%s FROM %s WHERE %s = %s",
+	query := fmt.Sprintf(
+		"%s FROM %s WHERE %s = %s",
 		q.startQuery("DELETE"),
 		q.QualifiedView(table),
 		q.QuoteIdentifier(table.Columns()[pk]),
@@ -442,7 +445,8 @@ func (q *Querier) Delete(record Record) error {
 //
 // Method never returns ErrNoRows.
 func (q *Querier) DeleteFrom(view View, tail string, args ...interface{}) (uint, error) {
-	query := fmt.Sprintf("%s FROM %s %s",
+	query := fmt.Sprintf(
+		"%s FROM %s %s",
 		q.startQuery("DELETE"),
 		q.QualifiedView(view),
 		tail,
@@ -456,5 +460,5 @@ func (q *Querier) DeleteFrom(view View, tail string, args ...interface{}) (uint,
 	if err != nil {
 		return 0, err
 	}
-	return uint(ra), nil
+	return uint(ra), nil //nolint:gosec // Preserve reform v1's uint result conversion semantics.
 }

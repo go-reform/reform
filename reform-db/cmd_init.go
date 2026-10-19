@@ -44,7 +44,7 @@ and edited manually.
 
 func gofmt(path string) {
 	if *gofmtF {
-		cmd := exec.Command("gofmt", "-s", "-w", path)
+		cmd := exec.Command("gofmt", "-s", "-w", path) //nolint:gosec // The executable is fixed; path is a filename argument.
 		logger.Debugf(strings.Join(cmd.Args, " "))
 		b, err := cmd.CombinedOutput()
 		if err != nil {
@@ -73,7 +73,7 @@ func convertName(sqlName string) string {
 		if f == "id" {
 			res[i] = "ID"
 		} else {
-			res[i] = strings.Title(f)
+			res[i] = strings.Title(f) //nolint:staticcheck // Preserve reform v1's generated type names for existing schemas.
 		}
 	}
 	return strings.Join(res, "")
@@ -217,7 +217,7 @@ func cmdInit(db *reform.DB, dir string) {
 	for _, s := range structs {
 		logger.Debugf("%#v", s)
 
-		f, err := os.Create(filepath.Join(dir, strings.ToLower(s.SQLName)+".go"))
+		f, err := os.Create(filepath.Join(dir, strings.ToLower(s.SQLName)+".go")) //nolint:gosec // The CLI writes models to the user-selected directory.
 		if err != nil {
 			logger.Fatalf("%s", err)
 		}

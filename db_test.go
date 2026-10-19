@@ -6,9 +6,9 @@ import (
 	"testing"
 
 	"github.com/AlekSi/pointer"
-	"github.com/brianvoe/gofakeit/v6"
-	"github.com/jackc/pgx"
-	"github.com/jackc/pgx/stdlib"
+	"github.com/brianvoe/gofakeit/v7"
+	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/stdlib"
 	"github.com/lib/pq"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"

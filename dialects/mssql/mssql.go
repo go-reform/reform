@@ -1,6 +1,6 @@
 // Package mssql implements reform.Dialect for Microsoft SQL Server (mssql driver).
 //
-// Deprecated: Use sqlserver dialect instead. https://github.com/denisenkom/go-mssqldb#deprecated
+// Deprecated: Use sqlserver dialect instead. https://github.com/microsoft/go-mssqldb#deprecated
 package mssql // import "gopkg.in/reform.v1/dialects/mssql"
 
 import (
@@ -43,7 +43,7 @@ func (mssql) DefaultValuesMethod() reform.DefaultValuesMethod {
 
 // Dialect implements reform.Dialect for Microsoft SQL Server.
 //
-// Deprecated: Use sqlserver.Dialect instead. https://github.com/denisenkom/go-mssqldb#deprecated
+// Deprecated: Use sqlserver.Dialect instead. https://github.com/microsoft/go-mssqldb#deprecated
 var Dialect mssql
 
 // check interface

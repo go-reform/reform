@@ -19,22 +19,24 @@ Supported SQL dialects:
 | RDBMS                | Library and drivers                                                                                 | Status                                                                                                                                                              |
 | -------------------- | --------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | PostgreSQL           | [github.com/lib/pq](https://github.com/lib/pq) (`postgres`)                                         | Stable. Tested with all [supported](https://www.postgresql.org/support/versioning/) versions.                                                                       |
-|                      | [github.com/jackc/pgx/stdlib](https://github.com/jackc/pgx) (`pgx` v3)                              | Stable. Tested with all [supported](https://www.postgresql.org/support/versioning/) versions.                                                                       |
+|                      | [github.com/jackc/pgx/v5/stdlib](https://github.com/jackc/pgx) (`pgx` v5)                              | Stable. Tested with all [supported](https://www.postgresql.org/support/versioning/) versions.                                                                       |
 | MySQL                | [github.com/go-sql-driver/mysql](https://github.com/go-sql-driver/mysql) (`mysql`)                  | Stable. Tested with all [supported](https://www.mysql.com/support/supportedplatforms/database.html) versions.                                                       |
 | SQLite3              | [github.com/mattn/go-sqlite3](https://github.com/mattn/go-sqlite3) (`sqlite3`)                      | Stable.                                                                                                                                                             |
-| Microsoft SQL Server | [github.com/denisenkom/go-mssqldb](https://github.com/denisenkom/go-mssqldb) (`sqlserver`, `mssql`) | Stable.<br/>Tested on Windows with: SQL2008R2SP2, SQL2012SP1, SQL2014, SQL2016.<br/>On Linux with [Docker images](https://hub.docker.com/_/microsoft-mssql-server). |
+| Microsoft SQL Server | [github.com/microsoft/go-mssqldb](https://github.com/microsoft/go-mssqldb) (`sqlserver`, `mssql`) | Stable.<br/>Tested on Windows with: SQL2008R2SP2, SQL2012SP1, SQL2014, SQL2016.<br/>On Linux with [Docker images](https://hub.docker.com/_/microsoft-mssql-server). |
 
 Notes:
 * [`clientFoundRows=true` flag](https://github.com/go-sql-driver/mysql#clientfoundrows) is required for `mysql` driver.
-* `mssql` driver is [deprecated](https://github.com/denisenkom/go-mssqldb#deprecated) (but not `sqlserver` driver).
+* `mssql` driver is [deprecated](https://github.com/microsoft/go-mssqldb#deprecated) (but not `sqlserver` driver).
 
 
 ## Quickstart
 
-1. Make sure you are using Go 1.24+, and Go modules support is enabled.
+1. Make sure you are using Go 1.26+, and Go modules support is enabled.
    Install or update `reform` package, `reform` and `reform-db` commands with:
     ```
-    go get -v gopkg.in/reform.v1/...
+    go get gopkg.in/reform.v1@latest
+    go install gopkg.in/reform.v1/reform@latest
+    go install gopkg.in/reform.v1/reform-db@latest
     ```
 
    Canonical import path is `gopkg.in/reform.v1`; using `github.com/go-reform/reform` will not work.
@@ -179,4 +181,4 @@ It is based on the original design by Renée French, released under [Creative Co
 
 ## Contributing
 
-See [Contributing Guidelines](.github/CONTRIBUTING.md).
+See [Contributing Guidelines](CONTRIBUTING.md).

@@ -5,21 +5,23 @@ help:                    ## Display this help message.
 
 # SHELL = go run .github/shell.go
 
+REFORM_ENV_WAIT_TIMEOUT ?= 180
+
 init:                    ## Install development tools.
-	rm -fr bin
-	go mod tidy
-	cd tools && go mod tidy
 	go mod verify
+	cd tools && go mod verify
 	cd tools && go generate -tags=tools -x
 
 env-up:                  ## Start development environment.
-	docker compose up --force-recreate --abort-on-container-exit --renew-anon-volumes --remove-orphans
+	$(MAKE) env-up-detach
+	trap 'docker compose stop' EXIT INT TERM; docker compose logs --follow
 
-env-up-detach:           ## Start development environment in the backgroud.
-	docker compose up --detach --force-recreate --renew-anon-volumes --remove-orphans
-	until [ "`docker inspect -f {{.State.Health.Status}} reform_postgres`" = "healthy" ]; do sleep 1; done
-	until [ "`docker inspect -f {{.State.Health.Status}} reform_mysql`" = "healthy" ]; do sleep 1; done
-	until [ "`docker inspect -f {{.State.Health.Status}} reform_mssql`" = "healthy" ]; do sleep 1; done
+env-up-detach:           ## Start development environment in the background.
+	docker compose up --wait --wait-timeout $(REFORM_ENV_WAIT_TIMEOUT) --force-recreate --renew-anon-volumes --remove-orphans || { \
+		docker compose ps --all; \
+		docker compose logs --no-color --tail=100; \
+		exit 1; \
+	}
 
 env-down:                ## Stop development environment.
 	docker compose down --volumes --remove-orphans
@@ -53,6 +55,7 @@ test-unit:
 	go generate -v -x gopkg.in/reform.v1/reform-db
 	go install -v gopkg.in/reform.v1/reform-db
 
+	go test -short -run '^Test' -count=1 -race ./...
 	go vet ./...
 
 test-db-init:
@@ -192,22 +195,16 @@ merge-cover:
 lint:                    ## Run linters.
 	# run required linters for all code
 	bin/golangci-lint run --config=.golangci-required.yml
+	bin/golangci-lint fmt --config=.golangci-required.yml --diff
 
 	# run optional linters for new code only
-	bin/golangci-lint run --new
+	bin/golangci-lint run --new --issues-exit-code=0
 	bin/go-consistent -pedantic ./... | bin/reviewdog -f=go-consistent -diff='git diff HEAD^'
 
 ci-check-changes:
-	# Revert version change in go.mod.
-	go mod tidy -go=1.24 -compat=1.23
-
-	# Break job if any files were changed during its run (code generation, etc), except go.sum.
-	# `go mod tidy` could remove old checksums from that file, and that's okay on CI,
-	# and actually expected for PRs made by @dependabot.
-	# Checksums of actually used modules are checked by previous CI steps.
-	cd tools && pwd && go mod tidy && git checkout go.sum
-	pwd && go mod tidy -go=1.24 -compat=1.23 && git checkout go.sum
-	git status
+	go mod tidy -diff
+	cd tools && go mod tidy -diff
 	git diff --exit-code
 
-.PHONY: docs parse reform reform-db test
+.PHONY: help init env-up env-up-detach env-down env-mysql test test-unit test-db-init test-db \
+	postgres pgx mysql mysql-traditional sqlite3 mssql sqlserver win-mssql win-sqlserver merge-cover lint ci-check-changes

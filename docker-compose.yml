@@ -2,7 +2,7 @@
 services:
   postgres:
     # https://hub.docker.com/_/postgres
-    image: ${REFORM_POSTGRES_IMAGE:-postgres}
+    image: ${REFORM_POSTGRES_IMAGE:-postgres:18.6}
     container_name: reform_postgres
     environment:
       - TZ=Europe/Moscow
@@ -12,12 +12,13 @@ services:
     healthcheck:
       test: psql -U postgres --command='SELECT 1'
       interval: 1s
-      timeout: 1s
-      retries: 1
+      timeout: 5s
+      start_period: 30s
+      retries: 30
 
   mysql:
     # https://hub.docker.com/_/mysql
-    image: ${REFORM_MYSQL_IMAGE:-mysql}
+    image: ${REFORM_MYSQL_IMAGE:-mysql:26.7.0}
     container_name: reform_mysql
     environment:
       - TZ=Europe/Moscow
@@ -26,23 +27,32 @@ services:
     ports:
       - 127.0.0.1:3306:3306
     healthcheck:
-      test: echo 'SELECT 1' | mysql
+      test: mysql --host=127.0.0.1 --user=root --execute='SELECT 1'
       interval: 1s
-      timeout: 1s
-      retries: 1
+      timeout: 5s
+      start_period: 60s
+      retries: 30
 
   mssql:
     # https://hub.docker.com/r/microsoft/mssql-server
-    image: ${REFORM_MSSQL_IMAGE:-mcr.microsoft.com/mssql/server:2022-latest}
+    image: ${REFORM_MSSQL_IMAGE:-mcr.microsoft.com/mssql/server:2025-latest}
     container_name: reform_mssql
     platform: linux/amd64
     environment:
       - ACCEPT_EULA=Y
-      - SA_PASSWORD=reform-password123
+      - MSSQL_SA_PASSWORD=reform-password123
     ports:
       - 127.0.0.1:1433:1433
     healthcheck:
-      test: /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P "$$SA_PASSWORD" -Q "SELECT 1" || exit 1
+      test:
+        - CMD-SHELL
+        - >
+          if [ -x /opt/mssql-tools18/bin/sqlcmd ]; then
+            /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P "$$MSSQL_SA_PASSWORD" -C -b -Q "SELECT 1";
+          else
+            /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P "$$MSSQL_SA_PASSWORD" -b -Q "SELECT 1";
+          fi
       interval: 1s
-      timeout: 1s
-      retries: 1
+      timeout: 5s
+      start_period: 60s
+      retries: 30

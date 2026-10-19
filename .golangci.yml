@@ -1,42 +1,56 @@
 ---
-# Almost all linters; some of them are optional.
-
-run:
-  skip-dirs:
-    - bogus
-
-linters-settings:
-  govet:
-    check-shadowing: true
-  goimports:
-    local-prefixes: gopkg.in/reform.v1
-
+version: "2"
+# Almost all linters; findings from this configuration are advisory.
 linters:
-  enable-all: true
+  default: all
   disable:
-    - lll          # too annoying
-    - nlreturn     # too annoying
-    - wrapcheck    # reform v1 should not wrap errors to keep SemVer compatibility
-    - wsl          # too annoying
-
-issues:
-  exclude-use-default: false
-  exclude:
-    # gosec - we are making an ORM after all
-    - "G201: SQL string formatting"
-    - "G202: SQL string concatenation"
-
-    # # golint - matches database/sql.Result.LastInsertId()
-    # # > method LastInsertIdMethod should be LastInsertIDMethod
-    # # > type `LastInsertIdMethod` should be `LastInsertIDMethod`
-    # # > var `lastInsertIdMethod` should be `lastInsertIDMethod`
-    # - "`?LastInsertIdMethod`? should be `?LastInsertIDMethod`?"
-
-  exclude-rules:
-    # - path: internal/test/models/
-    #   linters:
-    #     - golint
-    - path: _test\.go
-      linters:
-        - funlen       # tests may be long
-        - testpackage  # senseless
+    - exhaustruct # Replaced by exhaustruct_v5.
+    - gomodguard # Replaced by gomodguard_v2.
+    - lll
+    - nlreturn
+    - wrapcheck # Preserve reform v1's error compatibility.
+    - wsl
+    - wsl_v5
+  settings:
+    depguard:
+      rules:
+        main:
+          list-mode: lax
+          allow:
+            - $gostd
+            - gopkg.in/reform.v1
+            - github.com/
+    govet:
+      enable:
+        - shadow
+  exclusions:
+    presets: []
+    paths:
+      - internal/test/models/bogus/
+    rules:
+      # Preserve stylecheck exemptions for deliberately named model fixtures.
+      - path: internal/test/models/good\.go
+        linters: [staticcheck]
+        text: "^ST[0-9]+:"
+      - linters: [gosec]
+        text: "G20[12]: SQL string (formatting|concatenation)"
+      - path: _test\.go
+        linters:
+          - funlen
+          - testpackage
+formatters:
+  enable:
+    - goimports
+  settings:
+    goimports:
+      local-prefixes:
+        - gopkg.in/reform.v1
+  exclusions:
+    paths:
+      - internal/test/models/bogus/
+output:
+  formats:
+    text:
+      path: stdout
+      colors: false
+      print-issued-lines: false

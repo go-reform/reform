@@ -73,7 +73,7 @@ func ConnectToTestDB() *reform.DB {
 	switch dialect {
 	case postgresql.Dialect:
 		inspectOnce.Do(func() {
-			log.Printf("driver = %q, source = %q", driver, source)
+			log.Printf("driver = %q, source = %q", driver, source) //nolint:gosec // Test diagnostics quote the environment-supplied driver and DSN.
 
 			log.Printf("time.Now()          = %s", now)
 			log.Printf("time.Now().UTC()    = %s", now.UTC())
@@ -91,7 +91,7 @@ func ConnectToTestDB() *reform.DB {
 
 	case mysql.Dialect:
 		inspectOnce.Do(func() {
-			log.Printf("driver = %q, source = %q", driver, source)
+			log.Printf("driver = %q, source = %q", driver, source) //nolint:gosec // Test diagnostics quote the environment-supplied driver and DSN.
 
 			log.Printf("time.Now()          = %s", now)
 			log.Printf("time.Now().UTC()    = %s", now.UTC())
@@ -113,7 +113,7 @@ func ConnectToTestDB() *reform.DB {
 		}
 
 		inspectOnce.Do(func() {
-			log.Printf("driver = %q, source = %q", driver, source)
+			log.Printf("driver = %q, source = %q", driver, source) //nolint:gosec // Test diagnostics quote the environment-supplied driver and DSN.
 
 			log.Printf("time.Now()          = %s", now)
 			log.Printf("time.Now().UTC()    = %s", now.UTC())
@@ -130,7 +130,7 @@ func ConnectToTestDB() *reform.DB {
 		fallthrough
 	case sqlserver.Dialect:
 		inspectOnce.Do(func() {
-			log.Printf("driver = %q, source = %q", driver, source)
+			log.Printf("driver = %q, source = %q", driver, source) //nolint:gosec // Test diagnostics quote the environment-supplied driver and DSN.
 
 			log.Printf("time.Now()       = %s", now)
 			log.Printf("time.Now().UTC() = %s", now.UTC())
@@ -149,7 +149,7 @@ func ConnectToTestDB() *reform.DB {
 		})
 
 	default:
-		log.Fatalf("reform: no dialect for driver %s", driver)
+		log.Fatalf("reform: no dialect for driver %q", driver) //nolint:gosec // The test diagnostic quotes the environment-supplied driver.
 	}
 
 	return reform.NewDB(db, dialect, nil)

@@ -1,7 +1,6 @@
 package main
 
 import (
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
@@ -34,13 +33,13 @@ func (s *ReformDBSuite) TestInit() {
 		compositePK.Fields[0].Type = strings.ReplaceAll(compositePK.Fields[0].Type, "int32", "int64")
 	}
 
-	dir, err := ioutil.TempDir("", "ReformDBTestInit")
-	s.Require().NoError(err)
+	dir := filepath.Join(s.T().TempDir(), "models")
+	s.Require().NoError(os.Mkdir(dir, 0o750))
 	s.T().Log(dir)
 
 	cmdInit(s.db, dir)
 
-	fis, err := ioutil.ReadDir(dir)
+	fis, err := os.ReadDir(dir)
 	s.Require().NoError(err)
 	s.Require().Len(fis, 6)
 

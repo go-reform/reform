@@ -1,13 +1,13 @@
 module gopkg.in/reform.v1/tools
 
-go 1.17
+go 1.26.0
 
 require (
 	github.com/AlekSi/gocoverutil v0.2.0
 	github.com/golangci/golangci-lint v1.43.0
 	github.com/quasilyte/go-consistent v0.0.0-20200404105227-766526bf1e96
 	github.com/reviewdog/reviewdog v0.13.1
-	mvdan.cc/gofumpt v0.2.1
+	mvdan.cc/gofumpt v0.12.0
 )
 
 require (
@@ -73,7 +73,7 @@ require (
 	github.com/golangci/misspell v0.3.5 // indirect
 	github.com/golangci/revgrep v0.0.0-20210930125155-c22e5001d4f2 // indirect
 	github.com/golangci/unconvert v0.0.0-20180507085042-28b1c447d1f4 // indirect
-	github.com/google/go-cmp v0.5.6 // indirect
+	github.com/google/go-cmp v0.7.0 // indirect
 	github.com/google/go-github/v39 v39.2.0 // indirect
 	github.com/google/go-querystring v1.1.0 // indirect
 	github.com/googleapis/gax-go/v2 v2.1.1 // indirect
@@ -166,15 +166,17 @@ require (
 	github.com/yeya24/promlinter v0.1.0 // indirect
 	go.opencensus.io v0.23.0 // indirect
 	golang.org/x/build v0.0.0-20200616162219-07bebbe343e9 // indirect
-	golang.org/x/crypto v0.0.0-20210921155107-089bfa567519 // indirect
-	golang.org/x/mod v0.5.1 // indirect
-	golang.org/x/net v0.0.0-20211015210444-4f30a5c0130f // indirect
+	golang.org/x/crypto v0.55.0 // indirect
+	golang.org/x/mod v0.40.0 // indirect
+	golang.org/x/net v0.58.0 // indirect
 	golang.org/x/oauth2 v0.0.0-20211104180415-d3ed0bb246c8 // indirect
-	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c // indirect
-	golang.org/x/sys v0.0.0-20211213223007-03aa0b5f6827 // indirect
-	golang.org/x/text v0.3.7 // indirect
+	golang.org/x/sync v0.22.0 // indirect
+	golang.org/x/sys v0.47.0 // indirect
+	golang.org/x/text v0.41.0 // indirect
 	golang.org/x/time v0.0.0-20200416051211-89c76fbcd5d1 // indirect
-	golang.org/x/tools v0.1.8 // indirect
+	golang.org/x/tools v0.49.0 // indirect
+	golang.org/x/tools/go/expect v0.1.1-deprecated // indirect
+	golang.org/x/tools/go/packages/packagestest v0.1.1-deprecated // indirect
 	golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1 // indirect
 	google.golang.org/api v0.61.0 // indirect
 	google.golang.org/appengine v1.6.7 // indirect

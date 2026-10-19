@@ -7,7 +7,7 @@ import (
 )
 
 func objectGoType(t reflect.Type, structT reflect.Type) string {
-	if t.Kind() == reflect.Ptr {
+	if t.Kind() == reflect.Pointer {
 		return "*" + objectGoType(t.Elem(), structT)
 	}
 

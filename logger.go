@@ -12,7 +12,7 @@ func Inspect(arg interface{}, addType bool) string {
 	var s string
 	v := reflect.ValueOf(arg)
 	switch v.Kind() {
-	case reflect.Ptr:
+	case reflect.Pointer:
 		if v.IsNil() {
 			s = "<nil>"
 		} else {

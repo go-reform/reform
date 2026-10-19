@@ -8,7 +8,7 @@
 6. Push it!
 7. Make [release](https://github.com/go-reform/reform/releases).
 8. Refresh
-   * `env GO111MODULE=on GOPROXY=https://proxy.golang.org go get -v gopkg.in/reform.v1@v1.M.P`
+   * `GOPROXY=https://proxy.golang.org go get -v gopkg.in/reform.v1@v1.M.P`
    * https://pkg.go.dev/gopkg.in/reform.v1@v1.M.P
    * https://godoc.org/gopkg.in/reform.v1
    * https://goreportcard.com/report/gopkg.in/reform.v1

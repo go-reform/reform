@@ -10,7 +10,7 @@ import (
 	"time"
 
 	"github.com/AlekSi/pointer"
-	"github.com/brianvoe/gofakeit/v6"
+	"github.com/brianvoe/gofakeit/v7"
 
 	"gopkg.in/reform.v1"
 	"gopkg.in/reform.v1/dialects/postgresql"

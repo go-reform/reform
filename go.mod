@@ -1,6 +1,6 @@
 module gopkg.in/reform.v1
 
-go 1.17
+go 1.21
 
 require (
 	github.com/AlekSi/pointer v1.2.0
@@ -8,7 +8,7 @@ require (
 	github.com/denisenkom/go-mssqldb v0.10.0
 	github.com/go-sql-driver/mysql v1.6.0
 	github.com/jackc/pgx v3.6.2+incompatible
-	github.com/lib/pq v1.8.0
+	github.com/lib/pq v1.12.3
 	github.com/mattn/go-sqlite3 v1.14.0
 	github.com/stretchr/testify v1.7.0
 )
